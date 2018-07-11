@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>.: Madison :.</title>
+    <title>.: DSP :.</title>
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/css/inicio_bootstrap.css">
     <link rel="stylesheet" href="/js/iviewer/jquery.iviewer.css" />

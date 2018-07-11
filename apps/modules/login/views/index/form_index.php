@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Madison</title>
+    <title>DSP</title>
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/css/normalize.css">
     <link rel="stylesheet" type="text/css" href="/css/login_bootstrap.css">
@@ -36,7 +36,7 @@
             </section>
             <footer>
                 <p>
-                    <span>Copyright&copy; Madison Perú</span>
+                    <span>Copyright&copy; DSP Perú</span>
                     <span>Todos los derechos reservados</span>
                 </p>
             </footer>
