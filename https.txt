@@ -1,0 +1,10 @@
+NameVirtualHost *:9002
+Listen *:9002
+<VirtualHost *:9002>
+    DocumentRoot "D:/xampp/htdocs/DSP/public_html"
+    DirectoryIndex index.php
+    <Directory "D:/xampp/htdocs/DSP/public_html">
+        AllowOverride All
+        Allow from All
+    </Directory>
+</VirtualHost>
