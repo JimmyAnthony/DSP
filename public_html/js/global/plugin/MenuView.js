@@ -73,6 +73,7 @@ Ext.define('Ext.global.plugin.MenuView',{
             listeners:{
                 load: function(obj, records, successful, opts){
                     console.log(records);
+                    document.getElementById("menu_spinner").innerHTML = "";
                 }
             }
         });
