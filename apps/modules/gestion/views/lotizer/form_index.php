@@ -4,7 +4,7 @@
 		var lotizer = {
 			id:'lotizer',
 			id_menu:'<?php echo $p["id_menu"];?>',
-			url:'/gestion/lotizador/',
+			url:'/gestion/lotizer/',
 			opcion:'I',
 			init:function(){
 				var store = Ext.create('Ext.data.Store',{
