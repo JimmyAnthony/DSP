@@ -18,9 +18,19 @@ class lotizerModels extends Adodb {
     public function get_list_lotizer($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
+        parent::SetParameterSP($p['vp_name'], 'varchar');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+   public function get_lotizer_detalle($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_lotizer_detalle');
         parent::SetParameterSP($p['vp_cod_lote'], 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
     }
+
 }

@@ -15,10 +15,10 @@
                     {name: 'usuario', type: 'string'},
                     {name: 'cantidad', type: 'string'}
                 ],
-                autoLoad:true,
+                autoLoad:false,
                 proxy:{
                     type: 'ajax',
-                    url: lotizer.url+'get_list_lotizer/?vp_cod_lote=0',
+                    url: lotizer.url+'get_list_lotizer/',
                     reader:{
                         type: 'json',
                         rootProperty: 'data'
@@ -32,18 +32,17 @@
             });
 			var store_shipper = Ext.create('Ext.data.Store',{
                 fields: [
-                    {name: 'shi_codigo', type: 'string'},
-                    {name: 'shi_nombre', type: 'string'},
-                    {name: 'shi_logo', type: 'string'},
-                    {name: 'fec_ingreso', type: 'string'},
-                    {name: 'shi_estado', type: 'string'},
-                    {name: 'id_user', type: 'string'},
-                    {name: 'fecha_actual', type: 'string'}
+                    {name: 'lote', type: 'string'},
+                    {name: 'paquete', type: 'string'},
+                    {name: 'cod_paquete', type: 'string'},
+                    {name: 'fecha', type: 'string'},
+                    {name: 'usuario', type: 'string'},
+                    {name: 'ctdad_docs', type: 'string'}
                 ],
                 autoLoad:true,
                 proxy:{
                     type: 'ajax',
-                    url: lotizer.url+'get_sis_list_shipper_campana/',
+                    url: lotizer.url+'get_lotizer_detalle/',
                     reader:{
                         type: 'json',
                         rootProperty: 'data'
@@ -79,7 +78,7 @@
 						{
 							region:'east',
 							border:true,
-							width:'30%',
+							width:'50%',
 							padding:'5px 5px 5px 5px',
 							layout:'border',
 							items:[
@@ -275,19 +274,50 @@
 					                        columns:{
 					                            items:[
 					                                {
-					                                    text: 'Shipper',
-					                                    dataIndex: 'shi_nombre',
+					                                    text: 'Lote',
+					                                    dataIndex: 'lote',
+					                                    width: 50
+					                                },
+
+					                                {
+					                                    text: 'Paquete',
+					                                    dataIndex: 'paquete',
 					                                    flex: 1
 					                                },
 					                                {
+					                                    text: 'Cod_Paquete',
+					                                    dataIndex: 'cod_paquete',
+					                                    width: 50
+					                                },
+					                                {
+					                                    text: 'Fecha',
+					                                    dataIndex: 'fecha',
+					                                    width: 100
+					                                },
+					                                {
+					                                    text: 'Usuario',
+					                                    dataIndex: 'usuario',
+					                                    width: 100
+					                                },
+					                                {
+					                                    text: 'Ctdad_docs',
+					                                    dataIndex: 'ctdad_docs',
+					                                    width: 100
+					                                }
+
+
+
+
+
+					                                /*{
 					                                    text: 'Estado',
 					                                    dataIndex: 'shi_estado',
 					                                    width: 100,
 					                                    align: 'center',
 					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                }/*,
+					                                    }*/
+					                                /*,
 					                                {
 					                                    text: 'Logo',
 					                                    dataIndex: 'shi_logo',
@@ -366,7 +396,7 @@
 	                                                bodyStyle: 'background: transparent',
 	                                                items:[
 	                                                    {
-	                                                        xtype: 'textfield',
+	                                                        xtype: 'textfield',	
 	                                                        fieldLabel: 'Lotizer',
 	                                                        id:lotizer.id+'-txt-lotizer',
 	                                                        labelWidth:80,
@@ -384,7 +414,7 @@
 	                                                items:[
 	                                                    {
 									                        xtype:'button',
-									                        text: 'Buscar',
+									                        text: 'Buscar ver',
 									                        icon: '/images/icon/binocular.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
@@ -395,8 +425,9 @@
 									                                    fn: ['panel_asignar_gestion.limpiar']
 									                                });*/
 									                            },
-									                            click: function(obj, e){
-									                                //lotizer.buscar_ge();
+									                            click: function(obj, e){	             	
+									                            	var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue();
+		                               					            lotizer.getReloadGridlotizer(name);
 									                            }
 									                        }
 									                    }
@@ -422,7 +453,7 @@
 					                                {
 					                                    text: 'Cod.Lote',
 					                                    dataIndex: 'cod_lote',
-					                                    width: 150
+					                                    width: 50
 					                                },
 					                                {
 					                                    text: 'Lote',
@@ -443,10 +474,10 @@
 					                                    text: 'Cantidad',
 					                                    dataIndex: 'cantidad',
 					                                    width: 100,
-					                                    align: 'center',
+					                              /*      align: 'center',
 					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 					                                        return value==1?'Activo':'Inactivo';
-					                                    }
+					                                    }*/
 					                                },
 					                                {
 					                                    text: '&nbsp;',
@@ -482,13 +513,15 @@
 												beforeselect:function(obj, record, index, eOpts ){
 													//console.log(record);
 													lotizer.opcion='U';
-													lotizer.cod_cam=record.get('cod_cam');
+													lotizer.cod_lote=record.get('cod_lote');
 													lotizer.getImagen(record.get('imagen'));
-													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('nombre'));
+													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('cod_lote'));
 													Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(record.get('descripcion'));
 													Ext.getCmp(lotizer.id+'-date-re').setValue(record.get('fec_crea'));
 													Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('estado'));
-													lotizer.getReloadGridlotizer(record.get('cod_cam'));
+													//var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue(record.get('cod_lote'));
+													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
+
 												}
 					                        }
 					                    }
@@ -514,6 +547,7 @@
 	                        global.state_item_menu(lotizer.id_menu, true);
 	                    },
 	                    afterrender: function(obj, e){
+	                    	lotizer.getReloadGridlotizer('');
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,lotizer.id_menu);
 	                    },
@@ -580,16 +614,16 @@
 			getReloadGridlotizer:function(name){
 				Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
-	                {params: {vp_nombre:name},
+	                {params: {vp_name:name},
 	                callback:function(){
 	                	Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
 	            });
 			},
-			getReloadGridlotizer:function(campana){
+			getReloadGridlotizer2:function(cod_lote){
 				Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				Ext.getCmp(lotizer.id + '-grid-lotizer').getStore().load(
-	                {params: {campana:campana},
+	                {params: {vp_cod_lote:cod_lote},
 	                callback:function(){
 	                	Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
