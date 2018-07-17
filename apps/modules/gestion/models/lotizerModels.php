@@ -15,10 +15,10 @@ class lotizerModels extends Adodb {
         $this->dsn = Common::read_ini(PATH.'config/config.ini', 'server_main');
     }
 
-    public function get_campana_formulario($p){
+    public function get_list_lotizer($p){
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'get_campana_formulario');
-        parent::SetParameterSP($p['vp_cod_camp'], 'int');
+        parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
+        parent::SetParameterSP($p['vp_cod_lote'], 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;

@@ -4,22 +4,21 @@
 		var lotizer = {
 			id:'lotizer',
 			id_menu:'<?php echo $p["id_menu"];?>',
-			url:'/gestion/lotizador/',
+			url:'/gestion/lotizer/',
 			opcion:'I',
 			init:function(){
 				var store = Ext.create('Ext.data.Store',{
                 fields: [
-                    {name: 'cod_cam', type: 'string'},
-                    {name: 'nombre', type: 'string'},
-                    {name: 'descripcion', type: 'string'},
-                    {name: 'imagen', type: 'string'},
-                    {name: 'fec_crea', type: 'string'},
-                    {name: 'estado', type: 'string'}
+                    {name: 'cod_lote', type: 'string'},
+                    {name: 'lote', type: 'string'},
+                    {name: 'fecha', type: 'string'},
+                    {name: 'usuario', type: 'string'},
+                    {name: 'cantidad', type: 'string'}
                 ],
                 autoLoad:true,
                 proxy:{
                     type: 'ajax',
-                    url: lotizer.url+'get_sis_list_campana/',
+                    url: lotizer.url+'get_list_lotizer/?vp_cod_lote=0',
                     reader:{
                         type: 'json',
                         rootProperty: 'data'
@@ -351,7 +350,7 @@
 	                                xtype: 'uePanelS',
 	                                logo: 'CL',
 	                                title: 'Listado de Lotizador',
-	                                legend: 'Búsqueda de campañas registradas',
+	                                legend: 'Búsqueda de Lotes registradas',
 	                                height:100,
 	                                items:[
 	                                    {
@@ -368,8 +367,8 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Campaña',
-	                                                        id:lotizer.id+'-txt-campana',
+	                                                        fieldLabel: 'Lotizer',
+	                                                        id:lotizer.id+'-txt-lotizer',
 	                                                        labelWidth:80,
 	                                                        //readOnly:true,
 	                                                        labelAlign:'right',
@@ -421,28 +420,28 @@
 					                        columns:{
 					                            items:[
 					                                {
-					                                    text: 'Campaña',
-					                                    dataIndex: 'nombre',
+					                                    text: 'Cod.Lote',
+					                                    dataIndex: 'cod_lote',
 					                                    width: 150
 					                                },
 					                                {
-					                                    text: 'Descripcion',
-					                                    dataIndex: 'descripcion',
+					                                    text: 'Lote',
+					                                    dataIndex: 'lote',
 					                                    flex: 1
 					                                },
 					                                {
-					                                    text: 'Logo',
-					                                    dataIndex: 'imagen',
+					                                    text: 'Fecha',
+					                                    dataIndex: 'fecha',
 					                                    width: 150
 					                                },
 					                                {
-					                                    text: 'Fecha Creación',
-					                                    dataIndex: 'fec_crea',
+					                                    text: 'Usuario',
+					                                    dataIndex: 'usuario',
 					                                    width: 100
 					                                },
 					                                {
-					                                    text: 'Estado',
-					                                    dataIndex: 'estado',
+					                                    text: 'Cantidad',
+					                                    dataIndex: 'cantidad',
 					                                    width: 100,
 					                                    align: 'center',
 					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){

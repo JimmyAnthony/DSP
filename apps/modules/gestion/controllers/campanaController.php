@@ -22,7 +22,7 @@ class campanaController extends AppController {
     }
 
     public function index($p){        
-        $this->view('campana/form_index.php', $p);
+        $this->view('lotizer/form_index.php', $p);
     }
 
 
