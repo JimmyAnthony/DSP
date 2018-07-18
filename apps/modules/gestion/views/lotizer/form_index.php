@@ -451,50 +451,54 @@
 					                        columns:{
 					                            items:[
 					                                {
+					                                	id: lotizer.id + '-grid-cod_lote',
 					                                    text: 'Cod.Lote',
 					                                    dataIndex: 'cod_lote',
 					                                    width: 50
 					                                },
 					                                {
+					                                	id: lotizer.id + '-grid-lote',
 					                                    text: 'Lote',
 					                                    dataIndex: 'lote',
 					                                    flex: 1
 					                                },
 					                                {
+					                                	id: lotizer.id + '-grid-fecha',
 					                                    text: 'Fecha',
 					                                    dataIndex: 'fecha',
 					                                    width: 150
 					                                },
 					                                {
+					                                	id: lotizer.id + '-grid-usuario',
 					                                    text: 'Usuario',
 					                                    dataIndex: 'usuario',
 					                                    width: 100
 					                                },
 					                                {
+					                                	id: lotizer.id + '-grid-cantidad',
 					                                    text: 'Cantidad',
 					                                    dataIndex: 'cantidad',
 					                                    width: 100,
-					                              /*      align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }*/
 					                                },
-					                                {
-					                                    text: '&nbsp;',
-					                                    dataIndex: '',
-					                                    width: 30,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        metaData.style = "padding: 0px; margin: 0px";
-					                                        return global.permisos({
-					                                            type: 'link',
-					                                            id_menu: lotizer.id_menu,
-					                                            icons:[
-					                                                {id_serv: 9, img: 'detail.png', qtip: 'Click para ver detalle.', js: 'lotizer.getFormDetalleGestion()'}
-					                                            ]
-					                                        });
-					                                    }
-					                                }
+					                                
+													{
+							                            text: '&nbsp;',
+							                            dataIndex: '',
+							                            width: 30,
+							                            align: 'center',
+							                            renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+							                                metaData.style = "padding: 0px; margin: 0px";
+							                                    return global.permisos({
+							                                       type: 'link',
+							                                       id_menu: lotizer.id_menu,
+							                        	           icons:[
+							                            		    {img: 'edit.png', qtip: 'Click para Editar.', js: "lotizer.getFormMant("
+							                            		    +record.get('grid-cod_lote')+",'"+record.get('grid-lote')+"','"+record.get('grid-usuario')+"',"+record.get('grid-cantidad')+
+							                            		    ")"}
+							                                       ]
+							                                    });
+							                                }
+							                        }
 					                            ],
 					                            defaults:{
 					                                menuDisabled: true
@@ -637,7 +641,137 @@
 				Ext.getCmp(lotizer.id+'-date-re').setValue('');
 				Ext.getCmp(lotizer.id+'-cmb-estado').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-nombre').focus();
+			},
+			getFormMant:function(cod_lote,lote,usuario,cantidad){
+				var myData = [
+				    ['1','Activo'],
+				    ['0','Inactivo']
+				];
+				var store_estado = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'estado',
+			        autoLoad: true,
+			        data: myData,
+			        fields: ['code', 'name']
+			    });
+
+				Ext.create('Ext.window.Window',{
+	                id:lotizer.id+'-win-form',
+	                plain: true,
+	                title:'Edición',
+	                icon: '/images/icon/edit.png',
+	                height: 200,
+	                width: 450,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:20,
+	                items:[
+	                	{
+	                        xtype: 'textfield',
+	                        id:lotizer.id+'-grid-lotizer',
+	                        fieldLabel: 'Lote',
+	                        //disabled:true,
+	                        labelWidth:90,
+	                        labelAlign:'right',
+	                        width:'100%',
+	                        anchor:'100%',
+	                        value:nombre
+	                    },
+	                    {
+	                        xtype: 'textfield',
+	                        id:formularioGestion.id+'-form-descripcion',
+	                        fieldLabel: 'Descripción',
+	                        labelWidth:90,
+	                        labelAlign:'right',
+	                        width:'100%',
+	                        anchor:'100%',
+	                        value:descripcion
+	                    },
+	                    {
+	                        xtype:'combo',
+	                        fieldLabel: 'Estado',
+	                        id:formularioGestion.id+'-form-cmb-estado',
+	                        store: store_estado,
+	                        queryMode: 'local',
+	                        triggerAction: 'all',
+	                        valueField: 'code',
+	                        displayField: 'name',
+	                        emptyText: '[Seleccione]',
+	                        labelAlign:'right',
+	                        //allowBlank: false,
+	                        labelWidth: 90,
+	                        width:'100%',
+	                        anchor:'100%',
+	                        //readOnly: true,
+	                        listeners:{
+	                            afterrender:function(obj, e){
+	                                // obj.getStore().load();
+	                                if(ID==0){
+	                                	obj.setValue(1);
+	                                }else{
+	                                	obj.setValue(estado);
+	                                }
+	                            },
+	                            select:function(obj, records, eOpts){
+	                    
+	                            }
+	                        }
+	                    }
+	                ],
+	                bbar:[       
+	                    '->',
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Guardar',
+	                        icon: '/images/icon/save.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+	                                /*global.permisos({
+	                                    id: 15,
+	                                    id_btn: obj.getId(), 
+	                                    id_menu: gestion_devolucion.id_menu,
+	                                    fn: ['panel_asignar_gestion.limpiar']
+	                                });*/
+	                            },
+	                            click: function(obj, e){
+	                            	formularioGestion.setSaveRecordForm(ID);
+	                            }
+	                        }
+	                    },
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+	                                /*global.permisos({
+	                                    id: 15,
+	                                    id_btn: obj.getId(), 
+	                                    id_menu: gestion_devolucion.id_menu,
+	                                    fn: ['panel_asignar_gestion.limpiar']
+	                                });*/
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(formularioGestion.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+	                        //panel_asignar_gestion.getDatos();
+	                    },
+	                    'close':function(){
+	                        //if(panel_asignar_gestion.guarda!=0)gestion_devolucion.buscar();
+	                    }
+	                }
+	            }).show().center();
 			}
+
 		}
 		Ext.onReady(lotizer.init,lotizer);
 	}else{
