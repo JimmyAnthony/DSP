@@ -46,5 +46,17 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function getImg_tiff($img){
+        /*$output = array();$file2 = '0001_'.rand(0,9999999);
+        $file = trim($img);$file = str_replace('.TIF', '', $file);
+        $path = REALPATHAPP.'apps/public/imagenes'.$file;
+        //echo REALPATHAPP.'apps/public/imagenes/convert.sh '.$path.' '.REALPATHAPP.'apps/public/imagenes/'.$file2;
+        $a = exec(REALPATHAPP.'apps/public/imagenes/convert.sh '.$path.' '.REALPATHAPP.'apps/public/imagenes/'.$file2, $output);            
+        return $file2;*/
+    }
+    public function delete_tiff($p){
+        /*$path = REALPATHAPP.'apps/public/imagenes/'.trim($p['img']).'.jpg';
+        unlink($path);*/
+    }
 
 }
