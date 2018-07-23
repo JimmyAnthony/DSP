@@ -101,7 +101,7 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Nombre',
+	                                                        fieldLabel: 'Lote',
 	                                                        id:lotizer.id+'-txt-nombre',
 	                                                        labelWidth:60,
 	                                                        //readOnly:true,
@@ -117,7 +117,7 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Descripcion',
+	                                                        fieldLabel: 'Paquete',
 	                                                        id:lotizer.id+'-txt-descripcion',
 	                                                        labelWidth:60,
 	                                                        //readOnly:true,
@@ -273,13 +273,13 @@
 					                        columnLines: true,
 					                        columns:{
 					                            items:[
-					                                {
+					                                {                                	
 					                                    text: 'Lote',
 					                                    dataIndex: 'lote',
 					                                    width: 50
 					                                },
 
-					                                {
+					                                {			                                
 					                                    text: 'Paquete',
 					                                    dataIndex: 'paquete',
 					                                    flex: 1
@@ -303,11 +303,7 @@
 					                                    text: 'Ctdad_docs',
 					                                    dataIndex: 'ctdad_docs',
 					                                    width: 100
-					                                }
-
-
-
-
+					                                }	
 
 					                                /*{
 					                                    text: 'Estado',
@@ -360,7 +356,24 @@
 					                        },
 					                        trackMouseOver: false,
 					                        listeners:{
+
+											beforeselect:function(obj, record, index, eOpts ){
+															//console.log(record);
+															/*lotizer.opcion='U';*/
+															//lotizer.cod_lote=record.get('cod_lote');
+															/*lotizer.getImagen(record.get('imagen'));*/
+															Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('lote'));
+															Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(record.get('paquete'));
+															Ext.getCmp(lotizer.id+'-date-re').setValue(record.get('fecha'));
+															/*Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('fecha'));*/
+															//var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue(record.get('cod_lote'));
+															//lotizer.getReloadGridlotizer2(lotizer.cod_lote);
+
+														},
+
+
 					                            afterrender: function(obj){
+
 					                                
 					                            }
 					                        }
@@ -516,13 +529,13 @@
 					                            },
 												beforeselect:function(obj, record, index, eOpts ){
 													//console.log(record);
-													lotizer.opcion='U';
+													/*lotizer.opcion='U';*/
 													lotizer.cod_lote=record.get('cod_lote');
-													lotizer.getImagen(record.get('imagen'));
-													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('cod_lote'));
-													Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(record.get('descripcion'));
-													Ext.getCmp(lotizer.id+'-date-re').setValue(record.get('fec_crea'));
-													Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('estado'));
+													/*lotizer.getImagen(record.get('imagen'));*/
+													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('lote'));
+													Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(record.get('paquete'));
+													Ext.getCmp(lotizer.id+'-date-re').setValue(record.get('fecha'));
+													/*Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('fecha'));*/
 													//var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue(record.get('cod_lote'));
 													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
 
@@ -669,18 +682,18 @@
 	                items:[
 	                	{
 	                        xtype: 'textfield',
-	                        id:lotizer.id+'-grid-lotizer',
-	                        fieldLabel: 'Lote',
+	                        id:lotizer.id+'-grid-lotizer-form',
+	                        fieldLabel: 'Cod_Lote',
 	                        //disabled:true,
 	                        labelWidth:90,
 	                        labelAlign:'right',
 	                        width:'100%',
 	                        anchor:'100%',
-	                        value:nombre
+	                        value:cod_lote
 	                    },
 	                    {
 	                        xtype: 'textfield',
-	                        id:formularioGestion.id+'-form-descripcion',
+	                        id:lotizer.id+'-form-descripcion',
 	                        fieldLabel: 'Descripción',
 	                        labelWidth:90,
 	                        labelAlign:'right',
