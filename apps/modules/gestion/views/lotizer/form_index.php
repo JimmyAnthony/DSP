@@ -89,7 +89,7 @@
 										{
 	                                        xtype: 'fieldset',
 	                                        margin: '5 5 5 10',
-	                                        title:'<b>Mantenimiento de Lotizador</b>',
+	                                        title:'<b>Mantenimiento Lotizador</b>',
 	                                        border:false,
 	                                        bodyStyle: 'background: transparent',
 	                                        padding:'2px 5px 1px 5px',
@@ -104,23 +104,7 @@
 	                                                        fieldLabel: 'Lote',
 	                                                        id:lotizer.id+'-txt-nombre',
 	                                                        labelWidth:60,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Paquete',
-	                                                        id:lotizer.id+'-txt-descripcion',
-	                                                        labelWidth:60,
-	                                                        //readOnly:true,
+	                                                        readOnly:true,
 	                                                        labelAlign:'right',
 	                                                        width:'100%',
 	                                                        anchor:'100%'
@@ -133,12 +117,13 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype:'datefield',
-	                                                        id:lotizer.id+'-date-re',
+	                                                        id:lotizer.id+'-txt-fecha',
 	                                                        fieldLabel:'Fecha',
 	                                                        labelWidth:60,
 	                                                        labelAlign:'right',
 	                                                        value:new Date('Y-m-d'),
 	                                                        format: 'Y-m-d',
+	                                                        readOnly:true,
 	                                                        width: '100%',
 	                                                        anchor:'100%'
 	                                                    }
@@ -148,82 +133,45 @@
 	                                                columnWidth: 1,border:false,
 	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 	                                                items:[
-	                                                	{
-	                                                		xtype:'form',
-	                                                		id:lotizer.id+'-form-info',
-	                                                		border:false,
-	                                                		items:[
-	                                                			{
-														            xtype: 'filefield',
-														            emptyText: 'Seleccione una imagen',
-														            fieldLabel: 'Imagen',
-														            labelAlign:'right',
-														            labelWidth:60,
-														            name: 'uploadedfile',
-														            id:lotizer.id+'-imagen_lotizer',
-														            buttonText: '',
-														            width: '100%',
-	                                                        		anchor:'100%',
-														            buttonConfig: {
-														                icon: '/images/icon/upload-file.png',
-														            }
-														        }
-	                                                		]
-	                                                	}
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'0px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
 	                                                    {
-	                                                    	xtype:'panel',
-	                                                    	padding:'10px 60px 10px 60px',
-	                                                    	border:true,
-	                                                    	height:300,
-	                                                    	html:'<div id="GaleryFull" class="links"></div>'
+	                                                        xtype: 'textfield',
+	                                                        fieldLabel: 'Usuario',
+	                                                        id:lotizer.id+'-txt-usuario',
+	                                                        labelWidth:60,
+	                                                        readOnly:true,
+	                                                        labelAlign:'right',
+	                                                        width:'100%',
+	                                                        anchor:'100%'
 	                                                    }
 	                                                ]
 	                                            },
+
 	                                            {
-                                                columnWidth: 0.50,border:false,
-                                                padding:'0px 2px 0px 0px',  bodyStyle: 'background: transparent',
-                                                items:[
-                                                    {
-                                                        xtype:'combo',
-                                                        fieldLabel: 'Estado',
-                                                        id:lotizer.id+'-cmb-estado',
-                                                        store: store_estado,
-                                                        queryMode: 'local',
-                                                        triggerAction: 'all',
-                                                        valueField: 'code',
-                                                        displayField: 'name',
-                                                        emptyText: '[Seleccione]',
-                                                        labelAlign:'right',
-                                                        //allowBlank: false,
-                                                        labelWidth: 80,
-                                                        width:'100%',
-                                                        anchor:'100%',
-                                                        //readOnly: true,
-                                                        listeners:{
-                                                            afterrender:function(obj, e){
-                                                                // obj.getStore().load();
-                                                            },
-                                                            select:function(obj, records, eOpts){
-                                                    
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
+	                                                columnWidth: 1,border:false,
+	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+	                                                items:[
+	                                                    {
+	                                                        xtype: 'textfield',
+	                                                        fieldLabel: 'Cantidad',
+	                                                        id:lotizer.id+'-txt-ctdad',
+	                                                        labelWidth:60,
+	                                                        readOnly:true,
+	                                                        labelAlign:'right',
+	                                                        width:'100%',
+	                                                        anchor:'100%'
+	                                                    }
+	                                                ]
+	                                            },
+	                                            
 	                                        ]
 	                                    }
 									],
 									bbar:[
 										{
+											id: 'boton', 
 					                        xtype:'button',
-					                        text: 'Guardar',
-					                        icon: '/images/icon/save.png',
+					                        text: 'Editar',
+					                        icon: '/images/icon/editar.png',
 					                        listeners:{
 					                            beforerender: function(obj, opts){
 					                                /*global.permisos({
@@ -305,45 +253,7 @@
 					                                    width: 100
 					                                }	
 
-					                                /*{
-					                                    text: 'Estado',
-					                                    dataIndex: 'shi_estado',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }*/
-					                                /*,
-					                                {
-					                                    text: 'Logo',
-					                                    dataIndex: 'shi_logo',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Estado',
-					                                    dataIndex: 'shi_estado',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                },
-					                                {
-					                                    text: '&nbsp;',
-					                                    dataIndex: '',
-					                                    width: 30,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        metaData.style = "padding: 0px; margin: 0px";
-					                                        return global.permisos({
-					                                            type: 'link',
-					                                            id_menu: lotizer.id_menu,
-					                                            icons:[
-					                                                {id_serv: 9, img: 'detail.png', qtip: 'Click para ver detalle.', js: 'lotizer.getFormDetalleGestion()'}
-					                                            ]
-					                                        });
-					                                    }
-					                                }*/
+					                                
 					                            ],
 					                            defaults:{
 					                                menuDisabled: true
@@ -358,17 +268,13 @@
 					                        listeners:{
 
 											beforeselect:function(obj, record, index, eOpts ){
-															//console.log(record);
-															/*lotizer.opcion='U';*/
-															//lotizer.cod_lote=record.get('cod_lote');
-															/*lotizer.getImagen(record.get('imagen'));*/
+												/*
 															Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('lote'));
 															Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(record.get('paquete'));
 															Ext.getCmp(lotizer.id+'-date-re').setValue(record.get('fecha'));
-															/*Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('fecha'));*/
-															//var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue(record.get('cod_lote'));
-															//lotizer.getReloadGridlotizer2(lotizer.cod_lote);
+															Ext.getCmp(lotizer.id+'-txt-qdocs').setValue(record.get('ctdad_docs'));
 
+												*/
 														},
 
 
@@ -379,6 +285,7 @@
 					                        }
 					                    }
 									]
+
 								}
 							]
 						},
@@ -427,7 +334,7 @@
 	                                                items:[
 	                                                    {
 									                        xtype:'button',
-									                        text: 'Buscar ver',
+									                        text: 'Buscar',
 									                        icon: '/images/icon/binocular.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
@@ -491,27 +398,10 @@
 					                                	id: lotizer.id + '-grid-cantidad',
 					                                    text: 'Cantidad',
 					                                    dataIndex: 'cantidad',
+					                                    loocked : true,
 					                                    width: 100,
 					                                },
 					                                
-													{
-							                            text: '&nbsp;',
-							                            dataIndex: '',
-							                            width: 30,
-							                            align: 'center',
-							                            renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-							                                metaData.style = "padding: 0px; margin: 0px";
-							                                    return global.permisos({
-							                                       type: 'link',
-							                                       id_menu: lotizer.id_menu,
-							                        	           icons:[
-							                            		    {img: 'edit.png', qtip: 'Click para Editar.', js: "lotizer.getFormMant("
-							                            		    +record.get('grid-cod_lote')+",'"+record.get('grid-lote')+"','"+record.get('grid-usuario')+"',"+record.get('grid-cantidad')+
-							                            		    ")"}
-							                                       ]
-							                                    });
-							                                }
-							                        }
 					                            ],
 					                            defaults:{
 					                                menuDisabled: true
@@ -533,8 +423,9 @@
 													lotizer.cod_lote=record.get('cod_lote');
 													/*lotizer.getImagen(record.get('imagen'));*/
 													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('lote'));
-													Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(record.get('paquete'));
-													Ext.getCmp(lotizer.id+'-date-re').setValue(record.get('fecha'));
+													Ext.getCmp(lotizer.id+'-txt-fecha').setValue(record.get('fecha'));
+													Ext.getCmp(lotizer.id+'-txt-usuario').setValue(record.get('usuario'));
+													Ext.getCmp(lotizer.id+'-txt-ctdad').setValue(record.get('cantidad'));
 													/*Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('fecha'));*/
 													//var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue(record.get('cod_lote'));
 													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
@@ -543,6 +434,7 @@
 					                        }
 					                    }
 									]
+									
 								}
 							]
 						}
@@ -576,7 +468,7 @@
 				}).show();
 			},
 			getImagen:function(param){
-				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});
+				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});*/
 			},
 			setlotizer:function(op){
 
@@ -648,11 +540,18 @@
 			},
 			setNuevo:function(){
 				lotizer.shi_codigo=0;
-				lotizer.getImagen('default.png');
+				//lotizer.getImagen('default.png');
+				Ext.getCmp('boton').setText('Guardar');
+//					                        icon: '/images/icon/save.png',
+
 				Ext.getCmp(lotizer.id+'-txt-nombre').setValue('');
-				Ext.getCmp(lotizer.id+'-txt-descripcion').setValue('');
-				Ext.getCmp(lotizer.id+'-date-re').setValue('');
-				Ext.getCmp(lotizer.id+'-cmb-estado').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
+				Ext.getCmp(lotizer.id+'-txt-fecha').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(false);
+				Ext.getCmp(lotizer.id+'-txt-ctdad').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(false);
+				Ext.getCmp(lotizer.id+'-txt-usuario').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-nombre').focus();
 			},
 			getFormMant:function(cod_lote,lote,usuario,cantidad){
