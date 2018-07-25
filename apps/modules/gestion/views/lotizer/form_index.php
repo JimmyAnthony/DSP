@@ -182,8 +182,30 @@
 					                                });*/
 					                            },
 					                            click: function(obj, e){
-					                                //lotizer.buscar_ge();
-					                                lotizer.setlotizer();
+
+
+													Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
+													Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(false);
+												  	Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(false);
+													Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(true);
+
+
+													var botonTxt = Ext.getCmp('boton').getText();
+													if (botonTxt == 'Editar') {
+														Ext.getCmp('boton').setText('Update');
+														Ext.getCmp('boton').setIcon('/images/icon/save.png');
+													} else {
+														Ext.getCmp('boton').setText('Editar');
+														Ext.getCmp('boton').setIcon('/images/icon/editar.png');
+														if (botonTxt == 'Update') {
+															 lotizer.opcion='U';
+															// lotizer.setlotizer();
+														} else {
+															 lotizer.opcion='I';
+															// lotizer.setlotizer();
+														}
+													}
+
 					                            }
 					                        }
 					                    },
@@ -203,6 +225,12 @@
 					                            click: function(obj, e){
 					                                //lotizer.buscar_ge();
 					                                lotizer.opcion='I';
+
+													Ext.getCmp('boton').setText('Grabar');
+													Ext.getCmp('boton').setIcon('/images/icon/save.png');
+
+					                                lotizer.cod_lote=0;
+													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
 					                                lotizer.setNuevo();
 					                            }
 					                        }
@@ -317,7 +345,7 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',	
-	                                                        fieldLabel: 'Lotizer',
+	                                                        fieldLabel: 'Lotes',
 	                                                        id:lotizer.id+'-txt-lotizer',
 	                                                        labelWidth:80,
 	                                                        //readOnly:true,
@@ -426,8 +454,19 @@
 													Ext.getCmp(lotizer.id+'-txt-fecha').setValue(record.get('fecha'));
 													Ext.getCmp(lotizer.id+'-txt-usuario').setValue(record.get('usuario'));
 													Ext.getCmp(lotizer.id+'-txt-ctdad').setValue(record.get('cantidad'));
-													/*Ext.getCmp(lotizer.id+'-cmb-estado').setValue(record.get('fecha'));*/
-													//var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue(record.get('cod_lote'));
+
+													Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(true);
+													Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(true);
+													Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(true);
+													Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(true);
+
+
+													var botonTxt = Ext.getCmp('boton').getText();
+													if (botonTxt == 'Guardar' || botonTxt == 'Update') {
+														Ext.getCmp('boton').setText('Editar');
+														Ext.getCmp('boton').setIcon('/images/icon/editar.png');
+													}
+
 													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
 
 												}
@@ -473,17 +512,17 @@
 			setlotizer:function(op){
 
 				global.Msg({
-                    msg: '¿Está seguro de guardar?',
+                    msg: '¿Está seguro de salvar?',
                     icon: 3,
                     buttons: 3,
                     fn: function(btn){
                         Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 
 						Ext.getCmp(lotizer.id+'-form-info').submit({
-		                    url: lotizer.url + 'setRegisterCampana/',
+		                    url: lotizer.url + 'setRegisterLotizer/',
 		                    params:{
 		                        vp_op: lotizer.opcion,
-		                        vp_shi_codigo:lotizer.cod_cam,
+		                        vp_shi_codigo:lotizer.cod_lote,
 		                        vp_shi_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
 		                        vp_shi_descripcion:Ext.getCmp(lotizer.id+'-txt-descripcion').getValue(),
 		                        vp_fec_ingreso:Ext.getCmp(lotizer.id+'-date-re').getRawValue(),
@@ -531,6 +570,7 @@
 			},
 			getReloadGridlotizer2:function(cod_lote){
 				Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				//id:lotizer.id+'-form'
 				Ext.getCmp(lotizer.id + '-grid-lotizer').getStore().load(
 	                {params: {vp_cod_lote:cod_lote},
 	                callback:function(){
@@ -551,9 +591,10 @@
 				Ext.getCmp(lotizer.id+'-txt-ctdad').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-usuario').setValue('');
-				Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(false);
+				Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(true);
 				Ext.getCmp(lotizer.id+'-txt-nombre').focus();
 			},
+
 			getFormMant:function(cod_lote,lote,usuario,cantidad){
 				var myData = [
 				    ['1','Activo'],
