@@ -201,8 +201,9 @@
 															 lotizer.opcion='U';
 															// lotizer.setlotizer();
 														} else {
+															 lotizer.cod_lote = 0;
 															 lotizer.opcion='I';
-															// lotizer.setlotizer();
+															 lotizer.setlotizer();
 														}
 													}
 
@@ -518,19 +519,20 @@
                     fn: function(btn){
                         Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 
-						Ext.getCmp(lotizer.id+'-form-info').submit({
+						Ext.getCmp(lotizer.id+'-form').submit({
 		                    url: lotizer.url + 'setRegisterLotizer/',
 		                    params:{
 		                        vp_op: lotizer.opcion,
-		                        vp_shi_codigo:lotizer.cod_lote,
-		                        vp_shi_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
-		                        vp_shi_descripcion:Ext.getCmp(lotizer.id+'-txt-descripcion').getValue(),
-		                        vp_fec_ingreso:Ext.getCmp(lotizer.id+'-date-re').getRawValue(),
-		                        vp_estado:Ext.getCmp(lotizer.id+'-cmb-estado').getValue()
+		                        vp_cod_lote:lotizer.cod_lote,
+		                        vp_lote_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
+		                        vp_lote_fecha:Ext.getCmp(lotizer.id+'-txt-fecha').getValue(),
+		                        vp_lote_ctdad:Ext.getCmp(lotizer.id+'-txt-ctdad').getValue(),
+		                        vp_usuario:Ext.getCmp(lotizer.id+'-txt-usuario').getValue()
 		                    },
 		                    success: function( fp, o ){
 		                    	//console.log(o);
 		                        var res = o.result;
+		                        
 		                        Ext.getCmp(lotizer.id+'-form').el.unmask();
 		                        //console.log(res);
 		                        if (parseInt(res.error) == 0){

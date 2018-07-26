@@ -34,17 +34,15 @@ class lotizerModels extends Adodb {
     }
 
     public function setRegisterLotizer($p){
-        $p['vp_shi_codigo'] =(empty($p['vp_shi_codigo']))?0:$p['vp_shi_codigo'];
+        //$p['vp_cod_lote'] =(empty($p['vp_cod_lote']))?0:$p['vp_cod_lote'];
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'set_shiper');
+        parent::ConnectionOpen($this->dsn, 'setRegisterLotizer');
         parent::SetParameterSP($p['vp_op'], 'varchar');
-        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
-        parent::SetParameterSP($p['vp_shi_nombre'], 'varchar');
-        parent::SetParameterSP($p['vp_shi_descripcion'], 'varchar');
-        parent::SetParameterSP($p['vp_fec_ingreso'], 'varchar');
-        parent::SetParameterSP($p['vp_shi_logo'], 'varchar');
-        parent::SetParameterSP($p['vp_estado'], 'int');
-        parent::SetParameterSP(USR_ID, 'int');
+        parent::SetParameterSP($p['vp_cod_lote'], 'int');
+        parent::SetParameterSP($p['vp_lote_nombre'], 'varchar');
+        parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
+        parent::SetParameterSP($p['vp_ctdad'], 'int');
+        parent::SetParameterSP($p['vp_usuario'], 'varchar');
          //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;

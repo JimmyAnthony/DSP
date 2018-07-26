@@ -72,7 +72,7 @@ class lotizerController extends AppController {
 
     public function setRegisterLotizer($p){
         //$this->valida_mobil($p);
-        header("Content-Type: text/plain");
+    /*    header("Content-Type: text/plain");
         $target_path = basename( $_FILES['uploadedfile']['name']);
 
         if(!empty($_FILES['uploadedfile']['name'])){
@@ -95,17 +95,21 @@ class lotizerController extends AppController {
             } else{
                 $men =  "{success: true,error:1, errors: 'No se logro subir la imagen al servidor',close:0}";
             }
-        }else{
-            $rs = $this->objDatos->setRegisterShipper($p);
+        }else{*/
+            $rs = $this->objDatos->setRegisterLotizer($p);
             $rs = $rs[0];
             //var_export($rs);
+            $nuevo = $rs['status'];
+            //alert("Hola");
+
             if ($rs['status'] == 'OK' ){
                 $men = "{success: true,error:0,data:'Información se guardo correctamente',close:0}";
             }else{
                 //unlink($dir);
+               // $men = $rs['status'];
                 $men =  "{success: true,error:1, errors: 'Error al registrar la información',close:0}";    
             }
-        }
+        //}
         return $men;
     }
 
