@@ -100,8 +100,14 @@ class lotizerController extends AppController {
             $rs = $rs[0];
             //var_export($rs);
             $nuevo = $rs['status'];
-            //alert("Hola");
+            /*
+                            global.Msg({
+                                msg: '¿Está de ....?',
+                                icon: 3,
+                                buttons: 3,
+                            });
 
+*/
             if ($rs['status'] == 'OK' ){
                 $men = "{success: true,error:0,data:'Información se guardo correctamente',close:0}";
             }else{

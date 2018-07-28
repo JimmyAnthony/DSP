@@ -157,6 +157,7 @@
 	                                                        labelWidth:60,
 	                                                        readOnly:true,
 	                                                        labelAlign:'right',
+	                                                        maskRe: /[0-9.]/,
 	                                                        width:'100%',
 	                                                        anchor:'100%'
 	                                                    }

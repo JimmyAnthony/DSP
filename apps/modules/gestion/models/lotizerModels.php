@@ -34,7 +34,7 @@ class lotizerModels extends Adodb {
     }
 
     public function setRegisterLotizer($p){
-        //$p['vp_cod_lote'] =(empty($p['vp_cod_lote']))?0:$p['vp_cod_lote'];
+        $p['vp_cod_lote'] =(empty($p['vp_cod_lote']))?0:$p['vp_cod_lote'];
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'setRegisterLotizer');
         parent::SetParameterSP($p['vp_op'], 'varchar');
