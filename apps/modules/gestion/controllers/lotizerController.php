@@ -30,11 +30,13 @@ class lotizerController extends AppController {
         //var_export($rs);
         $array = array();
         foreach ($rs as $index => $value){
-                $value_['cod_lote'] = intval($value['cod_lote']);
-                $value_['lote'] = utf8_encode(trim($value['lote']));
-                $value_['fecha'] = substr(trim($value['fecha_ingre']),0,10) ;
-                $value_['usuario'] = utf8_encode(trim($value['usuario']));
-                $value_['cantidad'] = intval($value['ctdad_pqt']);
+                $value_['id_lote'] = intval($value['id_lote']);
+                $value_['tipdoc'] = utf8_encode(trim($value['tipdoc']));
+                $value_['nombre'] = utf8_encode(trim($value['nombre']));
+                $value_['fecha'] = substr(trim($value['fecha']),0,10) ;
+                $value_['tot_folder'] = utf8_encode(trim($value['tot_folder']));
+                $value_['id_user'] = utf8_encode(trim($value['id_user']));
+                $value_['estado'] = utf8_encode(trim($value['estado']));
                 $array[]=$value_;
         }
         $data = array(
@@ -52,12 +54,12 @@ class lotizerController extends AppController {
         //var_export($rs);
         $array = array();
         foreach ($rs as $index => $value){
-                $value_['lote'] = utf8_encode(trim($value['lote']));
-                $value_['paquete'] = utf8_encode(trim($value['paquete']));                
-                $value_['cod_paquete'] = utf8_encode(trim($value['cod_paquete']));
-                $value_['fecha'] = substr(trim($value['fecha_ingre']),0,10) ;
-                $value_['usuario'] = utf8_encode(trim($value['usuario']));
-                $value_['ctdad_docs'] = intval($value['ctdad_docs']);
+                $value_['nombre'] = utf8_encode(trim($value['nombre']));                
+                $value_['id_det'] = intval($value['id_det']);
+                $value_['fecha'] = substr(trim($value['fecha']),0,10) ;
+                $value_['tot_pag'] = intval($value['tot_pag']);
+                $value_['tot_pag_err'] = intval($value['tot_pag_err']);
+                $value_['estado'] = utf8_encode(trim($value['estado']));
                 $array[]=$value_;
         }
         $data = array(
@@ -70,7 +72,7 @@ class lotizerController extends AppController {
         return $this->response($data);
     }
 
-    public function setRegisterLotizer($p){
+    public function set_lotizer($p){
         //$this->valida_mobil($p);
     /*    header("Content-Type: text/plain");
         $target_path = basename( $_FILES['uploadedfile']['name']);
@@ -96,7 +98,7 @@ class lotizerController extends AppController {
                 $men =  "{success: true,error:1, errors: 'No se logro subir la imagen al servidor',close:0}";
             }
         }else{*/
-            $rs = $this->objDatos->setRegisterLotizer($p);
+            $rs = $this->objDatos->set_lotizer($p);
             $rs = $rs[0];
             //var_export($rs);
             $nuevo = $rs['status'];

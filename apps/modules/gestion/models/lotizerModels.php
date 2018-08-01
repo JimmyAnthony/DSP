@@ -18,7 +18,9 @@ class lotizerModels extends Adodb {
     public function get_list_lotizer($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
-        parent::SetParameterSP($p['vp_name'], 'varchar');
+        parent::SetParameterSP($p['nombre'], 'varchar');
+        parent::SetParameterSP($p['fecha'], 'varchar');
+        parent::SetParameterSP($p['estado'], 'varchar');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
@@ -27,22 +29,24 @@ class lotizerModels extends Adodb {
    public function get_lotizer_detalle($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_lotizer_detalle');
-        parent::SetParameterSP($p['vp_cod_lote'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
     }
 
-    public function setRegisterLotizer($p){
-        $p['vp_cod_lote'] =(empty($p['vp_cod_lote']))?0:$p['vp_cod_lote'];
+    public function set_lotizer($p){
+        $p['vp_id_lote'] =(empty($p['vp_id_lote']))?0:$p['vp_id_lote'];
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'setRegisterLotizer');
+        parent::ConnectionOpen($this->dsn, 'set_lotizer');
         parent::SetParameterSP($p['vp_op'], 'varchar');
-        parent::SetParameterSP($p['vp_cod_lote'], 'int');
-        parent::SetParameterSP($p['vp_lote_nombre'], 'varchar');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_nombre'], 'varchar');
         parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
         parent::SetParameterSP($p['vp_ctdad'], 'int');
-        parent::SetParameterSP($p['vp_usuario'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');        
+
          //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;

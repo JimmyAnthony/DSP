@@ -9,11 +9,13 @@
 			init:function(){
 				var store = Ext.create('Ext.data.Store',{
                 fields: [
-                    {name: 'cod_lote', type: 'string'},
-                    {name: 'lote', type: 'string'},
+                    {name: 'id_lote', type: 'string'},
+                    {name: 'tipdoc', type: 'string'},
+                    {name: 'nombre', type: 'string'},
                     {name: 'fecha', type: 'string'},
-                    {name: 'usuario', type: 'string'},
-                    {name: 'cantidad', type: 'string'}
+                    {name: 'tot_folder', type: 'string'},                    
+                    {name: 'id_user', type: 'string'},                    
+                    {name: 'estado', type: 'string'}
                 ],
                 autoLoad:false,
                 proxy:{
@@ -32,12 +34,12 @@
             });
 			var store_shipper = Ext.create('Ext.data.Store',{
                 fields: [
-                    {name: 'lote', type: 'string'},
-                    {name: 'paquete', type: 'string'},
-                    {name: 'cod_paquete', type: 'string'},
+                    {name: 'nombre', type: 'string'},
+                    {name: 'id_det', type: 'string'},
                     {name: 'fecha', type: 'string'},
-                    {name: 'usuario', type: 'string'},
-                    {name: 'ctdad_docs', type: 'string'}
+                    {name: 'tot_pag', type: 'string'},                    
+                    {name: 'tot_pag_err', type: 'string'},
+                    {name: 'estado', type: 'string'}
                 ],
                 autoLoad:true,
                 proxy:{
@@ -101,9 +103,9 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Lote',
+	                                                        fieldLabel: 'Nombre',
 	                                                        id:lotizer.id+'-txt-nombre',
-	                                                        labelWidth:60,
+	                                                        labelWidth:100,
 	                                                        readOnly:true,
 	                                                        labelAlign:'right',
 	                                                        width:'100%',
@@ -119,7 +121,7 @@
 	                                                        xtype:'datefield',
 	                                                        id:lotizer.id+'-txt-fecha',
 	                                                        fieldLabel:'Fecha',
-	                                                        labelWidth:60,
+	                                                        labelWidth:100,
 	                                                        labelAlign:'right',
 	                                                        value:new Date('Y-m-d'),
 	                                                        format: 'Y-m-d',
@@ -135,9 +137,9 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Usuario',
-	                                                        id:lotizer.id+'-txt-usuario',
-	                                                        labelWidth:60,
+	                                                        fieldLabel: 'Estado',
+	                                                        id:lotizer.id+'-txt-estado',
+	                                                        labelWidth:100,
 	                                                        readOnly:true,
 	                                                        labelAlign:'right',
 	                                                        width:'100%',
@@ -152,9 +154,9 @@
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Cantidad',
-	                                                        id:lotizer.id+'-txt-ctdad',
-	                                                        labelWidth:60,
+	                                                        fieldLabel: 'Total Folder',
+	                                                        id:lotizer.id+'-txt-tot_folder',
+	                                                        labelWidth:100,
 	                                                        readOnly:true,
 	                                                        labelAlign:'right',
 	                                                        maskRe: /[0-9.]/,
@@ -187,9 +189,9 @@
 
 													Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
 													Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(false);
-												  	Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(false);
-													Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(true);
-
+												  	Ext.getCmp(lotizer.id+'-txt-estado').setReadOnly(false);
+												  	Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(false);
+													
 
 													var botonTxt = Ext.getCmp('boton').getText();
 													if (botonTxt == 'Editar') {
@@ -202,9 +204,10 @@
 															 lotizer.opcion='U';
 															// lotizer.setlotizer();
 														} else {
-															 lotizer.cod_lote = 0;
+															 lotizer.id_lote = 0;
 															 lotizer.opcion='I';
-															 lotizer.setlotizer();
+															 lotizer.usuario = 'rvite';
+															 lotizer.set_lotizer();
 														}
 													}
 
@@ -227,12 +230,13 @@
 					                            click: function(obj, e){
 					                                //lotizer.buscar_ge();
 					                                lotizer.opcion='I';
+					                                lotizer.estado='L';
 
 													Ext.getCmp('boton').setText('Grabar');
 													Ext.getCmp('boton').setIcon('/images/icon/save.png');
 
-					                                lotizer.cod_lote=0;
-													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
+					                                lotizer.id_lote=0;
+													lotizer.getReloadGridlotizer2(lotizer.id_lote);
 					                                lotizer.setNuevo();
 					                            }
 					                        }
@@ -252,19 +256,14 @@
 					                        columns:{
 					                            items:[
 					                                {                                	
-					                                    text: 'Lote',
-					                                    dataIndex: 'lote',
-					                                    width: 50
+					                                    text: 'Nombre',
+					                                    dataIndex: 'nombre',
+					                                    flex : 1
 					                                },
 
 					                                {			                                
-					                                    text: 'Paquete',
-					                                    dataIndex: 'paquete',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Cod_Paquete',
-					                                    dataIndex: 'cod_paquete',
+					                                    text: 'Id.Det',
+					                                    dataIndex: 'id_det',
 					                                    width: 50
 					                                },
 					                                {
@@ -273,13 +272,19 @@
 					                                    width: 100
 					                                },
 					                                {
-					                                    text: 'Usuario',
-					                                    dataIndex: 'usuario',
+					                                    text: 'Tot Pag',
+					                                    dataIndex: 'tot_pag',
 					                                    width: 100
 					                                },
 					                                {
-					                                    text: 'Ctdad_docs',
-					                                    dataIndex: 'ctdad_docs',
+					                                    text: 'Tot Pag Err',
+					                                    dataIndex: 'tot_pag_err',
+					                                    width: 100
+					                                },
+
+					                                {
+					                                    text: 'Estado',
+					                                    dataIndex: 'estado',
 					                                    width: 100
 					                                }	
 
@@ -401,35 +406,48 @@
 					                        columns:{
 					                            items:[
 					                                {
-					                                	id: lotizer.id + '-grid-cod_lote',
-					                                    text: 'Cod.Lote',
-					                                    dataIndex: 'cod_lote',
+					                                	id: lotizer.id + '-grid-id_lote',
+					                                    text: 'Id.Lote',
+					                                    dataIndex: 'id_lote',
 					                                    width: 50
 					                                },
 					                                {
-					                                	id: lotizer.id + '-grid-lote',
-					                                    text: 'Lote',
-					                                    dataIndex: 'lote',
+					                                	id: lotizer.id + '-grid-tipdoc',
+					                                    text: 'Tipo Doc',
+					                                    dataIndex: 'tipdoc',
+					                                    width: 50
+					                                },
+
+					                                {
+					                                	id: lotizer.id + '-grid-nombre',
+					                                    text: 'Nombre',
+					                                    dataIndex: 'nombre',
 					                                    flex: 1
 					                                },
 					                                {
 					                                	id: lotizer.id + '-grid-fecha',
 					                                    text: 'Fecha',
 					                                    dataIndex: 'fecha',
-					                                    width: 150
-					                                },
-					                                {
-					                                	id: lotizer.id + '-grid-usuario',
-					                                    text: 'Usuario',
-					                                    dataIndex: 'usuario',
 					                                    width: 100
 					                                },
 					                                {
-					                                	id: lotizer.id + '-grid-cantidad',
-					                                    text: 'Cantidad',
-					                                    dataIndex: 'cantidad',
+					                                	id: lotizer.id + '-grid-tot_folder',
+					                                    text: 'Total Folder',
+					                                    dataIndex: 'Tot Folder',
+					                                    width: 150
+					                                },
+					                                {
+					                                	id: lotizer.id + '-grid-id_user',
+					                                    text: 'Id.User',
+					                                    dataIndex: 'id_user',
+					                                    width: 100
+					                                },					                                
+					                                {
+					                                	id: lotizer.id + '-grid-estado',
+					                                    text: 'Estado',
+					                                    dataIndex: 'estado',
 					                                    loocked : true,
-					                                    width: 100,
+					                                    width: 50,
 					                                },
 					                                
 					                            ],
@@ -450,17 +468,17 @@
 												beforeselect:function(obj, record, index, eOpts ){
 													//console.log(record);
 													/*lotizer.opcion='U';*/
-													lotizer.cod_lote=record.get('cod_lote');
+													lotizer.id_lote=record.get('id_lote');
 													/*lotizer.getImagen(record.get('imagen'));*/
-													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('lote'));
+													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('nombre'));
 													Ext.getCmp(lotizer.id+'-txt-fecha').setValue(record.get('fecha'));
-													Ext.getCmp(lotizer.id+'-txt-usuario').setValue(record.get('usuario'));
-													Ext.getCmp(lotizer.id+'-txt-ctdad').setValue(record.get('cantidad'));
+													Ext.getCmp(lotizer.id+'-txt-estado').setValue(record.get('estado'));
+													Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue(record.get('tot_folder'));
 
 													Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(true);
 													Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(true);
-													Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(true);
-													Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(true);
+													Ext.getCmp(lotizer.id+'-txt-estado').setReadOnly(true);
+													Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(true);
 
 
 													var botonTxt = Ext.getCmp('boton').getText();
@@ -469,7 +487,7 @@
 														Ext.getCmp('boton').setIcon('/images/icon/editar.png');
 													}
 
-													lotizer.getReloadGridlotizer2(lotizer.cod_lote);
+													lotizer.getReloadGridlotizer2(lotizer.id_lote);
 
 												}
 					                        }
@@ -511,7 +529,7 @@
 			getImagen:function(param){
 				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});*/
 			},
-			setlotizer:function(op){
+			set_lotizer:function(op){
 
 				global.Msg({
                     msg: '¿Está seguro de salvar?',
@@ -521,14 +539,15 @@
                         Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 
 						Ext.getCmp(lotizer.id+'-form').submit({
-		                    url: lotizer.url + 'setRegisterLotizer/',
+		                    url: lotizer.url + 'set_lotizer/',
 		                    params:{
 		                        vp_op: lotizer.opcion,
-		                        vp_cod_lote:lotizer.cod_lote,
-		                        vp_lote_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
+		                        vp_id_lote:lotizer.id_lote,
+		                        vp_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
 		                        vp_lote_fecha:Ext.getCmp(lotizer.id+'-txt-fecha').getValue(),
-		                        vp_lote_ctdad:Ext.getCmp(lotizer.id+'-txt-ctdad').getValue(),
-		                        vp_usuario:Ext.getCmp(lotizer.id+'-txt-usuario').getValue()
+		                        vp_ctdad:Ext.getCmp(lotizer.id+'-txt-tot_folder').getValue(),
+		                        vp_estado:lotizer.estado,
+		                        vp_id_user:lotizer.usuario
 		                    },
 		                    success: function( fp, o ){
 		                    	//console.log(o);
@@ -571,11 +590,11 @@
 	                }
 	            });
 			},
-			getReloadGridlotizer2:function(cod_lote){
+			getReloadGridlotizer2:function(id_lote){
 				Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				//id:lotizer.id+'-form'
 				Ext.getCmp(lotizer.id + '-grid-lotizer').getStore().load(
-	                {params: {vp_cod_lote:cod_lote},
+	                {params: {vp_id_lote:id_lote},
 	                callback:function(){
 	                	Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
@@ -591,10 +610,10 @@
 				Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-fecha').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(false);
-				Ext.getCmp(lotizer.id+'-txt-ctdad').setValue('');
-				Ext.getCmp(lotizer.id+'-txt-ctdad').setReadOnly(false);
-				Ext.getCmp(lotizer.id+'-txt-usuario').setValue('');
-				Ext.getCmp(lotizer.id+'-txt-usuario').setReadOnly(true);
+				Ext.getCmp(lotizer.id+'-txt-estado').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-estado').setReadOnly(false);
+				Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-nombre').focus();
 			},
 
