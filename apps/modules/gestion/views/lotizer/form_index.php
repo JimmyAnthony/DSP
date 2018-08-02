@@ -57,8 +57,8 @@
                 }
             });
 			var myData = [
-			    [1,'Activo'],
-			    [0,'Inactivo']
+			    ['L','Lotizer'],
+			    ['S','Scan']
 			];
 			var store_estado = Ext.create('Ext.data.ArrayStore', {
 		        storeId: 'estado',
@@ -114,6 +114,23 @@
 	                                                ]
 	                                            },
 	                                            {
+	                                                columnWidth: 1,border:false,
+	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+	                                                items:[
+	                                                    {
+	                                                        xtype: 'textfield',
+	                                                        fieldLabel: 'Tipo Doc',
+	                                                        id:lotizer.id+'-txt-tipdoc',
+	                                                        labelWidth:100,
+	                                                        readOnly:true,
+	                                                        labelAlign:'right',
+	                                                        width:'100%',
+	                                                        anchor:'100%'
+	                                                    }
+	                                                ]
+	                                            },
+
+	                                            {
 	                                                columnWidth: 0.40,border:false,
 	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 	                                                items:[
@@ -132,13 +149,45 @@
 	                                                ]
 	                                            },
 	                                            {
+                                               		columnWidth: 0.50,border:false,
+                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+                                             		items:[
+		                                                    {
+		                                                        xtype:'combo',
+		                                                        fieldLabel: 'Estado',
+		                                                        id:lotizer.id+'-txt-estado',
+		                                                        store: store_estado,
+		                                                        queryMode: 'local',
+		                                                        triggerAction: 'all',
+		                                                        valueField: 'code',
+		                                                        displayField: 'name',
+		                                                        emptyText: '[Seleccione]',
+		                                                        labelAlign:'right',
+		                                                        //allowBlank: false,
+		                                                        labelWidth: 80,
+		                                                        width:'100%',
+		                                                        anchor:'100%',
+		                                                        readOnly: true,
+		                                                        listeners:{
+		                                                            afterrender:function(obj, e){
+		                                                                // obj.getStore().load();
+		                                                            },
+		                                                            select:function(obj, records, eOpts){
+		                                                    
+		                                                            }
+		                                                        }
+		                                                    }
+                                             		]
+                                                },
+/*
+	                                            {
 	                                                columnWidth: 1,border:false,
 	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
 	                                                        fieldLabel: 'Estado',
-	                                                        id:lotizer.id+'-txt-estado',
+	                                                        id:lotizer.id+'-txt-estado2',
 	                                                        labelWidth:100,
 	                                                        readOnly:true,
 	                                                        labelAlign:'right',
@@ -146,7 +195,7 @@
 	                                                        anchor:'100%'
 	                                                    }
 	                                                ]
-	                                            },
+	                                            },*/
 
 	                                            {
 	                                                columnWidth: 1,border:false,
@@ -188,6 +237,7 @@
 
 
 													Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
+													Ext.getCmp(lotizer.id+'-txt-tipdoc').setReadOnly(false);
 													Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(false);
 												  	Ext.getCmp(lotizer.id+'-txt-estado').setReadOnly(false);
 												  	Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(false);
@@ -198,11 +248,13 @@
 														Ext.getCmp('boton').setText('Update');
 														Ext.getCmp('boton').setIcon('/images/icon/save.png');
 													} else {
-														Ext.getCmp('boton').setText('Editar');
-														Ext.getCmp('boton').setIcon('/images/icon/editar.png');
+														//Ext.getCmp('boton').setText('Editar');
+														//Ext.getCmp('boton').setIcon('/images/icon/editar.png');
+														lotizer.estado = Ext.getCmp(lotizer.id+'-txt-estado').setValue();
 														if (botonTxt == 'Update') {
 															 lotizer.opcion='U';
-															// lotizer.setlotizer();
+															 lotizer.usuario = 'rvite';
+															 lotizer.set_lotizer();
 														} else {
 															 lotizer.id_lote = 0;
 															 lotizer.opcion='I';
@@ -433,7 +485,7 @@
 					                                {
 					                                	id: lotizer.id + '-grid-tot_folder',
 					                                    text: 'Total Folder',
-					                                    dataIndex: 'Tot Folder',
+					                                    dataIndex: 'tot_folder',
 					                                    width: 150
 					                                },
 					                                {
@@ -471,11 +523,13 @@
 													lotizer.id_lote=record.get('id_lote');
 													/*lotizer.getImagen(record.get('imagen'));*/
 													Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('nombre'));
+													Ext.getCmp(lotizer.id+'-txt-tipdoc').setValue(record.get('tipdoc'));
 													Ext.getCmp(lotizer.id+'-txt-fecha').setValue(record.get('fecha'));
 													Ext.getCmp(lotizer.id+'-txt-estado').setValue(record.get('estado'));
 													Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue(record.get('tot_folder'));
 
 													Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(true);
+													Ext.getCmp(lotizer.id+'-txt-tipdoc').setReadOnly(true);
 													Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(true);
 													Ext.getCmp(lotizer.id+'-txt-estado').setReadOnly(true);
 													Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(true);
@@ -544,6 +598,7 @@
 		                        vp_op: lotizer.opcion,
 		                        vp_id_lote:lotizer.id_lote,
 		                        vp_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
+		                        vp_tipdoc:Ext.getCmp(lotizer.id+'-txt-tipdoc').getValue(),
 		                        vp_lote_fecha:Ext.getCmp(lotizer.id+'-txt-fecha').getValue(),
 		                        vp_ctdad:Ext.getCmp(lotizer.id+'-txt-tot_folder').getValue(),
 		                        vp_estado:lotizer.estado,
@@ -603,11 +658,13 @@
 			setNuevo:function(){
 				lotizer.shi_codigo=0;
 				//lotizer.getImagen('default.png');
-				Ext.getCmp('boton').setText('Guardar');
+				Ext.getCmp('boton').setText('Grabar');
 //					                        icon: '/images/icon/save.png',
 
 				Ext.getCmp(lotizer.id+'-txt-nombre').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
+				Ext.getCmp(lotizer.id+'-txt-tipdoc').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-tipdoc').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-fecha').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-estado').setValue('');
