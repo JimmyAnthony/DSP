@@ -25,7 +25,7 @@ class lotizerController extends AppController {
         $this->view('lotizer/form_index.php', $p);
     }
 
-   public function get_list_lotizer($p){
+   public function get_list_lotizer2($p){
         $rs = $this->objDatos->get_list_lotizer($p);
         //var_export($rs);
         $array = array();
@@ -44,7 +44,6 @@ class lotizerController extends AppController {
                 $value_['tot_errpag'] = intval(trim($value['tot_errpag']));
                 $value_['id_user'] = utf8_encode(trim($value['id_user']));
                 $value_['estado'] = utf8_encode(trim($value['estado']));
-                $value_['estado'] = utf8_encode(trim($value['estado']));
                 if(intval($value['type']) == 1){
                     $value_['children'] = $value_;
                     $lote = intval($value['id_lote']);
@@ -60,6 +59,94 @@ class lotizerController extends AppController {
         );
         header('Content-Type: application/json');
         return $this->response($data);
+    }
+    public function get_list_lotizer($p){
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json');
+        $this->rs_ = $this->objDatos->get_list_lotizer($p);
+        if(!empty($this->rs_)){
+            return '{"text": "root","children":['.$this->get_recursivo(1).']}';
+            
+        }else{
+            return json_encode(
+                array(
+                    'text'=>'root',
+                    'children'=>array(
+                        'id_lote'=>0,
+                        'iconCls'=>'task',
+                        'tipdoc'=>'',
+                        'nombre'=>'',
+                        'fecha'=>'',
+                        'tot_folder'=>0,
+                        'tot_pag'=>0,
+                        'tot_errpag'=>0,
+                        'id_user'=>0,
+                        'estado'=>'',
+                        'leaf'=>'true'
+                        )
+                    )
+                );
+        }
+    }
+
+    public function get_recursivo($_nivel){
+        $coma = '';
+        foreach ($this->rs_ as $key => $value){
+            if ($value['nivel'] == $_nivel){
+                $json.=$coma."{";
+                $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.=',"read":true';
+                $json.=',"expanded":true';
+                $json.=',"iconCls":"task"';
+                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
+                $json.=',"nombre":"'.$value['nombre'].'"';
+                $json.=',"fecha":"'.$value['fecha'].'"';
+                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
+                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
+                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
+                $json.=',"id_user":"'.$value['id_user'].'"';
+                $json.=',"estado":"'.$value['estado'].'"';
+                $json.=',"nivel":"'.$value['nivel'].'"';
+                $js = $this->getRecursividad_children($_nivel,$value['id_lote']);
+                if(!empty($js)){
+                    $json.=',"children":['.trim($js).']';
+                }else{
+                    $json.=',"leaf":"true"';
+                }
+                $json.="}";
+                $coma = ",";
+            }
+        }
+        return $json;
+    }
+    public function getRecursividad_children($_nivel,$_hijo){
+        $coma = '';
+        foreach ($this->rs_ as $key => $value){
+            if ($value['nivel'] != $_nivel && $value['id_lote'] == $_hijo){
+                $json.=$coma."{";
+                $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.=',"iconCls":"task"';
+                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
+                $json.=',"nombre":"'.$value['nombre'].'"';
+                $json.=',"fecha":"'.$value['fecha'].'"';
+                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
+                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
+                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
+                $json.=',"id_user":"'.$value['id_user'].'"';
+                $json.=',"estado":"'.$value['estado'].'"';
+                $json.=',"nivel":"'.$value['nivel'].'"';
+                #$js = $this->getRecursividad_children($_nivel,$value['id_lote']);
+                if(!empty($js)){
+                    $json.=',"children":['.trim($js).']';
+                }else{
+                    $json.=',"leaf":"true"';
+                }
+                $json.="}";
+                 $coma = ",";
+            }
+        }
+        return $json;
     }
 
    public function get_lotizer_detalle($p){
