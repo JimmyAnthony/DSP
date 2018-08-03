@@ -7,6 +7,31 @@
 			url:'/gestion/lotizer/',
 			opcion:'I',
 			init:function(){
+				var storeTree = new Ext.data.TreeStore({
+	                fields: [
+	                	{name: 'id_lote', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+	                ],
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: lotizer.url+'get_list_lotizer/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                folderSort: true
+	            });
 				var store = Ext.create('Ext.data.Store',{
                 fields: [
                     {name: 'id_lote', type: 'string'},
@@ -379,10 +404,10 @@
 						{
 							region:'center',
 							border:false,
-							//layout:'fit',
+							layout:'border',
 							items:[
 								{
-	                                //region:'north',
+	                                region:'north',
 	                                border:false,
 	                                xtype: 'uePanelS',
 	                                logo: 'CL',
@@ -445,17 +470,93 @@
 	                                ]
 	                            },
 								{
-									//region:'center',
+									region:'center',
 									width:'100%',
 									layout:'fit',
 									items:[
 										{
 					                        xtype: 'grid',
 					                        id: lotizer.id + '-grid',
-					                        store: store,
+					                        //store: store,
 					                        layout:'fit',
 					                        columnLines: true,
-					                        columns:{
+					                        store: storeTree,
+								            columns: [
+									            /*{
+									                xtype: 'treecolumn', //this is so we know which column will show the tree
+									                text: 'Task',
+									                flex: 2,
+									                sortable: true,
+									                dataIndex: 'task'
+									            },*/
+									            {
+									            	xtype: 'treecolumn',
+				                                    text: 'Lote',
+				                                    dataIndex: 'id_lote',
+				                                    sortable: true,
+				                                    width: 80
+				                                },
+									            {
+				                                	hidden:true,
+				                                    text: 'Tipo Doc',
+				                                    dataIndex: 'tipdoc',
+				                                    width: 50
+				                                },
+
+				                                {
+				                                    text: 'Nombre',
+				                                    dataIndex: 'nombre',
+				                                    flex: 1
+				                                },
+				                                {
+				                                    text: 'Fecha',
+				                                    dataIndex: 'fecha',
+				                                    width: 100
+				                                },
+				                                {
+				                                    text: 'Total Folder',
+				                                    dataIndex: 'tot_folder',
+				                                    width: 80
+				                                },
+				                                {
+				                                    text: 'Total Página',
+				                                    dataIndex: 'tot_pag',
+				                                    width: 80
+				                                },
+				                                {
+				                                    text: 'Total Pag. Errores',
+				                                    dataIndex: 'tot_errpag',
+				                                    width: 80
+				                                },
+				                                {
+				                                    text: 'User',
+				                                    dataIndex: 'id_user',
+				                                    width: 100
+				                                },
+				                                {
+				                                    text: 'Estado',
+				                                    dataIndex: 'estado',
+				                                    loocked : true,
+				                                    width: 50,
+				                                },
+									            {
+									                text: 'Edit',
+									                width: 55,
+									                menuDisabled: true,
+									                xtype: 'actioncolumn',
+									                tooltip: 'Edit task',
+									                align: 'center',
+									                icon: 'resources/images/edit_task.png',
+									                handler: function(grid, rowIndex, colIndex, actionItem, event, record, row) {
+									                    Ext.Msg.alert('Editing' + (record.get('done') ? ' completed task' : '') , record.get('task'));
+									                },
+									                // Only leaf level tasks may be edited
+									                isDisabled: function(view, rowIdx, colIdx, item, record) {
+									                    return !record.data.leaf;
+									                }
+									            }
+									        ],
+					                        /*columns:{
 					                            items:[
 					                                {
 					                                	id: lotizer.id + '-grid-id_lote',
@@ -506,7 +607,7 @@
 					                            defaults:{
 					                                menuDisabled: true
 					                            }
-					                        },
+					                        },*/
 					                        viewConfig: {
 					                            stripeRows: true,
 					                            enableTextSelection: false,
@@ -637,11 +738,11 @@
                 });
 			},
 			getReloadGridlotizer:function(name){
-				Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
 	                {params: {vp_name:name},
 	                callback:function(){
-	                	Ext.getCmp(lotizer.id+'-form').el.unmask();
+	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
 	            });
 			},

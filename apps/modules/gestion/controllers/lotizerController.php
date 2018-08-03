@@ -29,16 +29,29 @@ class lotizerController extends AppController {
         $rs = $this->objDatos->get_list_lotizer($p);
         //var_export($rs);
         $array = array();
+        $lote = 0;
         foreach ($rs as $index => $value){
+                if($lote != intval($value['id_lote']) && $lote != 0){
+                    $array[]=$value_;
+                }
                 $value_['id_lote'] = intval($value['id_lote']);
+                $value_['iconCls'] = "task-folder";
                 $value_['tipdoc'] = utf8_encode(trim($value['tipdoc']));
                 $value_['nombre'] = utf8_encode(trim($value['nombre']));
-                $value_['fecha'] = substr(trim($value['fecha']),0,10) ;
-                $value_['tot_folder'] = utf8_encode(trim($value['tot_folder']));
+                $value_['fecha'] = trim($value['fecha']);
+                $value_['tot_folder'] = intval(trim($value['tot_folder']));
+                $value_['tot_pag'] = intval(trim($value['tot_pag']));
+                $value_['tot_errpag'] = intval(trim($value['tot_errpag']));
                 $value_['id_user'] = utf8_encode(trim($value['id_user']));
                 $value_['estado'] = utf8_encode(trim($value['estado']));
-                $array[]=$value_;
+                $value_['estado'] = utf8_encode(trim($value['estado']));
+                if(intval($value['type']) == 1){
+                    $value_['children'] = $value_;
+                    $lote = intval($value['id_lote']);
+                }
         }
+        $array[]=$value_;
+
         $data = array(
             'success' => true,
             'error'=>0,

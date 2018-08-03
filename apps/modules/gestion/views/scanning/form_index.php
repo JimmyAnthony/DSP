@@ -374,21 +374,24 @@
 						                },
 						                {
 						                    xtype: 'button',
-						                    icon: null,
+						                    icon: '/images/icon/batman.png',
 						                    flex:1,
-						                    glyph: 72,
+						                    scale: 'large',
+						                    //glyph: 72,
 						                    margin:'5px 5px 5px 5px',
-						                    text: '[Delete]',
-						                    iconAlign: 'top'
+						                    //text: '[Delete]',
+						                    //iconAlign: 'top'
 						                },
 						                {
 						                    xtype: 'button',
-						                    icon: null,
+						                    icon: '/images/icon/if_box-open_173165.png',
 						                    flex:1,
-						                    glyph: 72,
+						                    //glyph: 72,
+						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
-						                    text: '[OCR]',
-						                    iconAlign: 'top'
+						                    //height:50
+						                    text: ' ',
+						                    //iconAlign: 'top'
 						                }
 									]
 								},
