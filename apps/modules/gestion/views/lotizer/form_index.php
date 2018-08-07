@@ -430,8 +430,8 @@
 													margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 							                        xtype:'button',
 							                        width:80,
-							                        text: 'Cancelar',
-							                        icon: '/images/icon/cancel.png',
+							                        text: 'Limpiar',
+							                        icon: '/images/icon/broom.png',
 							                        listeners:{
 							                            beforerender: function(obj, opts){
 							                                /*global.permisos({
