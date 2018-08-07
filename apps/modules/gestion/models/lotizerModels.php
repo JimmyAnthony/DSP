@@ -20,7 +20,7 @@ class lotizerModels extends Adodb {
         parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
         parent::SetParameterSP($p['nombre'], 'varchar');
         parent::SetParameterSP($p['fecha'], 'varchar');
-        parent::SetParameterSP($p['estado'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
@@ -46,7 +46,7 @@ class lotizerModels extends Adodb {
         parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
         parent::SetParameterSP($p['vp_ctdad'], 'int');
         parent::SetParameterSP($p['vp_estado'], 'varchar');
-        parent::SetParameterSP(USR_ID, 'int');        
+        parent::SetParameterSP(USR_ID, 'int');
 
          //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();

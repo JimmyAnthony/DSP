@@ -106,7 +106,11 @@
             'Ext.global.plugin.RegistroNovedades',
             'Ext.global.ueCarousel',
             'Ext.global.uePanelHtml',
-            'Ext.global.ueInputTextMask'
+            'Ext.global.ueInputTextMask',
+            'Ext.data.*',
+            'Ext.grid.*',
+            'Ext.tree.*',
+            'Ext.ux.CheckColumn'
             //'Ext.ux.GMapPanel'
             
         ]);

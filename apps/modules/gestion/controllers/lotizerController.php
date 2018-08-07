@@ -66,7 +66,7 @@ class lotizerController extends AppController {
         header('Content-type: application/json');
         $this->rs_ = $this->objDatos->get_list_lotizer($p);
         if(!empty($this->rs_)){
-            return '{"text": "root","children":['.$this->get_recursivo(1).']}';
+            return '{"text": ".","children":['.$this->get_recursivo(1).']}';
             
         }else{
             return json_encode(
@@ -96,8 +96,8 @@ class lotizerController extends AppController {
             if ($value['nivel'] == $_nivel){
                 $json.=$coma."{";
                 $json.='"id_lote":"'.$value['id_lote'].'"';
-                $json.=',"read":true';
-                $json.=',"expanded":true';
+                //$json.=',"read":true';
+                //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';
                 $json.=',"nombre":"'.$value['nombre'].'"';
@@ -105,6 +105,7 @@ class lotizerController extends AppController {
                 $json.=',"tot_folder":"'.$value['tot_folder'].'"';
                 $json.=',"tot_pag":"'.$value['tot_pag'].'"';
                 $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
+                $json.=',"usr_update":"'.$value['usr_update'].'"';
                 $json.=',"id_user":"'.$value['id_user'].'"';
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
@@ -133,10 +134,11 @@ class lotizerController extends AppController {
                 $json.=',"tot_folder":"'.$value['tot_folder'].'"';
                 $json.=',"tot_pag":"'.$value['tot_pag'].'"';
                 $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
+                $json.=',"usr_update":"'.$value['usr_update'].'"';
                 $json.=',"id_user":"'.$value['id_user'].'"';
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
-                #$js = $this->getRecursividad_children($_nivel,$value['id_lote']);
+                $js = '';//$this->getRecursividad_children($_nivel,$value['id_lote']);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{
@@ -174,54 +176,15 @@ class lotizerController extends AppController {
 
     public function set_lotizer($p){
         //$this->valida_mobil($p);
-    /*    header("Content-Type: text/plain");
-        $target_path = basename( $_FILES['uploadedfile']['name']);
-
-        if(!empty($_FILES['uploadedfile']['name'])){
-            $aleatorio = rand();
-            $narchivo = explode('.', $_FILES['uploadedfile']['name']);
-            $nombre_archivo = 'campana_'.$aleatorio.'.'.$narchivo[1];
-            $dir = "campana/" . $nombre_archivo;
-            $p['vp_shi_logo']=$nombre_archivo;
-
-            if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'],$dir)) {
-                $rs = $this->objDatos->setRegisterShipper($p);
-                $rs = $rs[0];
-                //var_export($rs);
-                if ($rs['status'] == 'OK' ){
-                    $men = "{success: true,error:0,data:'Información se guardo correctamente',close:0}";
-                }else{
-                    unlink($dir);
-                    $men =  "{success: true,error:1, errors: 'Error al registrar la información',close:0}";    
-                }
-            } else{
-                $men =  "{success: true,error:1, errors: 'No se logro subir la imagen al servidor',close:0}";
-            }
-        }else{*/
-            $rs = $this->objDatos->set_lotizer($p);
-            $rs = $rs[0];
-            //var_export($rs);
-            $nuevo = $rs['status'];
-            /*
-                            global.Msg({
-                                msg: '¿Está de ....?',
-                                icon: 3,
-                                buttons: 3,
-                            });
-
-*/
-            if ($rs['status'] == 'OK' ){
-                $men = "{success: true,error:0,data:'Información se guardo correctamente',close:0}";
-            }else{
-                //unlink($dir);
-               // $men = $rs['status'];
-                $men =  "{success: true,error:1, errors: 'Error al registrar la información',close:0}";    
-            }
-        //}
-        return $men;
+        
+        $rs = $this->objDatos->set_lotizer($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => ($rs['status']=='OK')?'1':'0',
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
     }
-
-
-
-
 }
