@@ -16,6 +16,7 @@
 				        {name: 'id_lote', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
 	                    {name: 'descripcion', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'tot_folder', type: 'string'},
@@ -287,7 +288,7 @@
 	                                        layout:'column',
 	                                        items: [
 	                                            {
-	                                                columnWidth: .3,border:false,
+	                                                columnWidth: .2,border:false,
 	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 	                                                items:[
 	                                                    {
@@ -303,12 +304,28 @@
 	                                                ]
 	                                            },
 	                                            {
+	                                                columnWidth: .3,border:false,
+	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+	                                                items:[
+	                                                    {
+	                                                        xtype: 'textfield',
+	                                                        fieldLabel: 'Descripción',
+	                                                        id:lotizer.id+'-txt-descripcion',
+	                                                        labelWidth:70,
+	                                                        //readOnly:true,
+	                                                        labelAlign:'right',
+	                                                        width:'100%',
+	                                                        anchor:'100%'
+	                                                    }
+	                                                ]
+	                                            },
+	                                            {
 	                                                width: 150,border:false,
 	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 	                                                items:[
 	                                                    {
 	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Total Folder',
+	                                                        fieldLabel: 'Total Folders',
 	                                                        id:lotizer.id+'-txt-tot_folder',
 	                                                        labelWidth:100,
 	                                                        //readOnly:true,
@@ -465,9 +482,14 @@
 									            {
 									            	xtype: 'treecolumn',
 				                                    text: 'Nombre',
-				                                    dataIndex: 'descripcion',
+				                                    dataIndex: 'lote_nombre',
 				                                    sortable: true,
 				                                    flex: 1
+				                                },
+				                                {
+				                                    text: 'Descripción',
+				                                    dataIndex: 'descripcion',
+				                                    flex: 2
 				                                },
 				                                {
 				                                    text: 'Fecha y Hora',
@@ -625,6 +647,7 @@
 				lotizer.opcion=op;
 				if(op!='D'){
 					Ext.getCmp(lotizer.id+'-txt-nombre').setValue(rec.data.nombre);
+					Ext.getCmp(lotizer.id+'-txt-descripcion').setValue(rec.data.descripcion);
 				  	Ext.getCmp(lotizer.id+'-txt-estado').setValue(rec.data.estado);
 				  	Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue(rec.data.tot_folder);
 				  	Ext.getCmp(lotizer.id+'-txt-nombre').focus(true);
@@ -635,6 +658,7 @@
 			},
 			set_lotizer_clear:function(){
 				Ext.getCmp(lotizer.id+'-txt-nombre').setValue('');
+				Ext.getCmp(lotizer.id+'-txt-descripcion').setValue('');
 			  	Ext.getCmp(lotizer.id+'-txt-estado').setValue('L');
 			  	Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue(0);
 			  	lotizer.id_lote=0;
@@ -677,6 +701,7 @@
 									vp_op: lotizer.opcion,
 			                        vp_id_lote:lotizer.id_lote,
 			                        vp_nombre:Ext.getCmp(lotizer.id+'-txt-nombre').getValue(),
+			                        vp_descripcion:Ext.getCmp(lotizer.id+'-txt-descripcion').getValue(),
 			                        vp_tipdoc:Ext.getCmp(lotizer.id+'-txt-tipdoc').getValue(),
 			                        vp_lote_fecha:Ext.getCmp(lotizer.id+'-txt-fecha').getValue(),
 			                        vp_ctdad:Ext.getCmp(lotizer.id+'-txt-tot_folder').getValue(),
@@ -709,6 +734,10 @@
 				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var estado = Ext.getCmp(lotizer.id+'-txt-estado-filter').getValue();
 				var fecha = Ext.getCmp(lotizer.id+'-txt-fecha-filtro').getRawValue();
+				if(fecha== null || fecha==''){
+		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
 	                {params: {vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){

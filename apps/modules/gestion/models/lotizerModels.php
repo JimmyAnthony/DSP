@@ -42,6 +42,7 @@ class lotizerModels extends Adodb {
         parent::SetParameterSP($p['vp_op'], 'varchar');
         parent::SetParameterSP($p['vp_id_lote'], 'int');
         parent::SetParameterSP($p['vp_nombre'], 'varchar');
+        parent::SetParameterSP($p['vp_descripcion'], 'varchar');
         parent::SetParameterSP($p['vp_tipdoc'], 'varchar');
         parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
         parent::SetParameterSP($p['vp_ctdad'], 'int');
