@@ -185,6 +185,25 @@
                                             ]
                                         },
                                         {
+	                                        width: 160,border:false,
+	                                        padding:'0px 2px 0px 0px',  
+	                                    	bodyStyle: 'background: transparent',
+	                                        items:[
+	                                            {
+	                                                xtype:'datefield',
+	                                                id:lotizer.id+'-txt-fecha-filtro',
+	                                                fieldLabel:'Fecha',
+	                                                labelWidth:60,
+	                                                labelAlign:'right',
+	                                                value:new Date(),
+	                                                format: 'Ymd',
+	                                                //readOnly:true,
+	                                                width: '100%',
+	                                                anchor:'100%'
+	                                            }
+	                                        ]
+	                                    },
+                                        {
 	                                   		width: 150,border:false,
 	                                    	padding:'0px 2px 0px 0px',  
 	                                    	bodyStyle: 'background: transparent',
@@ -326,8 +345,8 @@
 	                                                        fieldLabel:'Fecha',
 	                                                        labelWidth:60,
 	                                                        labelAlign:'right',
-	                                                        value:new Date('Y-m-d'),
-	                                                        format: 'Y-m-d',
+	                                                        value:new Date(),
+	                                                        format: 'Ymd',
 	                                                        readOnly:true,
 	                                                        width: '100%',
 	                                                        anchor:'100%'
@@ -684,8 +703,9 @@
 				lotizer.set_lotizer_clear();
 				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var estado = Ext.getCmp(lotizer.id+'-txt-estado-filter').getValue();
+				var fecha = Ext.getCmp(lotizer.id+'-txt-fecha-filtro').getRawValue();
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
-	                {params: {vp_name:name,vp_estado:estado},
+	                {params: {vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
