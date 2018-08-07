@@ -732,6 +732,7 @@
 			getReloadGridlotizer:function(name){
 				lotizer.set_lotizer_clear();
 				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue();
 				var estado = Ext.getCmp(lotizer.id+'-txt-estado-filter').getValue();
 				var fecha = Ext.getCmp(lotizer.id+'-txt-fecha-filtro').getRawValue();
 				if(fecha== null || fecha==''){
