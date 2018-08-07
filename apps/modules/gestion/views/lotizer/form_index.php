@@ -16,6 +16,7 @@
 				        {name: 'id_lote', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'tot_folder', type: 'string'},
 	                    {name: 'tot_pag', type: 'string'},
@@ -464,7 +465,7 @@
 									            {
 									            	xtype: 'treecolumn',
 				                                    text: 'Nombre',
-				                                    dataIndex: 'nombre',
+				                                    dataIndex: 'descripcion',
 				                                    sortable: true,
 				                                    flex: 1
 				                                },
@@ -526,15 +527,19 @@
 				                                    align: 'center',
 				                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 				                                        //console.log(record);
-				                                        metaData.style = "padding: 0px; margin: 0px";
-				                                        return global.permisos({
-				                                            type: 'link',
-				                                            id_menu: lotizer.id_menu,
-				                                            icons:[
-				                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "lotizer.setEditLote("+rowIndex+",'U')"},
-				                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "lotizer.setEditLote("+rowIndex+",'D')"}
-				                                            ]
-				                                        });
+				                                        if(parseInt(record.get('nivel')) == 1){
+					                                        metaData.style = "padding: 0px; margin: 0px";
+					                                        return global.permisos({
+					                                            type: 'link',
+					                                            id_menu: lotizer.id_menu,
+					                                            icons:[
+					                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "lotizer.setEditLote("+rowIndex+",'U')"},
+					                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "lotizer.setEditLote("+rowIndex+",'D')"}
+					                                            ]
+					                                        });
+					                                    }else{
+				                                        	return '';
+				                                        }
 				                                    }
 				                                }
 									        ],

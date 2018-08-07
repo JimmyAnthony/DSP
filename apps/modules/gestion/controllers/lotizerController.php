@@ -100,7 +100,8 @@ class lotizerController extends AppController {
                 //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';
-                $json.=',"nombre":"'.$value['nombre'].'"';
+                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
+                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
                 $json.=',"fecha":"'.$value['fecha'].'"';
                 $json.=',"tot_folder":"'.$value['tot_folder'].'"';
                 $json.=',"tot_pag":"'.$value['tot_pag'].'"';
@@ -129,7 +130,8 @@ class lotizerController extends AppController {
                 $json.='"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"iconCls":"task"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';
-                $json.=',"nombre":"'.$value['nombre'].'"';
+                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
+                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
                 $json.=',"fecha":"'.$value['fecha'].'"';
                 $json.=',"tot_folder":"'.$value['tot_folder'].'"';
                 $json.=',"tot_pag":"'.$value['tot_pag'].'"';
