@@ -159,7 +159,7 @@
                             xtype: 'uePanelS',
                             logo: 'CL',
                             title: 'Listado de Lotes',
-                            legend: 'Búsqueda de Lotes registradas',
+                            legend: 'Búsqueda de Lotes registrados',
                             height:90,
                             items:[
                                 {
