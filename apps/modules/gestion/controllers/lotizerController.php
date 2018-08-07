@@ -25,31 +25,42 @@ class lotizerController extends AppController {
         $this->view('lotizer/form_index.php', $p);
     }
 
-   public function get_list_lotizer2($p){
-        $rs = $this->objDatos->get_list_lotizer($p);
+   public function get_list_shipper($p){
+        $rs = $this->objDatos->get_list_shipper($p);
         //var_export($rs);
         $array = array();
         $lote = 0;
         foreach ($rs as $index => $value){
-                if($lote != intval($value['id_lote']) && $lote != 0){
-                    $array[]=$value_;
-                }
-                $value_['id_lote'] = intval($value['id_lote']);
-                $value_['iconCls'] = "task-folder";
-                $value_['tipdoc'] = utf8_encode(trim($value['tipdoc']));
-                $value_['nombre'] = utf8_encode(trim($value['nombre']));
-                $value_['fecha'] = trim($value['fecha']);
-                $value_['tot_folder'] = intval(trim($value['tot_folder']));
-                $value_['tot_pag'] = intval(trim($value['tot_pag']));
-                $value_['tot_errpag'] = intval(trim($value['tot_errpag']));
-                $value_['id_user'] = utf8_encode(trim($value['id_user']));
-                $value_['estado'] = utf8_encode(trim($value['estado']));
-                if(intval($value['type']) == 1){
-                    $value_['children'] = $value_;
-                    $lote = intval($value['id_lote']);
-                }
+            $value_['shi_codigo'] = intval($value['shi_codigo']);
+            $value_['shi_nombre'] = utf8_encode(trim($value['shi_nombre']));
+            $value_['shi_logo'] = utf8_encode(trim($value['shi_logo']));
+            $value_['fec_ingreso'] = trim($value['fec_ingreso']);
+            $value_['shi_estado'] = intval(trim($value['shi_estado']));
+            $value_['id_user'] = intval(trim($value['id_user']));
+            $value_['fecha_actual'] = utf8_encode(trim($value['fecha_actual']));
+            $array[]=$value_;
         }
-        $array[]=$value_;
+
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function get_list_contratos($p){
+        $rs = $this->objDatos->get_list_contratos($p);
+        //var_export($rs);
+        $array = array();
+        $lote = 0;
+        foreach ($rs as $index => $value){
+            $value_['fac_cliente'] = intval($value['fac_cliente']);
+            $value_['cod_contrato'] = intval($value['cod_contrato']);
+            $value_['pro_descri'] = utf8_encode(trim($value['pro_descri']));
+            $array[]=$value_;
+        }
 
         $data = array(
             'success' => true,
@@ -96,6 +107,8 @@ class lotizerController extends AppController {
             if ($value['nivel'] == $_nivel){
                 $json.=$coma."{";
                 $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
+                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 //$json.=',"read":true';
                 //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
@@ -129,6 +142,8 @@ class lotizerController extends AppController {
             if ($value['nivel'] != $_nivel && $value['id_lote'] == $_hijo){
                 $json.=$coma."{";
                 $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
+                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 $json.=',"iconCls":"task"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';
                 $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
