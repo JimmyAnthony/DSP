@@ -18,6 +18,7 @@
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
@@ -136,20 +137,10 @@
                     }
                 }
             });
-			var myData = [
-			    ['L','Lotizer'],
-			    ['S','Scan']
-			];
-			var store_estado = Ext.create('Ext.data.ArrayStore', {
-		        storeId: 'estado',
-		        autoLoad: true,
-		        data: myData,
-		        fields: ['code', 'name']
-		    });
 
 		    var myDataLote = [
-				['L','Activo'],
-			    ['E','Inactivo']
+				['A','Activo'],
+			    ['I','Inactivo']
 			];
 			var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
 		        storeId: 'estado',
@@ -367,7 +358,7 @@
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
 			                                                            // obj.getStore().load();
-			                                                            Ext.getCmp(lotizer.id+'-txt-estado-filter').setValue('L');
+			                                                            Ext.getCmp(lotizer.id+'-txt-estado-filter').setValue('A');
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
 			                                                
@@ -538,7 +529,7 @@
 				                                                        listeners:{
 				                                                            afterrender:function(obj, e){
 				                                                                // obj.getStore().load();
-				                                                                Ext.getCmp(lotizer.id+'-txt-estado').setValue('L');
+				                                                                Ext.getCmp(lotizer.id+'-txt-estado').setValue('A');
 				                                                            },
 				                                                            select:function(obj, records, eOpts){
 				                                                    
@@ -636,6 +627,33 @@
 						                                    flex: 2
 						                                },
 						                                {
+						                                    text: 'Estado Lote',
+						                                    dataIndex: 'lot_estado',
+						                                    loocked : true,
+						                                    width: 100,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        metaData.style = "padding: 0px; margin: 0px";
+						                                        if(parseInt(record.get('nivel'))==1){
+							                                        var estado = (record.get('lot_estado')=='LT')?'baggage_cart_box.png':'contraer.png';
+							                                        var qtip = (record.get('lot_estado')=='LT')?'Lotizado.':'Lote en otro Estado.';
+						                                        }else{
+						                                        	var estado = (record.get('lot_estado')=='LT')?'basket_put_gray.png':'basket_put.png';
+							                                        var qtip = (record.get('lot_estado')=='LT')?'Folder Vacio.':'Folder en otro Estado.';
+						                                        }
+						                                        
+
+						                                        return global.permisos({
+						                                            type: 'link',
+						                                            id_menu: lotizer.id_menu,
+						                                            icons:[
+						                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+						                                            ]
+						                                        });
+						                                    }
+						                                },
+						                                {
 						                                    text: 'Fecha y Hora',
 						                                    dataIndex: 'fecha',
 						                                    width: 180,
@@ -666,16 +684,16 @@
 						                                    align: 'center'
 						                                },
 						                                {
-						                                    text: 'Estado',
+						                                    text: 'Estado Registro',
 						                                    dataIndex: 'estado',
 						                                    loocked : true,
-						                                    width: 50,
+						                                    width: 100,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
 						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('estado')=='L')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('estado')=='L')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: lotizer.id_menu,
@@ -816,7 +834,7 @@
 			set_lotizer_clear:function(){
 				Ext.getCmp(lotizer.id+'-txt-nombre').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-descripcion').setValue('');
-			  	Ext.getCmp(lotizer.id+'-txt-estado').setValue('L');
+			  	Ext.getCmp(lotizer.id+'-txt-estado').setValue('A');
 			  	Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue(0);
 			  	lotizer.id_lote=0;
 			  	lotizer.shi_codigo=0;
@@ -936,7 +954,7 @@
 		            return false;
 		        }
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
@@ -968,8 +986,7 @@
 				Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-nombre').focus();
-			},
-
+			}/*,
 			getFormMant:function(cod_lote,lote,usuario,cantidad){
 				var myData = [
 				    ['1','Activo'],
@@ -1062,7 +1079,7 @@
 	                                    id_menu: gestion_devolucion.id_menu,
 	                                    fn: ['panel_asignar_gestion.limpiar']
 	                                });*/
-	                            },
+	                            /*},
 	                            click: function(obj, e){
 	                            	formularioGestion.setSaveRecordForm(ID);
 	                            }
@@ -1081,7 +1098,7 @@
 	                                    id_menu: gestion_devolucion.id_menu,
 	                                    fn: ['panel_asignar_gestion.limpiar']
 	                                });*/
-	                            },
+	                            /*},
 	                            click: function(obj, e){
 	                                Ext.getCmp(formularioGestion.id+'-win-form').close();
 	                            }
@@ -1098,7 +1115,7 @@
 	                    }
 	                }
 	            }).show().center();
-			}
+			}*/
 
 		}
 		Ext.onReady(lotizer.init,lotizer);

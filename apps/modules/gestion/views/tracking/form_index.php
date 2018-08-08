@@ -18,6 +18,7 @@
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
@@ -147,8 +148,8 @@
 			    });
 
 			    var myDataLote = [
-					['L','Activo'],
-				    ['E','Inactivo']
+					['A','Activo'],
+				    ['I','Inactivo']
 				];
 				var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
 			        storeId: 'estado',
@@ -400,7 +401,7 @@
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
 			                                                            // obj.getStore().load();
-			                                                            Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('L');
+			                                                            Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('A');
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
 			                                                
@@ -491,6 +492,33 @@
 						                                    flex: 2
 						                                },
 						                                {
+						                                    text: 'Estado Lote',
+						                                    dataIndex: 'lot_estado',
+						                                    loocked : true,
+						                                    width: 100,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        metaData.style = "padding: 0px; margin: 0px";
+						                                        if(parseInt(record.get('nivel'))==1){
+							                                        var estado = (record.get('lot_estado')=='LT')?'baggage_cart_box.png':'contraer.png';
+							                                        var qtip = (record.get('lot_estado')=='LT')?'Lotizado.':'Lote en otro Estado.';
+						                                        }else{
+						                                        	var estado = (record.get('lot_estado')=='LT')?'basket_put_gray.png':'basket_put.png';
+							                                        var qtip = (record.get('lot_estado')=='LT')?'Folder Vacio.':'Folder en otro Estado.';
+						                                        }
+						                                        
+
+						                                        return global.permisos({
+						                                            type: 'link',
+						                                            id_menu: lotizer.id_menu,
+						                                            icons:[
+						                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+						                                            ]
+						                                        });
+						                                    }
+						                                },
+						                                {
 						                                    text: 'Fecha y Hora',
 						                                    dataIndex: 'fecha',
 						                                    width: 180,
@@ -529,8 +557,8 @@
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
 						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('estado')=='L')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('estado')=='L')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: tracking.id_menu,
@@ -564,7 +592,7 @@
 							                                
 							                            },
 														beforeselect:function(obj, record, index, eOpts ){
-															tracking.getStatusPanel(record.get('estado'));
+															tracking.getStatusPanel(record.get('lot_estado'));
 															//console.log(record);
 															/*tracking.opcion='U';*/
 															/*tracking.id_lote=record.get('id_lote');
@@ -703,22 +731,22 @@
 		        	case 'N':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']]);
 		        	break;
-		        	case 'L':
+		        	case 'LT':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']]);
 		        	break;
-		        	case 'S':
+		        	case 'ES':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']]);
 		        	break;
-		        	case 'C':
+		        	case 'CO':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color','databox_interno_color']]);
 		        	break;
-		        	case 'R':
+		        	case 'RE':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color_red','databox_interno_color','databox_interno_color']]);
 		        	break;
-		        	case 'F':
+		        	case 'FI':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color_green','databox_interno_color']]);
 		        	break;
-		        	case 'D':
+		        	case 'DE':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color_green','databox_interno_color_blue']]);
 		        	break;
 		        }
@@ -762,7 +790,7 @@
 		        }
 		        //Ext.getCmp(tracking.id + '-grid').getStore().removeAll();
 				Ext.getCmp(tracking.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
 	                }
