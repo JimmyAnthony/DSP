@@ -174,7 +174,7 @@
 		            '<tpl for=".">',
 		                '<div class="databox_principal" >',
 		                    '<div class="{clase_box1}">',
-		                    	'<p><img src="/images/icon/if_box-open_173165.png"/></p>',
+		                    	'<p><img src="/images/icon/baggage_cart_box.png"/></p>',
 		                        '<hr></hr>',
 		                        '<p>Lotizado</p>',
 		                    '</div>',
