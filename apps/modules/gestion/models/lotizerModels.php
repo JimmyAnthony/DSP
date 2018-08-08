@@ -20,6 +20,7 @@ class lotizerModels extends Adodb {
         parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP($p['vp_lote'], 'int');
         parent::SetParameterSP($p['vp_name'], 'varchar');
         parent::SetParameterSP($p['fecha'], 'varchar');
         parent::SetParameterSP($p['vp_estado'], 'varchar');

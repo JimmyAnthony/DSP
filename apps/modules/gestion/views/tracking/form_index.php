@@ -308,8 +308,8 @@
 		                            region:'center',
 		                            border:false,
 		                            xtype: 'uePanelS',
-		                            logo: 'LT',
-		                            title: 'Listado de Lotes',
+		                            logo: 'DC',
+		                            title: 'Busqueda de Documentos',
 		                            legend: 'Búsqueda de Lotes registrados',
 		                            width:1000,
 		                            height:90,
@@ -322,6 +322,24 @@
 		                                    layout:'column',
 
 		                                    items: [
+		                                    	{
+		                                            width:100,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'N° Lote',
+		                                                    id:tracking.id+'-txt-lote',
+		                                                    labelWidth:50,
+		                                                    maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
 		                                        {
 		                                            width:300,border:false,
 		                                            padding:'0px 2px 0px 0px',  
@@ -329,9 +347,9 @@
 		                                            items:[
 		                                                {
 		                                                    xtype: 'textfield',	
-		                                                    fieldLabel: 'Lotes',
+		                                                    fieldLabel: 'Nombre Lote',
 		                                                    id:tracking.id+'-txt-tracking',
-		                                                    labelWidth:55,
+		                                                    labelWidth:80,
 		                                                    //readOnly:true,
 		                                                    labelAlign:'right',
 		                                                    width:'100%',
@@ -722,6 +740,7 @@
 				tracking.getStatusPanel('N');
 				var shi_codigo = Ext.getCmp(tracking.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(tracking.id+'-cbx-contrato').getValue();
+				var lote = Ext.getCmp(tracking.id+'-txt-lote').getValue();
 				var name = Ext.getCmp(tracking.id+'-txt-tracking').getValue();
 				var estado = Ext.getCmp(tracking.id+'-txt-estado-filter').getValue();
 				var fecha = Ext.getCmp(tracking.id+'-txt-fecha-filtro').getRawValue();
@@ -734,14 +753,16 @@
 		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
-
+		        if(lote== null || lote==''){
+		        	lote=0;
+		        }
 				if(fecha== null || fecha==''){
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
 		        //Ext.getCmp(tracking.id + '-grid').getStore().removeAll();
 				Ext.getCmp(tracking.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
 	                }
