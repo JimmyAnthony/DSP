@@ -6,65 +6,156 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/tracking/',
 			opcion:'I',
+			id_lote:0,
+			shi_codigo:0,
+			fac_cliente:0,
 			init:function(){
-				var store = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'cod_lote', type: 'string'},
-                    {name: 'lote', type: 'string'},
-                    {name: 'fecha', type: 'string'},
-                    {name: 'usuario', type: 'string'},
-                    {name: 'cantidad', type: 'string'}
-                ],
-                autoLoad:true,
-                proxy:{
-                    type: 'ajax',
-                    url: tracking.url+'get_list/?vp_cod_lote=0',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
-            });
-			var store_shipper = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'shi_codigo', type: 'string'},
-                    {name: 'shi_nombre', type: 'string'},
-                    {name: 'shi_logo', type: 'string'},
-                    {name: 'fec_ingreso', type: 'string'},
-                    {name: 'shi_estado', type: 'string'},
-                    {name: 'id_user', type: 'string'},
-                    {name: 'fecha_actual', type: 'string'}
-                ],
-                autoLoad:true,
-                proxy:{
-                    type: 'ajax',
-                    url: tracking.url+'get_sis_list_shipper_campana/',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
-            });
-			var myData = [
-			    [1,'Activo'],
-			    [0,'Inactivo']
-			];
-			var store_estado = Ext.create('Ext.data.ArrayStore', {
-		        storeId: 'estado',
-		        autoLoad: true,
-		        data: myData,
-		        fields: ['code', 'name']
-		    });
+				Ext.tip.QuickTipManager.init();
+
+				Ext.define('Task', {
+				    extend: 'Ext.data.TreeModel',
+				    fields: [
+				        {name: 'id_lote', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+				    ]
+				});
+				var storeTree = new Ext.data.TreeStore({
+	                model: 'Task',
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: tracking.url+'get_list_lotizer/'//,
+	                    //reader:{
+	                    //    type: 'json'//,
+	                    //    //rootProperty: 'data'
+	                    //}
+	                },
+	                folderSort: true,
+	                listeners:{
+	                	beforeload: function (store, operation, opts) {
+					        /*Ext.apply(operation, {
+					            params: {
+					                to: 'test1',
+		    						from: 'test2'
+					            }
+					       });*/
+					    },
+	                    load: function(obj, records, successful, opts){
+	                 		Ext.getCmp(tracking.id + '-grid').doLayout();
+	                 		//Ext.getCmp(tracking.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		storeTree.removeAt(0);
+	                 		Ext.getCmp(tracking.id + '-grid').collapseAll();
+		                    Ext.getCmp(tracking.id + '-grid').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                     });
+	                    }
+	                }
+	            });
+				
+				var store_shipper = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'shi_codigo', type: 'string'},
+	                    {name: 'shi_nombre', type: 'string'},
+	                    {name: 'shi_logo', type: 'string'},
+	                    {name: 'fec_ingreso', type: 'string'},                    
+	                    {name: 'shi_estado', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'fecha_actual', type: 'string'}
+	                ],
+	                autoLoad:true,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: tracking.url+'get_list_shipper/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+	            var store_contratos = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'fac_cliente', type: 'string'},
+	                    {name: 'cod_contrato', type: 'string'},
+	                    {name: 'pro_descri', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: tracking.url+'get_list_contratos/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+				var myData = [
+				    ['databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']
+				];
+				var store_estados = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'estado',
+			        autoLoad: false,
+			        data: myData,
+			        fields: ['clase_box1', 'clase_box2', 'clase_box3', 'clase_box4', 'clase_box5', 'clase_box6']
+			    });
+
+			    var myDataIMAGEN = [
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color'],
+				    ['databox_interno_color']
+				];
+				var store_imagen = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'imagen',
+			        autoLoad: false,
+			        data: myDataIMAGEN,
+			        fields: ['clase_box1']
+			    });
+
+			    var myDataLote = [
+					['L','Activo'],
+				    ['E','Inactivo']
+				];
+				var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'estado',
+			        autoLoad: true,
+			        data: myDataLote,
+			        fields: ['code', 'name']
+			    });
 
 				var panel = Ext.create('Ext.form.Panel',{
 					id:tracking.id+'-form',
@@ -76,313 +167,236 @@
 					},
 					tbar:[],
 					items:[
+					]
+				});
+				var imageTplPointer = new Ext.XTemplate(
+		            '<tpl for=".">',
+		                '<div class="databox_principal" >',
+		                    '<div class="{clase_box1}">',
+		                    	'<p><img src="/images/icon/if_box-open_173165.png"/></p>',
+		                        '<hr></hr>',
+		                        '<p>Lotizado</p>',
+		                    '</div>',
+		                    '<div class="{clase_box2}">',
+		                    	'<p><img src="/images/icon/if_General_Office_21_2530827.png"/></p>',
+		                        '<hr></hr>',
+		                        '<p>Escaneo</p>',
+		                    '</div>',
+		                    '<div class="{clase_box3}">',
+		                    	'<p><img src="/images/icon/if_General_Office_03_2530841.png"/></p>',
+		                        '<hr></hr>',
+		                        '<p>Control</p>',
+		                    '</div>',
+		                    '<div class="{clase_box4}">',
+		                    	'<p><img src="/images/icon/if_General_Office_63_2530796.png"/></p>',
+		                        '<hr></hr>',
+		                        '<p>Reproceso</p>',
+		                    '</div>',
+		                    '<div class="{clase_box5}">',
+		                    	'<p><img src="/images/icon/if_General_Office_01_2530843.png"/></p>',
+		                        '<hr></hr>',
+		                        '<p>Digitalizado</p>',
+		                    '</div>',
+		                    '<div class="{clase_box6}">',
+		                    	'<p><img src="/images/icon/if_General_Office_36_2530817.png"/></p>',
+		                        '<hr></hr>',
+		                        '<p>Devuelto</p>',
+		                    '</div>',
+		                '</div>',
+		            '</tpl>'
+		        );
+				tab.add({
+					id:tracking.id+'-tab',
+					border:false,
+					autoScroll:true,
+					closable:true,
+					layout:'border',
+					items:[
 						{
-							region:'east',
-							border:true,
-							width:'30%',
-							padding:'5px 5px 5px 5px',
-							layout:'border',
-							items:[
+                            region:'north',
+                            layout:'border',
+                            border:false,
+                            height:90,
+                            items:[
 								{
-									region:'north',
-									border:false,
-									items:[
-										{
-	                                        xtype: 'fieldset',
-	                                        margin: '5 5 5 10',
-	                                        title:'<b>Mantenimiento de Lotizador</b>',
-	                                        border:false,
-	                                        bodyStyle: 'background: transparent',
-	                                        padding:'2px 5px 1px 5px',
-	                                        layout:'column',
-	                                        items: [
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Nombre',
-	                                                        id:tracking.id+'-txt-nombre',
-	                                                        labelWidth:60,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Descripcion',
-	                                                        id:tracking.id+'-txt-descripcion',
-	                                                        labelWidth:60,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 0.40,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype:'datefield',
-	                                                        id:tracking.id+'-date-re',
-	                                                        fieldLabel:'Fecha',
-	                                                        labelWidth:60,
-	                                                        labelAlign:'right',
-	                                                        value:new Date('Y-m-d'),
-	                                                        format: 'Y-m-d',
-	                                                        width: '100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                	{
-	                                                		xtype:'form',
-	                                                		id:tracking.id+'-form-info',
-	                                                		border:false,
-	                                                		items:[
-	                                                			{
-														            xtype: 'filefield',
-														            emptyText: 'Seleccione una imagen',
-														            fieldLabel: 'Imagen',
-														            labelAlign:'right',
-														            labelWidth:60,
-														            name: 'uploadedfile',
-														            id:tracking.id+'-imagen_tracking',
-														            buttonText: '',
-														            width: '100%',
-	                                                        		anchor:'100%',
-														            buttonConfig: {
-														                icon: '/images/icon/upload-file.png',
-														            }
-														        }
-	                                                		]
-	                                                	}
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'0px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                    	xtype:'panel',
-	                                                    	padding:'10px 60px 10px 60px',
-	                                                    	border:true,
-	                                                    	height:300,
-	                                                    	html:'<div id="GaleryFull" class="links"></div>'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-                                                columnWidth: 0.50,border:false,
-                                                padding:'0px 2px 0px 0px',  bodyStyle: 'background: transparent',
-                                                items:[
-                                                    {
-                                                        xtype:'combo',
-                                                        fieldLabel: 'Estado',
-                                                        id:tracking.id+'-cmb-estado',
-                                                        store: store_estado,
-                                                        queryMode: 'local',
-                                                        triggerAction: 'all',
-                                                        valueField: 'code',
-                                                        displayField: 'name',
-                                                        emptyText: '[Seleccione]',
-                                                        labelAlign:'right',
-                                                        //allowBlank: false,
-                                                        labelWidth: 80,
-                                                        width:'100%',
-                                                        anchor:'100%',
-                                                        //readOnly: true,
-                                                        listeners:{
-                                                            afterrender:function(obj, e){
-                                                                // obj.getStore().load();
-                                                            },
-                                                            select:function(obj, records, eOpts){
-                                                    
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
-	                                        ]
-	                                    }
-									],
-									bbar:[
-										{
-					                        xtype:'button',
-					                        text: 'Guardar',
-					                        icon: '/images/icon/save.png',
-					                        listeners:{
-					                            beforerender: function(obj, opts){
-					                                /*global.permisos({
-					                                    id: 15,
-					                                    id_btn: obj.getId(), 
-					                                    id_menu: gestion_devolucion.id_menu,
-					                                    fn: ['panel_asignar_gestion.limpiar']
-					                                });*/
-					                            },
-					                            click: function(obj, e){
-					                                //tracking.buscar_ge();
-					                                tracking.settracking();
-					                            }
-					                        }
-					                    },
-					                    {
-					                        xtype:'button',
-					                        text: 'Nuevo',
-					                        icon: '/images/icon/file.png',
-					                        listeners:{
-					                            beforerender: function(obj, opts){
-					                                /*global.permisos({
-					                                    id: 15,
-					                                    id_btn: obj.getId(), 
-					                                    id_menu: gestion_devolucion.id_menu,
-					                                    fn: ['panel_asignar_gestion.limpiar']
-					                                });*/
-					                            },
-					                            click: function(obj, e){
-					                                //tracking.buscar_ge();
-					                                tracking.opcion='I';
-					                                tracking.setNuevo();
-					                            }
-					                        }
-					                    }
-									]
-								},
-								{
-									region:'center',
-									border:false,
-									layout:'fit',
-									items:[
-										{
-					                        xtype: 'grid',
-					                        id: tracking.id + '-grid-tracking',
-					                        store: store_shipper,
-					                        columnLines: true,
-					                        columns:{
-					                            items:[
-					                                {
-					                                    text: 'Shipper',
-					                                    dataIndex: 'shi_nombre',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Estado',
-					                                    dataIndex: 'shi_estado',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                }/*,
-					                                {
-					                                    text: 'Logo',
-					                                    dataIndex: 'shi_logo',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Estado',
-					                                    dataIndex: 'shi_estado',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                },
-					                                {
-					                                    text: '&nbsp;',
-					                                    dataIndex: '',
-					                                    width: 30,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        metaData.style = "padding: 0px; margin: 0px";
-					                                        return global.permisos({
-					                                            type: 'link',
-					                                            id_menu: tracking.id_menu,
-					                                            icons:[
-					                                                {id_serv: 9, img: 'detail.png', qtip: 'Click para ver detalle.', js: 'tracking.getFormDetalleGestion()'}
-					                                            ]
-					                                        });
-					                                    }
-					                                }*/
-					                            ],
-					                            defaults:{
-					                                menuDisabled: true
-					                            }
-					                        },
-					                        viewConfig: {
-					                            stripeRows: true,
-					                            enableTextSelection: false,
-					                            markDirty: false
-					                        },
-					                        trackMouseOver: false,
-					                        listeners:{
-					                            afterrender: function(obj){
-					                                
-					                            }
-					                        }
-					                    }
-									]
-								}
-							]
-						},
-						{
-							region:'center',
-							border:false,
-							//layout:'fit',
-							items:[
-								{
-	                                //region:'north',
-	                                border:false,
-	                                xtype: 'uePanelS',
-	                                logo: 'CL',
-	                                title: 'Listado de Lotizador',
-	                                legend: 'Búsqueda de Lotes registradas',
-	                                height:100,
-	                                items:[
-	                                    {
-	                                        xtype:'panel',
-	                                        border:false,
-	                                        bodyStyle: 'background: transparent',
-	                                        padding:'2px 5px 1px 5px',
-	                                        layout:'column',
-	                                        items: [
-	                                            {
-	                                                width:600,border:false,
-	                                                padding:'0px 2px 0px 0px',  
-	                                                bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'tracking',
-	                                                        id:tracking.id+'-txt-tracking',
-	                                                        labelWidth:80,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                width: 80,border:false,
-	                                                padding:'0px 2px 0px 0px',  
-	                                                bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
+		                            region:'west',
+		                            border:false,
+		                            xtype: 'uePanelS',
+		                            logo: 'CL',
+		                            title: 'Clientes y Contratos',
+		                            legend: 'Seleccione Clientes Registrados',
+		                            width:600,
+		                            //height:90,
+		                            items:[
+		                                {
+		                                    xtype:'panel',
+		                                    border:false,
+		                                    bodyStyle: 'background: transparent',
+		                                    padding:'2px 5px 1px 5px',
+		                                    layout:'column',
+		                                    items: [
+		                                    	{
+			                                   		width: 250,border:false,
+			                                    	padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Cliente',
+			                                                    id:tracking.id+'-cbx-cliente',
+			                                                    store: store_shipper,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'shi_codigo',
+			                                                    displayField: 'shi_nombre',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 50,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                        	Ext.getCmp(tracking.id+'-cbx-contrato').setValue('');
+			                                                			tracking.getContratos(records.get('shi_codigo'));
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
+			                                   		width: 270,border:false,
+			                                    	padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Contrato',
+			                                                    id:tracking.id+'-cbx-contrato',
+			                                                    store: store_contratos,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'fac_cliente',
+			                                                    displayField: 'pro_descri',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 50,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                			
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    }
+		                                    ]
+		                                }
+		                            ]
+		                        },
+		                        {
+		                            region:'center',
+		                            border:false,
+		                            xtype: 'uePanelS',
+		                            logo: 'LT',
+		                            title: 'Listado de Lotes',
+		                            legend: 'Búsqueda de Lotes registrados',
+		                            width:1000,
+		                            height:90,
+		                            items:[
+		                                {
+		                                    xtype:'panel',
+		                                    border:false,
+		                                    bodyStyle: 'background: transparent',
+		                                    padding:'2px 5px 1px 5px',
+		                                    layout:'column',
+
+		                                    items: [
+		                                        {
+		                                            width:300,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Lotes',
+		                                                    id:tracking.id+'-txt-tracking',
+		                                                    labelWidth:55,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+			                                        width: 160,border:false,
+			                                        padding:'0px 2px 0px 0px',  
+			                                    	bodyStyle: 'background: transparent',
+			                                        items:[
+			                                            {
+			                                                xtype:'datefield',
+			                                                id:tracking.id+'-txt-fecha-filtro',
+			                                                fieldLabel:'Fecha',
+			                                                labelWidth:60,
+			                                                labelAlign:'right',
+			                                                value:new Date(),
+			                                                format: 'Ymd',
+			                                                //readOnly:true,
+			                                                width: '100%',
+			                                                anchor:'100%'
+			                                            }
+			                                        ]
+			                                    },
+		                                        {
+			                                   		width: 150,border:false,
+			                                    	padding:'0px 2px 0px 0px',  
+			                                    	bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Estado',
+			                                                    id:tracking.id+'-txt-estado-filter',
+			                                                    store: store_estado_lote,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 50,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('L');
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+		                                        {
+		                                            width: 80,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
 									                        xtype:'button',
 									                        text: 'Buscar',
 									                        icon: '/images/icon/binocular.png',
@@ -395,125 +409,269 @@
 									                                    fn: ['panel_asignar_gestion.limpiar']
 									                                });*/
 									                            },
-									                            click: function(obj, e){
-									                                //tracking.buscar_ge();
+									                            click: function(obj, e){	             	
+									                            	var name = Ext.getCmp(tracking.id+'-txt-tracking').getValue();
+		                               					            tracking.getReloadGridtracking(name);
 									                            }
 									                        }
 									                    }
-	                                                ]
-	                                            }
-	                                        ]
-	                                    }
-	                                ]
-	                            },
+		                                            ]
+		                                        }
+		                                    ]
+		                                }
+		                            ]
+		                        }
+		                    ]
+		                },
+						{
+							region:'center',
+							layout:'border',
+							items:[
 								{
-									//region:'center',
-									width:'100%',
+									region:'center',
+									//width:'100%',
+									layout:'border',
+									items:[
+										{
+											region:'center',
+											layout:'fit',
+											border:false,
+											items:[
+												{
+							                        xtype: 'treepanel',
+							                        //collapsible: true,
+											        useArrows: true,
+											        rootVisible: true,
+											        multiSelect: true,
+											        //root:'Task',
+							                        id: tracking.id + '-grid',
+							                        //height: 370,
+							                        //reserveScrollbar: true,
+							                        //rootVisible: false,
+							                        //store: store,
+							                        //layout:'fit',
+							                        columnLines: true,
+							                        store: storeTree,
+										            columns: [
+											            /*{
+											                xtype: 'treecolumn', //this is so we know which column will show the tree
+											                text: 'Task',
+											                flex: 2,
+											                sortable: true,
+											                dataIndex: 'task'
+											            },*/
+											            {
+											            	xtype: 'treecolumn',
+						                                    text: 'Nombre',
+						                                    dataIndex: 'lote_nombre',
+						                                    sortable: true,
+						                                    flex: 1
+						                                },
+						                                {
+						                                    text: 'Descripción',
+						                                    dataIndex: 'descripcion',
+						                                    flex: 2
+						                                },
+						                                {
+						                                    text: 'Fecha y Hora',
+						                                    dataIndex: 'fecha',
+						                                    width: 180,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Total Folder',
+						                                    dataIndex: 'tot_folder',
+						                                    width: 80,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Total Página',
+						                                    dataIndex: 'tot_pag',
+						                                    width: 80,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Total Pag. Errores',
+						                                    dataIndex: 'tot_errpag',
+						                                    width: 100,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'User',
+						                                    dataIndex: 'usr_update',
+						                                    width: 100,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Estado',
+						                                    dataIndex: 'estado',
+						                                    loocked : true,
+						                                    width: 50,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        metaData.style = "padding: 0px; margin: 0px";
+						                                        var estado = (record.get('estado')=='L')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        var qtip = (record.get('estado')=='L')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+						                                        return global.permisos({
+						                                            type: 'link',
+						                                            id_menu: tracking.id_menu,
+						                                            icons:[
+						                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
+						                                            ]
+						                                        });
+						                                    }
+						                                }
+											        ],
+							                        /*viewConfig: {
+							                            stripeRows: true,
+							                            enableTextSelection: false,
+							                            markDirty: false
+							                        },*/
+							                        hideItemsReadFalse: function () {
+													    var me = this,
+													        items = me.getReferences().treelistRef.itemMap;
+
+
+													    for(var i in items){
+													        if(items[i].config.node.data.read == false){
+													            items[i].destroy();
+													        }
+													    }
+													},
+							                        trackMouseOver: false,
+							                        listeners:{
+							                            afterrender: function(obj){
+							                                //tracking.getImagen('default.png');
+							                                
+							                            },
+														beforeselect:function(obj, record, index, eOpts ){
+															tracking.getStatusPanel(record.get('estado'));
+															//console.log(record);
+															/*tracking.opcion='U';*/
+															/*tracking.id_lote=record.get('id_lote');
+															/*tracking.getImagen(record.get('imagen'));*/
+															/*Ext.getCmp(tracking.id+'-txt-nombre').setValue(record.get('nombre'));
+															Ext.getCmp(tracking.id+'-txt-tipdoc').setValue(record.get('tipdoc'));
+															Ext.getCmp(tracking.id+'-txt-fecha').setValue(record.get('fecha'));
+															Ext.getCmp(tracking.id+'-txt-estado').setValue(record.get('estado'));
+															Ext.getCmp(tracking.id+'-txt-tot_folder').setValue(record.get('tot_folder'));
+
+															Ext.getCmp(tracking.id+'-txt-nombre').setReadOnly(true);
+															Ext.getCmp(tracking.id+'-txt-tipdoc').setReadOnly(true);
+															Ext.getCmp(tracking.id+'-txt-fecha').setReadOnly(true);
+															Ext.getCmp(tracking.id+'-txt-estado').setReadOnly(true);
+															Ext.getCmp(tracking.id+'-txt-tot_folder').setReadOnly(true);
+
+
+															var botonTxt = Ext.getCmp('boton').getText();
+															if (botonTxt == 'Guardar' || botonTxt == 'Update') {
+																Ext.getCmp('boton').setText('Editar');
+																Ext.getCmp('boton').setIcon('/images/icon/editar.png');
+															}*/
+
+															//tracking.getReloadGridtracking2(tracking.id_lote);
+
+														}
+							                        }
+							                    }
+							                ]
+							            },
+										{
+											region:'south',
+											//width:'100%',
+											height:140,
+											layout:'fit',
+											items:[
+												{
+							                        xtype: 'dataview',
+							                        id: tracking.id+'-check-status',
+							                        layout:'fit',
+							                        store: store_estados,
+							                        autoScroll: true,
+							                        loadMask:true,
+							                        autoHeight: false,
+							                        tpl: imageTplPointer,
+							                        multiSelect: false,
+							                        singleSelect: false,
+							                        loadingText:'Cargando Estados...',
+							                        itemSelector: 'div.thumb-wrap',
+							                        emptyText: '<div class="databox_list_pointer"><div class="databox_none_data" ></div><div class="databox_title_clear_data">NO TIENE NINGUN ESTADO</div></div>',
+							                        itemSelector: 'div.databox_list_pointer',
+							                        trackOver: true,
+							                        overItemCls: 'databox_list_pointer-hover',
+							                        listeners: {
+							                            'itemclick': function(view, record, item, idx, event, opts) {
+							                                /*me.idx=idx;
+							                                if(config.msn)me.filtra_novedad(record);
+							                                if(config.hist)me.reload_historico();
+							                                if(config.records)config.records(view, record, item, idx, event, opts,'N');*/
+							                            },
+							                            'afterrender':function(){
+							                                /*Ext.getCmp(config.id+'-nov-lista').refresh();
+							                                Ext.getCmp(config.id+'-nov-lista').refresh();*/
+							                            }
+							                        }
+							                    }
+											]
+										}
+									]
+									
+								},
+								{
+									region:'east',
+									title:'PÁGINAS',
+									//width:'100%',
+									width:500,
 									layout:'fit',
 									items:[
 										{
-					                        xtype: 'grid',
-					                        id: tracking.id + '-grid',
-					                        store: store,
+					                        xtype: 'dataview',
+					                        id: tracking.id+'-paginas',
 					                        layout:'fit',
-					                        columnLines: true,
-					                        columns:{
-					                            items:[
-					                                {
-					                                    text: 'Cod.Lote',
-					                                    dataIndex: 'cod_lote',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Lote',
-					                                    dataIndex: 'lote',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Fecha',
-					                                    dataIndex: 'fecha',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Usuario',
-					                                    dataIndex: 'usuario',
-					                                    width: 100
-					                                },
-					                                {
-					                                    text: 'Cantidad',
-					                                    dataIndex: 'cantidad',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                },
-					                                {
-					                                    text: '&nbsp;',
-					                                    dataIndex: '',
-					                                    width: 30,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        metaData.style = "padding: 0px; margin: 0px";
-					                                        return global.permisos({
-					                                            type: 'link',
-					                                            id_menu: tracking.id_menu,
-					                                            icons:[
-					                                                {id_serv: 9, img: 'detail.png', qtip: 'Click para ver detalle.', js: 'tracking.getFormDetalleGestion()'}
-					                                            ]
-					                                        });
-					                                    }
-					                                }
-					                            ],
-					                            defaults:{
-					                                menuDisabled: true
-					                            }
-					                        },
-					                        viewConfig: {
-					                            stripeRows: true,
-					                            enableTextSelection: false,
-					                            markDirty: false
-					                        },
-					                        trackMouseOver: false,
-					                        listeners:{
-					                            afterrender: function(obj){
-					                                tracking.getImagen('default.png');
+					                        store: store_imagen,
+					                        autoScroll: true,
+					                        loadMask:true,
+					                        autoHeight: false,
+					                        tpl: [
+								                '<tpl for=".">',
+								                    '<div class="dataview-multisort-item">',
+								                        '<img src="/images/icon/{clase_box1}.png" />',
+								                        '<h3>{name}</h3>',
+								                    '</div>',
+								                '</tpl>'
+								            ],
+					                        multiSelect: false,
+					                        singleSelect: false,
+					                        loadingText:'Cargando Estados...',
+					                        emptyText: '<div class="databox_list_pointer"><div class="databox_none_data" ></div><div class="databox_title_clear_data">NO TIENE NINGUNA PÁGINA</div></div>',
+					                        itemSelector: 'div.dataview-multisort-item',
+					                        trackOver: true,
+					                        //overItemCls: 'databox_list_pointer-hover',
+					                        listeners: {
+					                            'itemclick': function(view, record, item, idx, event, opts) {
+					                                /*me.idx=idx;
+					                                if(config.msn)me.filtra_novedad(record);
+					                                if(config.hist)me.reload_historico();
+					                                if(config.records)config.records(view, record, item, idx, event, opts,'N');*/
 					                            },
-												beforeselect:function(obj, record, index, eOpts ){
-													//console.log(record);
-													tracking.opcion='U';
-													tracking.cod_cam=record.get('cod_cam');
-													tracking.getImagen(record.get('imagen'));
-													Ext.getCmp(tracking.id+'-txt-nombre').setValue(record.get('nombre'));
-													Ext.getCmp(tracking.id+'-txt-descripcion').setValue(record.get('descripcion'));
-													Ext.getCmp(tracking.id+'-date-re').setValue(record.get('fec_crea'));
-													Ext.getCmp(tracking.id+'-cmb-estado').setValue(record.get('estado'));
-													tracking.getReloadGridtracking(record.get('cod_cam'));
-												}
+					                            'afterrender':function(){
+					                                /*Ext.getCmp(config.id+'-nov-lista').refresh();
+					                                Ext.getCmp(config.id+'-nov-lista').refresh();*/
+					                            }
 					                        }
 					                    }
 									]
 								}
 							]
 						}
-					]
-				});
-				tab.add({
-					id:tracking.id+'-tab',
-					border:false,
-					autoScroll:true,
-					closable:true,
-					layout:{
-						type:'fit'
-					},
-					items:[
-						panel
 					],
 					listeners:{
 						beforerender: function(obj, opts){
 	                        global.state_item_menu(tracking.id_menu, true);
 	                    },
 	                    afterrender: function(obj, e){
+	                    	//tracking.getReloadGridtracking('');
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,tracking.id_menu);
 	                    },
@@ -524,86 +682,75 @@
 
 				}).show();
 			},
+			getStatusPanel: function(ES) {
+		        Ext.getCmp(tracking.id+'-check-status').getStore().removeAll();
+		        switch(ES){
+		        	case 'N':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']]);
+		        	break;
+		        	case 'L':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']]);
+		        	break;
+		        	case 'S':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']]);
+		        	break;
+		        	case 'C':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color','databox_interno_color']]);
+		        	break;
+		        	case 'R':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color_red','databox_interno_color','databox_interno_color']]);
+		        	break;
+		        	case 'F':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color_green','databox_interno_color']]);
+		        	break;
+		        	case 'D':
+		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color_green','databox_interno_color_blue']]);
+		        	break;
+		        }
+		    },
 			getImagen:function(param){
-				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/tracking/'+param}});
+				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/tracking/'+param}});*/
 			},
-			settracking:function(op){
-
-				global.Msg({
-                    msg: '¿Está seguro de guardar?',
-                    icon: 3,
-                    buttons: 3,
-                    fn: function(btn){
-                        Ext.getCmp(tracking.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-
-						Ext.getCmp(tracking.id+'-form-info').submit({
-		                    url: tracking.url + 'setRegisterCampana/',
-		                    params:{
-		                        vp_op: tracking.opcion,
-		                        vp_shi_codigo:tracking.cod_cam,
-		                        vp_shi_nombre:Ext.getCmp(tracking.id+'-txt-nombre').getValue(),
-		                        vp_shi_descripcion:Ext.getCmp(tracking.id+'-txt-descripcion').getValue(),
-		                        vp_fec_ingreso:Ext.getCmp(tracking.id+'-date-re').getRawValue(),
-		                        vp_estado:Ext.getCmp(tracking.id+'-cmb-estado').getValue()
-		                    },
-		                    success: function( fp, o ){
-		                    	//console.log(o);
-		                        var res = o.result;
-		                        Ext.getCmp(tracking.id+'-form').el.unmask();
-		                        //console.log(res);
-		                        if (parseInt(res.error) == 0){
-		                            global.Msg({
-		                                msg: res.data,
-		                                icon: 1,
-		                                buttons: 1,
-		                                fn: function(btn){
-		                                    tracking.getReloadGridtracking('');
-		                                    tracking.setNuevo();
-		                                }
-		                            });
-		                        } else{
-		                            global.Msg({
-		                                msg: 'Ocurrio un error intentalo nuevamente.',
-		                                icon: 0,
-		                                buttons: 1,
-		                                fn: function(btn){
-		                                    tracking.getReloadGridtracking('');
-		                                    tracking.setNuevo();
-		                                }
-		                            });
-		                        }
-		                    }
-		                });
-		            }
-                });
+			getContratos:function(shi_codigo){
+				Ext.getCmp(tracking.id+'-cbx-contrato').getStore().removeAll();
+				Ext.getCmp(tracking.id+'-cbx-contrato').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo},
+	                callback:function(){
+	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
+	                }
+	            });
 			},
 			getReloadGridtracking:function(name){
-				Ext.getCmp(tracking.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				//Ext.getCmp(tracking.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				tracking.getStatusPanel('N');
+				var shi_codigo = Ext.getCmp(tracking.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(tracking.id+'-cbx-contrato').getValue();
+				var name = Ext.getCmp(tracking.id+'-txt-tracking').getValue();
+				var estado = Ext.getCmp(tracking.id+'-txt-estado-filter').getValue();
+				var fecha = Ext.getCmp(tracking.id+'-txt-fecha-filtro').getRawValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
+				if(fecha== null || fecha==''){
+		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        //Ext.getCmp(tracking.id + '-grid').getStore().removeAll();
 				Ext.getCmp(tracking.id + '-grid').getStore().load(
-	                {params: {vp_nombre:name},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
-	                	Ext.getCmp(tracking.id+'-form').el.unmask();
+	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
 	                }
 	            });
-			},
-			getReloadGridtracking:function(campana){
-				Ext.getCmp(tracking.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				Ext.getCmp(tracking.id + '-grid-tracking').getStore().load(
-	                {params: {campana:campana},
-	                callback:function(){
-	                	Ext.getCmp(tracking.id+'-form').el.unmask();
-	                }
-	            });
-			},
-			setNuevo:function(){
-				tracking.shi_codigo=0;
-				tracking.getImagen('default.png');
-				Ext.getCmp(tracking.id+'-txt-nombre').setValue('');
-				Ext.getCmp(tracking.id+'-txt-descripcion').setValue('');
-				Ext.getCmp(tracking.id+'-date-re').setValue('');
-				Ext.getCmp(tracking.id+'-cmb-estado').setValue('');
-				Ext.getCmp(tracking.id+'-txt-nombre').focus();
 			}
+
 		}
 		Ext.onReady(tracking.init,tracking);
 	}else{
