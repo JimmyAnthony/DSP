@@ -650,10 +650,7 @@
 					                        //overItemCls: 'databox_list_pointer-hover',
 					                        listeners: {
 					                            'itemclick': function(view, record, item, idx, event, opts) {
-					                                /*me.idx=idx;
-					                                if(config.msn)me.filtra_novedad(record);
-					                                if(config.hist)me.reload_historico();
-					                                if(config.records)config.records(view, record, item, idx, event, opts,'N');*/
+					                                tracking.getImagen(record.get('clase_box1')+'.png');
 					                            },
 					                            'afterrender':function(){
 					                                /*Ext.getCmp(config.id+'-nov-lista').refresh();
@@ -709,7 +706,7 @@
 		        }
 		    },
 			getImagen:function(param){
-				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/tracking/'+param}});*/
+				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/images/icon/'+param}});///tracking/
 			},
 			getContratos:function(shi_codigo){
 				Ext.getCmp(tracking.id+'-cbx-contrato').getStore().removeAll();
