@@ -100,40 +100,47 @@
 									items:[
 										{
 						                    xtype: 'button',
-						                    icon: null,
+						                    icon: '/images/icon/if_floppy_285657.png',
 						                    flex:1,
-						                    glyph: 72,
+						                    //glyph: 72,
+						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
+						                    //height:50
 						                    text: 'Guardar',
-						                    iconAlign: 'top'
+						                    //iconAlign: 'top'
 						                },
 						                {
 						                    xtype: 'button',
-						                    icon: null,
+						                    icon: '/images/icon/if_radial_arrows_1216559.png',
 						                    flex:1,
-						                    glyph: 72,
+						                    //glyph: 72,
+						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
-						                    text: 'Actualizar',
-						                    iconAlign: 'top'
+						                    //height:50
+						                    text: 'Actualizar'
+						                    //iconAlign: 'top'
 						                },
 						                {
 						                    xtype: 'button',
-						                    icon: null,
+						                    icon: '/images/icon/if_edit-delete_118920.png',
 						                    flex:1,
-						                    glyph: 72,
+						                    //glyph: 72,
+						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
-						                    text: 'Eliminar',
-						                    iconAlign: 'top'
-						                },
+						                    //height:50
+						                    text: 'Eliminar'
+						                    //iconAlign: 'top'
+						                }/*,
 						                {
 						                    xtype: 'button',
-						                    icon: null,
+						                    icon: '/images/icon/if_log_out_678146.png',
 						                    flex:1,
-						                    glyph: 72,
+						                    //glyph: 72,
+						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
-						                    text: 'Salir',
-						                    iconAlign: 'top'
-						                }
+						                    //height:50
+						                    text: ' '
+						                }*/
 									]
 								},
 								{
@@ -152,22 +159,26 @@
 									        items: [
 									            {
 								                    xtype: 'button',
-								                    icon: null,
-								                    glyph: 72,
-								                    width: '50%',
+								                    icon: '/images/icon/if_network-workgroup_118928.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
 								                    margin:'5px 5px 5px 5px',
+								                    //height:50
 								                    text: 'Digitalizar',
-								                    iconAlign: 'top'
+								                    //iconAlign: 'top'
 								                },
 								                {
 								                    xtype: 'button',
-								                    icon: null,
-								                    glyph: 72,
-								                    width: '50%',
+								                    icon: '/images/icon/if_document-save-as_118915.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
 								                    margin:'5px 5px 5px 5px',
-								                    text: 'Importar Imagen',
-								                    iconAlign: 'top'
-								                }
+								                    //height:50
+								                    text: 'Importar',
+								                    //iconAlign: 'top'
+								                },
 									        ]
 									    },
 									    {
@@ -320,77 +331,90 @@
 									items:[
 										{
 						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: '(+)',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: '(-)',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: '[+]',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: '[-]',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: '[Rotar]',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: '[Save]',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/batman.png',
-						                    flex:1,
-						                    scale: 'large',
-						                    //glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    //text: '[Delete]',
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_box-open_173165.png',
+						                    icon: '/images/icon/if_69_111122.png',
 						                    flex:1,
 						                    //glyph: 72,
 						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
 						                    //height:50
-						                    text: ' ',
+						                    text: 'Zoom(+)'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_68_111123.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Zoom(-)'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_153_111058.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Máximizar',
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_152_111059.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Minimizar',
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_icons_update_1564533.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Rotar'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_24_111010.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Gruardar'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_90_111056.png',
+						                    flex:1,
+						                    scale: 'large',
+						                    //glyph: 72,
+						                    margin:'5px 5px 5px 5px',
+						                    //text: '[Delete]',
+						                    text: 'Eliminar'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_122_111086.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Cortar'
 						                    //iconAlign: 'top'
 						                }
 									]
