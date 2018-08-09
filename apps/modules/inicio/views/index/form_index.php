@@ -15,7 +15,7 @@
     <!--
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
     -->
-   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZTYdq5n5j-iOv5xAZCCTyuGQwkFU3CMU&callback=initMap"type="text/javascript"></script>
+   <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZTYdq5n5j-iOv5xAZCCTyuGQwkFU3CMU&callback=initMap"type="text/javascript"></script>-->
 
     <!--<script type="text/javascript" src="/js/jquery-1.8.0.min.js" ></script>-->
     <script type="text/javascript" src="/js/ext-5.1.0/packages/sencha-charts/build/sencha-charts.js"></script>

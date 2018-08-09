@@ -7,6 +7,62 @@
 			url:'/gestion/scanning/',
 			opcion:'I',
 			init:function(){
+				Ext.tip.QuickTipManager.init();
+
+				Ext.define('Task', {
+				    extend: 'Ext.data.TreeModel',
+				    fields: [
+				        {name: 'id_lote', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+				    ]
+				});
+				var storeTree = new Ext.data.TreeStore({
+	                model: 'Task',
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: scanning.url+'get_list_lotizer/'//,
+	                    //reader:{
+	                    //    type: 'json'//,
+	                    //    //rootProperty: 'data'
+	                    //}
+	                },
+	                folderSort: true,
+	                listeners:{
+	                	beforeload: function (store, operation, opts) {
+					        /*Ext.apply(operation, {
+					            params: {
+					                to: 'test1',
+		    						from: 'test2'
+					            }
+					       });*/
+					    },
+	                    load: function(obj, records, successful, opts){
+	                 		Ext.getCmp(scanning.id + '-grid').doLayout();
+	                 		//Ext.getCmp(scanning.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		storeTree.removeAt(0);
+	                 		Ext.getCmp(scanning.id + '-grid').collapseAll();
+		                    Ext.getCmp(scanning.id + '-grid').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                     });
+	                    }
+	                }
+	            });
 				this.msgTpl = new Ext.Template(
 		            'Sounds Effects: <b>{fx}%</b><br />',
 		            'Ambient Sounds: <b>{ambient}%</b><br />',
@@ -92,31 +148,7 @@
 		        data: myDataLote,
 		        fields: ['code', 'name']
 		    });
-			var store_shipper = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'shi_codigo', type: 'string'},
-                    {name: 'shi_nombre', type: 'string'},
-                    {name: 'shi_logo', type: 'string'},
-                    {name: 'fec_ingreso', type: 'string'},
-                    {name: 'shi_estado', type: 'string'},
-                    {name: 'id_user', type: 'string'},
-                    {name: 'fecha_actual', type: 'string'}
-                ],
-                autoLoad:true,
-                proxy:{
-                    type: 'ajax',
-                    url: scanning.url+'get_sis_list_shipper_campana/',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
-            });
+			
 			var myData = [
 			    [1,'Activo'],
 			    [0,'Inactivo']
@@ -155,7 +187,7 @@
 		                            title: 'Busqueda de Lotes a Escanear',
 		                            legend: 'Seleccione el Lote Registrado',
 		                            width:350,
-		                            height:350,
+		                            height:210,
 		                            items:[
 		                                {
 		                                    xtype:'panel',
@@ -268,19 +300,41 @@
 			                                        width: 300,border:false,
 			                                        padding:'0px 2px 5px 0px',  
 			                                    	bodyStyle: 'background: transparent',
+			                                    	layout:'column',
 			                                        items:[
 			                                            {
 			                                                xtype:'datefield',
 			                                                id:scanning.id+'-txt-fecha-filtro',
+			                                                padding:'0px 10px 0px 0px',  
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth: 50,
 			                                                labelAlign:'right',
 			                                                value:new Date(),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
-			                                                width: '100%',
+			                                                width: 187,
 			                                                anchor:'100%'
-			                                            }
+			                                            },
+			                                            {
+									                        xtype:'button',
+									                        width:100,
+									                        text: 'Buscar',
+									                        icon: '/images/icon/binocular.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){	             	
+									                            	var name = Ext.getCmp(scanning.id+'-txt-scanning').getValue();
+		                               					            scanning.getReloadGridscanning(name);
+									                            }
+									                        }
+									                    }
 			                                        ]
 			                                    }
 		                                    ]
@@ -289,171 +343,305 @@
 		                        },
 								{
 									region:'center',
+									layout:'border',
 									border:true,
 									padding:'5px 5px 5px 5px',
 									items:[
 										{
-									        xtype: 'fieldset',
-									        title: 'Acción',
-									        margin:'5px 5px 5px 5px',
-									        defaults: {
-									            anchor: '100%'
-									        },
-									        layout: 'hbox',
-									        items: [
-									            {
-								                    xtype: 'button',
-								                    icon: '/images/icon/if_network-workgroup_118928.png',
-								                    flex:1,
-								                    //glyph: 72,
-								                    scale: 'large',
-								                    margin:'5px 5px 5px 5px',
-								                    //height:50
-								                    text: 'Digitalizar',
-								                    //iconAlign: 'top'
-								                },
-								                {
-								                    xtype: 'button',
-								                    icon: '/images/icon/if_document-save-as_118915.png',
-								                    flex:1,
-								                    //glyph: 72,
-								                    scale: 'large',
-								                    margin:'5px 5px 5px 5px',
-								                    //height:50
-								                    text: 'Importar',
-								                    //iconAlign: 'top'
-								                },
-									        ]
-									    },
-									    {
-									        xtype: 'fieldset',
-									        title: 'Escáner',
-									        margin:'5px 5px 5px 5px',
-									        defaults: {
-									            anchor: '100%'
-									        },
-									        items: [
-									        	{
-									        		xtype:'panel',
-									        		layout: 'hbox',
-									        		items:[
-									        			{
-												            xtype: 'filefield',
-												            //buttonOnly: true,
-												            width: '75%',
-												            anchor: '100%',
-												            buttonText:'Seleccionar',
-												            hideLabel: true,
-												            margin:'5px 5px 5px 5px',
-												            reference: 'basicFile'
-												        },
-										                {
-											                xtype: 'checkbox',
-											                boxLabel: 'Duplex',
-											                margin:'5px 5px 5px 5px',
-											                listeners: {
-											                }
-											            }
-									        		]
-									        	},
-									            {
-										            xtype: 'combobox',
-										            margin:'5px 5px 5px 5px',
-										            reference: 'states',
-										            publishes: 'value',
-										            fieldLabel: 'Modo',
-										            displayField: 'state',
-										            anchor: '-15',
-										            store: store,
-										            minChars: 0,
-										            queryMode: 'local',
-										            typeAhead: true
-										        },
-									            {
-										            xtype: 'combobox',
-										            margin:'5px 5px 5px 5px',
-										            reference: 'states',
-										            publishes: 'value',
-										            fieldLabel: 'Resolución',
-										            displayField: 'state',
-										            anchor: '-15',
-										            store: store,
-										            minChars: 0,
-										            queryMode: 'local',
-										            typeAhead: true
-										        },
-										        {
-													xtype: 'sliderfield',
-													margin:'10px 5px 5px 5px',
-													fieldLabel: 'Brillo',
-													itemId: 'UpdatingSliderField',
-													name: 'integer_value',
-													value: [
-														2
-													],
-													minValue: 0,
-													maxValue: 100,
-													listeners:{
-								                        change:function(slider,value){
-								                        }
-								                    }
-												},
+											region:'center',
+											border:false,
+											layout:'fit',
+											items:[
 												{
-													xtype: 'sliderfield',
-													margin:'10px 5px 5px 5px',
-													fieldLabel: 'Contraste',
-													itemId: 'UpdatingSliderField2',
-													name: 'integer_value2',
-													value: [
-														2
-													],
-													minValue: 0,
-													maxValue: 100,
-													listeners:{
-								                        change:function(slider,value){
-								                        }
-								                    }
-												},
+							                        xtype: 'treepanel',
+							                        //collapsible: true,
+											        useArrows: true,
+											        rootVisible: true,
+											        multiSelect: true,
+											        //root:'Task',
+							                        id: scanning.id + '-grid',
+							                        //height: 370,
+							                        //reserveScrollbar: true,
+							                        //rootVisible: false,
+							                        //store: store,
+							                        //layout:'fit',
+							                        columnLines: true,
+							                        store: storeTree,
+										            columns: [
+											            {
+											            	xtype: 'treecolumn',
+						                                    text: 'Nombre',
+						                                    dataIndex: 'lote_nombre',
+						                                    sortable: true,
+						                                    flex: 1
+						                                },
+						                                /*{
+						                                    text: 'Estado Lote',
+						                                    dataIndex: 'lot_estado',
+						                                    loocked : true,
+						                                    width: 100,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        metaData.style = "padding: 0px; margin: 0px";
+						                                        if(parseInt(record.get('nivel'))==1){
+							                                        var estado = (record.get('lot_estado')=='LT')?'baggage_cart_box.png':'contraer.png';
+							                                        var qtip = (record.get('lot_estado')=='LT')?'Lotizado.':'Lote en otro Estado.';
+						                                        }else{
+						                                        	var estado = (record.get('lot_estado')=='LT')?'basket_put_gray.png':'basket_put.png';
+							                                        var qtip = (record.get('lot_estado')=='LT')?'Folder Vacio.':'Folder en otro Estado.';
+						                                        }
+						                                        
+
+						                                        return global.permisos({
+						                                            type: 'link',
+						                                            id_menu: scanning.id_menu,
+						                                            icons:[
+						                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+						                                            ]
+						                                        });
+						                                    }
+						                                },*/
+						                                {
+						                                    text: 'Folderes',
+						                                    dataIndex: 'tot_folder',
+						                                    width: 80,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Páginas',
+						                                    dataIndex: 'tot_pag',
+						                                    width: 80,
+						                                    align: 'center'
+						                                }/*,
+						                                {
+						                                    text: 'Total Pag. Errores',
+						                                    dataIndex: 'tot_errpag',
+						                                    width: 100,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Editar',
+						                                    dataIndex: 'estado',
+						                                    //loocked : true,
+						                                    width: 50,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        if(parseInt(record.get('nivel')) == 1){
+							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        return global.permisos({
+							                                            type: 'link',
+							                                            id_menu: scanning.id_menu,
+							                                            icons:[
+							                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "scanning.setEditLote("+rowIndex+",'U')"},
+							                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setEditLote("+rowIndex+",'D')"}
+							                                            ]
+							                                        });
+							                                    }else{
+						                                        	return '';
+						                                        }
+						                                    }
+						                                }*/
+											        ],
+							                        /*viewConfig: {
+							                            stripeRows: true,
+							                            enableTextSelection: false,
+							                            markDirty: false
+							                        },*/
+							                        hideItemsReadFalse: function () {
+													    var me = this,
+													        items = me.getReferences().treelistRef.itemMap;
 
 
-									        ]
-									    },
-									    {
-									        xtype: 'fieldset',
-									        title: 'Valores',
-									        margin:'5px 5px 5px 5px',
-									        defaults: {
-									            anchor: '100%'
-									        },
-									        items: [
-									    		{
-										            xtype: 'filefield',
-										            emptyText: 'Directorio de Destino',
-										            fieldLabel: 'Destino',
-										            name: 'photo-path',
-										            buttonText: '',
-										            buttonConfig: {
-										                iconCls: 'upload-icon'
-										            }
-										        },
-										        {
-										            xtype: 'textfield',
-										            fieldLabel: 'Nombre del Fichero'
-										        },
-										        {
-										            xtype: 'combobox',
-										            //margin:'5px 5px 5px 5px',
-										            reference: 'states',
-										            publishes: 'value',
-										            fieldLabel: 'Select formato',
-										            displayField: 'state',
-										            anchor: '100%',
-										            store: store,
-										            minChars: 0,
-										            queryMode: 'local',
-										            typeAhead: true
-										        }
-										    ]
+													    for(var i in items){
+													        if(items[i].config.node.data.read == false){
+													            items[i].destroy();
+													        }
+													    }
+													},
+							                        trackMouseOver: false,
+							                        listeners:{
+							                            afterrender: function(obj){
+							                                //scanning.getImagen('default.png');
+							                                
+							                            },
+														beforeselect:function(obj, record, index, eOpts ){
+															
+														}
+							                        }
+							                    }
+											]
+										},
+										{
+											region:'south',
+											height:370,
+											border:false,
+											items:[
+												{
+											        xtype: 'fieldset',
+											        title: 'Acción',
+											        margin:'5px 5px 5px 5px',
+											        defaults: {
+											            anchor: '100%'
+											        },
+											        layout: 'hbox',
+											        items: [
+											            {
+										                    xtype: 'button',
+										                    icon: '/images/icon/if_network-workgroup_118928.png',
+										                    flex:1,
+										                    //glyph: 72,
+										                    scale: 'large',
+										                    margin:'5px 5px 5px 5px',
+										                    //height:50
+										                    text: 'Digitalizar',
+										                    //iconAlign: 'top'
+										                },
+										                {
+										                    xtype: 'button',
+										                    icon: '/images/icon/if_document-save-as_118915.png',
+										                    flex:1,
+										                    //glyph: 72,
+										                    scale: 'large',
+										                    margin:'5px 5px 5px 5px',
+										                    //height:50
+										                    text: 'Importar',
+										                    //iconAlign: 'top'
+										                },
+											        ]
+											    },
+											    {
+											        xtype: 'fieldset',
+											        title: 'Escáner',
+											        margin:'5px 5px 5px 5px',
+											        defaults: {
+											            anchor: '100%'
+											        },
+											        items: [
+											        	{
+											        		xtype:'panel',
+											        		layout: 'hbox',
+											        		items:[
+											        			{
+														            xtype: 'filefield',
+														            //buttonOnly: true,
+														            width: '75%',
+														            anchor: '100%',
+														            buttonText:'Seleccionar',
+														            hideLabel: true,
+														            margin:'5px 5px 5px 5px',
+														            reference: 'basicFile'
+														        },
+												                {
+													                xtype: 'checkbox',
+													                boxLabel: 'Duplex',
+													                margin:'5px 5px 5px 5px',
+													                listeners: {
+													                }
+													            }
+											        		]
+											        	},
+											            {
+												            xtype: 'combobox',
+												            margin:'5px 5px 5px 5px',
+												            reference: 'states',
+												            publishes: 'value',
+												            fieldLabel: 'Modo',
+												            displayField: 'state',
+												            anchor: '-15',
+												            store: store,
+												            minChars: 0,
+												            queryMode: 'local',
+												            typeAhead: true
+												        },
+											            {
+												            xtype: 'combobox',
+												            margin:'5px 5px 5px 5px',
+												            reference: 'states',
+												            publishes: 'value',
+												            fieldLabel: 'Resolución',
+												            displayField: 'state',
+												            anchor: '-15',
+												            store: store,
+												            minChars: 0,
+												            queryMode: 'local',
+												            typeAhead: true
+												        },
+												        {
+															xtype: 'sliderfield',
+															margin:'10px 5px 5px 5px',
+															fieldLabel: 'Brillo',
+															itemId: 'UpdatingSliderField',
+															name: 'integer_value',
+															value: [
+																2
+															],
+															minValue: 0,
+															maxValue: 100,
+															listeners:{
+										                        change:function(slider,value){
+										                        }
+										                    }
+														},
+														{
+															xtype: 'sliderfield',
+															margin:'10px 5px 5px 5px',
+															fieldLabel: 'Contraste',
+															itemId: 'UpdatingSliderField2',
+															name: 'integer_value2',
+															value: [
+																2
+															],
+															minValue: 0,
+															maxValue: 100,
+															listeners:{
+										                        change:function(slider,value){
+										                        }
+										                    }
+														},
+
+
+											        ]
+											    },
+											    {
+											        xtype: 'fieldset',
+											        title: 'Valores',
+											        margin:'5px 5px 5px 5px',
+											        defaults: {
+											            anchor: '100%'
+											        },
+											        items: [
+											    		{
+												            xtype: 'filefield',
+												            emptyText: 'Directorio de Destino',
+												            fieldLabel: 'Destino',
+												            name: 'photo-path',
+												            buttonText: '',
+												            buttonConfig: {
+												                iconCls: 'upload-icon'
+												            }
+												        },
+												        {
+												            xtype: 'textfield',
+												            fieldLabel: 'Nombre del Fichero'
+												        },
+												        {
+												            xtype: 'combobox',
+												            //margin:'5px 5px 5px 5px',
+												            reference: 'states',
+												            publishes: 'value',
+												            fieldLabel: 'Select formato',
+												            displayField: 'state',
+												            anchor: '100%',
+												            store: store,
+												            minChars: 0,
+												            queryMode: 'local',
+												            typeAhead: true
+												        }
+												    ]
+												}
+											]
 										}
 									]
 								}
@@ -847,21 +1035,44 @@
 		            }
                 });
 			},
-			getReloadGridscanning:function(name){
-				Ext.getCmp(scanning.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				Ext.getCmp(scanning.id + '-grid').getStore().load(
-	                {params: {vp_nombre:name},
+			getContratos:function(shi_codigo){
+				Ext.getCmp(scanning.id+'-cbx-contrato').getStore().removeAll();
+				Ext.getCmp(scanning.id+'-cbx-contrato').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo},
 	                callback:function(){
-	                	Ext.getCmp(scanning.id+'-form').el.unmask();
+	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
 	                }
 	            });
 			},
-			getReloadGridscanning:function(campana){
-				Ext.getCmp(scanning.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				Ext.getCmp(scanning.id + '-grid-scanning').getStore().load(
-	                {params: {campana:campana},
+			getReloadGridscanning:function(name){
+				//scanning.set_scanning_clear();
+				//Ext.getCmp(scanning.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(scanning.id+'-cbx-contrato').getValue();
+				var lote = Ext.getCmp(scanning.id+'-txt-lote').getValue();
+				var name = Ext.getCmp(scanning.id+'-txt-scanning').getValue();
+				var estado = 'A';//Ext.getCmp(scanning.id+'-txt-estado-filter').getValue();
+				var fecha = Ext.getCmp(scanning.id+'-txt-fecha-filtro').getRawValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(lote== null || lote==''){
+		        	lote=0;
+		        }
+				if(fecha== null || fecha==''){
+		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				Ext.getCmp(scanning.id + '-grid').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
-	                	Ext.getCmp(scanning.id+'-form').el.unmask();
+	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
 	                }
 	            });
 			},
