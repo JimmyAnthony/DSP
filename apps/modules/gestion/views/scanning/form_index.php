@@ -222,7 +222,7 @@
 			                                                        afterrender:function(obj, e){
 			                                                            // obj.getStore().load();
 			                                                        },
-			                                                        select:function(obj, records, eOpts){
+			                                                        select:function(obj, records, eOpts){ 
 			                                                			
 			                                                        }
 			                                                    }
