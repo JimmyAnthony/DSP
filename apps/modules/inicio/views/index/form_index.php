@@ -727,7 +727,7 @@
                         Ext.getCmp(inicio.id+'-btn-nv-').setText('<div id="sts_novedad" class="cls_nv_"><div class="'+clss+'">'+res.novedad+'</div><div/>');
                         if(parseInt(res.novedad)!=0 && inicio.id_msn!=parseInt(res.msn_id)){
                             inicio.id_msn=parseInt(res.msn_id);
-                            inicio.reload_novedad();
+                            //inicio.reload_novedad();
                         }
                     }
                 });
