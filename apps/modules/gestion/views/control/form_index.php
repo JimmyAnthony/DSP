@@ -7,6 +7,67 @@
 			url:'/gestion/control/',
 			opcion:'I',
 			init:function(){
+				Ext.tip.QuickTipManager.init();
+
+				Ext.define('Task', {
+				    extend: 'Ext.data.TreeModel',
+				    fields: [
+				        {name: 'id_lote', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+				    ]
+				});
+				var storeTree = new Ext.data.TreeStore({
+	                model: 'Task',
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: control.url+'get_list_lotizer/'//,
+	                    //reader:{
+	                    //    type: 'json'//,
+	                    //    //rootProperty: 'data'
+	                    //}
+	                },
+	                folderSort: true,
+	                listeners:{
+	                	beforeload: function (store, operation, opts) {
+					        /*Ext.apply(operation, {
+					            params: {
+					                to: 'test1',
+		    						from: 'test2'
+					            }
+					       });*/
+					    },
+	                    load: function(obj, records, successful, opts){
+	                 		Ext.getCmp(control.id + '-grid').doLayout();
+	                 		//Ext.getCmp(control.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		storeTree.removeAt(0);
+	                 		Ext.getCmp(control.id + '-grid').collapseAll();
+		                    Ext.getCmp(control.id + '-grid').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                     });
+	                    }
+	                }
+	            });
+				this.msgTpl = new Ext.Template(
+		            'Sounds Effects: <b>{fx}%</b><br />',
+		            'Ambient Sounds: <b>{ambient}%</b><br />',
+		            'Interface Sounds: <b>{iface}%</b>'
+		        );
 				var store = Ext.create('Ext.data.Store',{
                 fields: [
                     {name: 'cod_lote', type: 'string'},
@@ -15,7 +76,7 @@
                     {name: 'usuario', type: 'string'},
                     {name: 'cantidad', type: 'string'}
                 ],
-                autoLoad:true,
+                autoLoad:false,
                 proxy:{
                     type: 'ajax',
                     url: control.url+'get_list/?vp_cod_lote=0',
@@ -35,7 +96,7 @@
                     {name: 'shi_codigo', type: 'string'},
                     {name: 'shi_nombre', type: 'string'},
                     {name: 'shi_logo', type: 'string'},
-                    {name: 'fec_ingreso', type: 'string'},
+                    {name: 'fec_ingreso', type: 'string'},                    
                     {name: 'shi_estado', type: 'string'},
                     {name: 'id_user', type: 'string'},
                     {name: 'fecha_actual', type: 'string'}
@@ -43,7 +104,7 @@
                 autoLoad:true,
                 proxy:{
                     type: 'ajax',
-                    url: control.url+'get_sis_list_shipper_campana/',
+                    url: control.url+'get_list_shipper/',
                     reader:{
                         type: 'json',
                         rootProperty: 'data'
@@ -55,6 +116,39 @@
                     }
                 }
             });
+            var store_contratos = Ext.create('Ext.data.Store',{
+                fields: [
+                    {name: 'fac_cliente', type: 'string'},
+                    {name: 'cod_contrato', type: 'string'},
+                    {name: 'pro_descri', type: 'string'}
+                ],
+                autoLoad:false,
+                proxy:{
+                    type: 'ajax',
+                    url: control.url+'get_list_contratos/',
+                    reader:{
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                },
+                listeners:{
+                    load: function(obj, records, successful, opts){
+                        
+                    }
+                }
+            });
+
+		    var myDataLote = [
+				['A','Activo'],
+			    ['I','Inactivo']
+			];
+			var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'estado',
+		        autoLoad: true,
+		        data: myDataLote,
+		        fields: ['code', 'name']
+		    });
+			
 			var myData = [
 			    [1,'Activo'],
 			    [0,'Inactivo']
@@ -70,6 +164,7 @@
 					id:control.id+'-form',
 					bodyStyle: 'background: transparent',
 					border:false,
+					region:'center',
 					layout:'border',
 					defaults:{
 						border:false
@@ -77,247 +172,497 @@
 					tbar:[],
 					items:[
 						{
-							region:'east',
+							region:'west',
 							border:true,
-							width:'30%',
-							padding:'5px 5px 5px 5px',
+							width:350,
 							layout:'border',
+							border:true,
+							padding:'5px 5px 5px 5px',
 							items:[
 								{
-									region:'north',
-									border:false,
-									items:[
-										{
-	                                        xtype: 'fieldset',
-	                                        margin: '5 5 5 10',
-	                                        title:'<b>Mantenimiento de Lotizador</b>',
-	                                        border:false,
-	                                        bodyStyle: 'background: transparent',
-	                                        padding:'2px 5px 1px 5px',
-	                                        layout:'column',
-	                                        items: [
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Nombre',
-	                                                        id:control.id+'-txt-nombre',
-	                                                        labelWidth:60,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'Descripcion',
-	                                                        id:control.id+'-txt-descripcion',
-	                                                        labelWidth:60,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 0.40,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype:'datefield',
-	                                                        id:control.id+'-date-re',
-	                                                        fieldLabel:'Fecha',
-	                                                        labelWidth:60,
-	                                                        labelAlign:'right',
-	                                                        value:new Date('Y-m-d'),
-	                                                        format: 'Y-m-d',
-	                                                        width: '100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                	{
-	                                                		xtype:'form',
-	                                                		id:control.id+'-form-info',
-	                                                		border:false,
-	                                                		items:[
-	                                                			{
-														            xtype: 'filefield',
-														            emptyText: 'Seleccione una imagen',
-														            fieldLabel: 'Imagen',
-														            labelAlign:'right',
-														            labelWidth:60,
-														            name: 'uploadedfile',
-														            id:control.id+'-imagen_control',
-														            buttonText: '',
-														            width: '100%',
-	                                                        		anchor:'100%',
-														            buttonConfig: {
-														                icon: '/images/icon/upload-file.png',
-														            }
-														        }
-	                                                		]
-	                                                	}
-	                                                ]
-	                                            },
-	                                            {
-	                                                columnWidth: 1,border:false,
-	                                                padding:'0px 2px 0px 0px',  bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                    	xtype:'panel',
-	                                                    	padding:'10px 60px 10px 60px',
-	                                                    	border:true,
-	                                                    	height:300,
-	                                                    	html:'<div id="GaleryFull" class="links"></div>'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-                                                columnWidth: 0.50,border:false,
-                                                padding:'0px 2px 0px 0px',  bodyStyle: 'background: transparent',
-                                                items:[
-                                                    {
-                                                        xtype:'combo',
-                                                        fieldLabel: 'Estado',
-                                                        id:control.id+'-cmb-estado',
-                                                        store: store_estado,
-                                                        queryMode: 'local',
-                                                        triggerAction: 'all',
-                                                        valueField: 'code',
-                                                        displayField: 'name',
-                                                        emptyText: '[Seleccione]',
-                                                        labelAlign:'right',
-                                                        //allowBlank: false,
-                                                        labelWidth: 80,
-                                                        width:'100%',
-                                                        anchor:'100%',
-                                                        //readOnly: true,
-                                                        listeners:{
-                                                            afterrender:function(obj, e){
-                                                                // obj.getStore().load();
-                                                            },
-                                                            select:function(obj, records, eOpts){
-                                                    
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
-	                                        ]
-	                                    }
-									],
-									bbar:[
-										{
-					                        xtype:'button',
-					                        text: 'Guardar',
-					                        icon: '/images/icon/save.png',
-					                        listeners:{
-					                            beforerender: function(obj, opts){
-					                                /*global.permisos({
-					                                    id: 15,
-					                                    id_btn: obj.getId(), 
-					                                    id_menu: gestion_devolucion.id_menu,
-					                                    fn: ['panel_asignar_gestion.limpiar']
-					                                });*/
-					                            },
-					                            click: function(obj, e){
-					                                //control.buscar_ge();
-					                                control.setcontrol();
-					                            }
-					                        }
-					                    },
-					                    {
-					                        xtype:'button',
-					                        text: 'Nuevo',
-					                        icon: '/images/icon/file.png',
-					                        listeners:{
-					                            beforerender: function(obj, opts){
-					                                /*global.permisos({
-					                                    id: 15,
-					                                    id_btn: obj.getId(), 
-					                                    id_menu: gestion_devolucion.id_menu,
-					                                    fn: ['panel_asignar_gestion.limpiar']
-					                                });*/
-					                            },
-					                            click: function(obj, e){
-					                                //control.buscar_ge();
-					                                control.opcion='I';
-					                                control.setNuevo();
-					                            }
-					                        }
-					                    }
-									]
-								},
+		                            region:'north',
+		                            border:false,
+		                            xtype: 'uePanelS',
+		                            logo: 'BE',
+		                            title: 'Busqueda de Lotes a Escanear',
+		                            legend: 'Seleccione el Lote Registrado',
+		                            width:350,
+		                            height:210,
+		                            items:[
+		                                {
+		                                    xtype:'panel',
+		                                    border:false,
+		                                    bodyStyle: 'background: transparent',
+		                                    padding:'2px 5px 1px 5px',
+		                                    layout:'column',
+		                                    items: [
+		                                    	{
+			                                   		width: 300,border:false,
+			                                    	padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                              {
+				                                            xtype:'combo',
+				                                            fieldLabel: 'Cliente',
+				                                            id:control.id+'-cbx-cliente',
+				                                            store: store_shipper,
+				                                            queryMode: 'local',
+				                                            triggerAction: 'all',
+				                                            valueField: 'shi_codigo',
+				                                            displayField: 'shi_nombre',
+				                                            emptyText: '[Seleccione]',
+				                                            labelAlign:'right',
+				                                            //allowBlank: false,
+				                                            labelWidth: 50,
+				                                            width:'100%',
+				                                            anchor:'100%',
+				                                            //readOnly: true,
+				                                            listeners:{
+				                                                afterrender:function(obj, e){
+				                                                    // obj.getStore().load();
+				                                                },
+				                                                select:function(obj, records, eOpts){
+				                                                	Ext.getCmp(control.id+'-cbx-contrato').setValue('');
+				                                        			control.getContratos(records.get('shi_codigo'));
+				                                                }
+				                                            }
+				                                        }
+			                                 		]
+			                                    },
+			                                    {
+			                                   		width: 300,border:false,
+			                                    	padding:'10px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Contrato',
+			                                                    id:control.id+'-cbx-contrato',
+			                                                    store: store_contratos,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'fac_cliente',
+			                                                    displayField: 'pro_descri',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 50,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                        },
+			                                                        select:function(obj, records, eOpts){ 
+			                                                			
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
+		                                            width:300,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'N° Lote',
+		                                                    id:control.id+'-txt-lote',
+		                                                    labelWidth:50,
+		                                                    maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                            width:300,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Nombre',
+		                                                    id:control.id+'-txt-control',
+		                                                    labelWidth: 50,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+			                                        width: 300,border:false,
+			                                        padding:'0px 2px 5px 0px',  
+			                                    	bodyStyle: 'background: transparent',
+			                                    	layout:'column',
+			                                        items:[
+			                                            {
+			                                                xtype:'datefield',
+			                                                id:control.id+'-txt-fecha-filtro',
+			                                                padding:'0px 10px 0px 0px',  
+			                                                fieldLabel:'Fecha',
+			                                                labelWidth: 50,
+			                                                labelAlign:'right',
+			                                                value:new Date(),
+			                                                format: 'Ymd',
+			                                                //readOnly:true,
+			                                                width: 187,
+			                                                anchor:'100%'
+			                                            },
+			                                            {
+									                        xtype:'button',
+									                        width:100,
+									                        text: 'Buscar',
+									                        icon: '/images/icon/binocular.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){	             	
+									                            	var name = Ext.getCmp(control.id+'-txt-control').getValue();
+		                               					            control.getReloadGridcontrol(name);
+									                            }
+									                        }
+									                    }
+			                                        ]
+			                                    }
+		                                    ]
+		                                }
+		                            ]
+		                        },
 								{
 									region:'center',
-									border:false,
 									layout:'fit',
+									border:true,
+									padding:'5px 5px 5px 5px',
 									items:[
 										{
-					                        xtype: 'grid',
-					                        id: control.id + '-grid-control',
-					                        store: store_shipper,
+					                        xtype: 'treepanel',
+					                        //collapsible: true,
+									        useArrows: true,
+									        rootVisible: true,
+									        multiSelect: true,
+									        //root:'Task',
+					                        id: control.id + '-grid',
+					                        //height: 370,
+					                        //reserveScrollbar: true,
+					                        //rootVisible: false,
+					                        //store: store,
+					                        //layout:'fit',
 					                        columnLines: true,
-					                        columns:{
-					                            items:[
-					                                {
-					                                    text: 'Shipper',
-					                                    dataIndex: 'shi_nombre',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Estado',
-					                                    dataIndex: 'shi_estado',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                }/*,
-					                                {
-					                                    text: 'Logo',
-					                                    dataIndex: 'shi_logo',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Estado',
-					                                    dataIndex: 'shi_estado',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                },
-					                                {
-					                                    text: '&nbsp;',
-					                                    dataIndex: '',
-					                                    width: 30,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+					                        store: storeTree,
+								            columns: [
+									            {
+									            	xtype: 'treecolumn',
+				                                    text: 'Nombre',
+				                                    dataIndex: 'lote_nombre',
+				                                    renderer: control.renderTip,
+				                                    sortable: true,
+				                                    flex: 1
+				                                },
+				                                /*{
+				                                    text: 'Estado Lote',
+				                                    dataIndex: 'lot_estado',
+				                                    loocked : true,
+				                                    width: 100,
+				                                    align: 'center',
+				                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+				                                        //console.log(record);
+				                                        metaData.style = "padding: 0px; margin: 0px";
+				                                        if(parseInt(record.get('nivel'))==1){
+					                                        var estado = (record.get('lot_estado')=='LT')?'baggage_cart_box.png':'contraer.png';
+					                                        var qtip = (record.get('lot_estado')=='LT')?'Lotizado.':'Lote en otro Estado.';
+				                                        }else{
+				                                        	var estado = (record.get('lot_estado')=='LT')?'basket_put_gray.png':'basket_put.png';
+					                                        var qtip = (record.get('lot_estado')=='LT')?'Folder Vacio.':'Folder en otro Estado.';
+				                                        }
+				                                        
+
+				                                        return global.permisos({
+				                                            type: 'link',
+				                                            id_menu: control.id_menu,
+				                                            icons:[
+				                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+				                                            ]
+				                                        });
+				                                    }
+				                                },*/
+				                                {
+				                                    text: 'Folders',
+				                                    dataIndex: 'tot_folder',
+				                                    width: 45,
+				                                    align: 'center'
+				                                },
+				                                {
+				                                    text: 'Páginas',
+				                                    dataIndex: 'tot_pag',
+				                                    width: 50,
+				                                    align: 'center'
+				                                }/*,
+				                                {
+				                                    text: 'Total Pag. Errores',
+				                                    dataIndex: 'tot_errpag',
+				                                    width: 100,
+				                                    align: 'center'
+				                                },
+				                                {
+				                                    text: 'Editar',
+				                                    dataIndex: 'estado',
+				                                    //loocked : true,
+				                                    width: 50,
+				                                    align: 'center',
+				                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+				                                        //console.log(record);
+				                                        if(parseInt(record.get('nivel')) == 1){
 					                                        metaData.style = "padding: 0px; margin: 0px";
 					                                        return global.permisos({
 					                                            type: 'link',
 					                                            id_menu: control.id_menu,
 					                                            icons:[
-					                                                {id_serv: 9, img: 'detail.png', qtip: 'Click para ver detalle.', js: 'control.getFormDetalleGestion()'}
+					                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "control.setEditLote("+rowIndex+",'U')"},
+					                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setEditLote("+rowIndex+",'D')"}
 					                                            ]
 					                                        });
-					                                    }
-					                                }*/
+					                                    }else{
+				                                        	return '';
+				                                        }
+				                                    }
+				                                }*/
+									        ],
+					                        /*viewConfig: {
+					                            stripeRows: true,
+					                            enableTextSelection: false,
+					                            markDirty: false
+					                        },*/
+					                        hideItemsReadFalse: function () {
+											    var me = this,
+											        items = me.getReferences().treelistRef.itemMap;
+
+
+											    for(var i in items){
+											        if(items[i].config.node.data.read == false){
+											            items[i].destroy();
+											        }
+											    }
+											},
+					                        trackMouseOver: false,
+					                        listeners:{
+					                            afterrender: function(obj){
+					                                //control.getImagen('default.png');
+					                                
+					                            },
+												beforeselect:function(obj, record, index, eOpts ){
+													
+												}
+					                        }
+					                    }
+									]
+								}
+							]
+						},
+						{
+							region:'center',
+							layout:'border',
+							border:true,
+							padding:'5px 5px 5px 5px',
+							items:[
+								{
+									region:'north',
+									border:false,
+									height:60,
+									padding:'5px 20px 5px 20px',
+									bodyStyle: 'background: transparent',
+									layout: 'hbox',
+									items:[
+										{
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_69_111122.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Zoom(+)'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_68_111123.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Zoom(-)'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_153_111058.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Máximizar',
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_152_111059.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Minimizar',
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_icons_update_1564533.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Rotar'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_24_111010.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Guardar'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_90_111056.png',
+						                    flex:1,
+						                    scale: 'large',
+						                    //glyph: 72,
+						                    margin:'5px 5px 5px 5px',
+						                    //text: '[Delete]',
+						                    text: 'Eliminar'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_122_111086.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Cortar'
+						                    //iconAlign: 'top'
+						                }
+									]
+								},
+								{
+									region:'center',
+									id: control.id+'-panel_img',
+									border:true,
+									autoScroll:true,
+									padding:'5px 5px 5px 5px'
+								}
+							]
+						},
+						{
+							region:'east',
+							border:true,
+							width:'20%',
+							layout:'border',
+							border:true,
+							padding:'5px 5px 5px 5px',
+							items:[
+								{
+									region:'north',
+									border:true,
+									height:60,
+									padding:'5px 5px 5px 5px',
+									bodyStyle: 'background: transparent',
+									layout: 'hbox',
+									items:[
+										{
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_BT_file_text_plus_905568.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Pág.(0)',
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_BT_file_text_minus_905569.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Error.(0)',
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_BT_binder_905575.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Total.(0)',
+						                    //iconAlign: 'top'
+						                },
+									]
+								},
+								{
+									region:'center',
+									layout:'fit',
+									border:true,
+									padding:'5px 5px 5px 5px',
+									items:[
+										{
+					                        xtype: 'grid',
+					                        id: control.id + '-grid-paginas',
+					                        store: store,
+					                        columnLines: true,
+					                        columns:{
+					                            items:[
+					                                {
+					                                    text: 'Páginas',
+					                                    dataIndex: 'lote',
+					                                    width: 50
+					                                },
+					                                {
+					                                    text: 'Descripción',
+					                                    dataIndex: 'descripcion',
+					                                    flex: 1
+					                                },
+					                                {
+					                                    text: 'Flag',
+					                                    dataIndex: 'flag',
+					                                    width: 50
+					                                }
 					                            ],
 					                            defaults:{
 					                                menuDisabled: true
@@ -338,163 +683,6 @@
 									]
 								}
 							]
-						},
-						{
-							region:'center',
-							border:false,
-							//layout:'fit',
-							items:[
-								{
-	                                //region:'north',
-	                                border:false,
-	                                xtype: 'uePanelS',
-	                                logo: 'CL',
-	                                title: 'Listado de Lotizador',
-	                                legend: 'Búsqueda de Lotes registradas',
-	                                height:100,
-	                                items:[
-	                                    {
-	                                        xtype:'panel',
-	                                        border:false,
-	                                        bodyStyle: 'background: transparent',
-	                                        padding:'2px 5px 1px 5px',
-	                                        layout:'column',
-	                                        items: [
-	                                            {
-	                                                width:600,border:false,
-	                                                padding:'0px 2px 0px 0px',  
-	                                                bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-	                                                        xtype: 'textfield',
-	                                                        fieldLabel: 'control',
-	                                                        id:control.id+'-txt-control',
-	                                                        labelWidth:80,
-	                                                        //readOnly:true,
-	                                                        labelAlign:'right',
-	                                                        width:'100%',
-	                                                        anchor:'100%'
-	                                                    }
-	                                                ]
-	                                            },
-	                                            {
-	                                                width: 80,border:false,
-	                                                padding:'0px 2px 0px 0px',  
-	                                                bodyStyle: 'background: transparent',
-	                                                items:[
-	                                                    {
-									                        xtype:'button',
-									                        text: 'Buscar',
-									                        icon: '/images/icon/binocular.png',
-									                        listeners:{
-									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
-									                            },
-									                            click: function(obj, e){
-									                                //control.buscar_ge();
-									                            }
-									                        }
-									                    }
-	                                                ]
-	                                            }
-	                                        ]
-	                                    }
-	                                ]
-	                            },
-								{
-									//region:'center',
-									width:'100%',
-									layout:'fit',
-									items:[
-										{
-					                        xtype: 'grid',
-					                        id: control.id + '-grid',
-					                        store: store,
-					                        layout:'fit',
-					                        columnLines: true,
-					                        columns:{
-					                            items:[
-					                                {
-					                                    text: 'Cod.Lote',
-					                                    dataIndex: 'cod_lote',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Lote',
-					                                    dataIndex: 'lote',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Fecha',
-					                                    dataIndex: 'fecha',
-					                                    width: 150
-					                                },
-					                                {
-					                                    text: 'Usuario',
-					                                    dataIndex: 'usuario',
-					                                    width: 100
-					                                },
-					                                {
-					                                    text: 'Cantidad',
-					                                    dataIndex: 'cantidad',
-					                                    width: 100,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        return value==1?'Activo':'Inactivo';
-					                                    }
-					                                },
-					                                {
-					                                    text: '&nbsp;',
-					                                    dataIndex: '',
-					                                    width: 30,
-					                                    align: 'center',
-					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-					                                        metaData.style = "padding: 0px; margin: 0px";
-					                                        return global.permisos({
-					                                            type: 'link',
-					                                            id_menu: control.id_menu,
-					                                            icons:[
-					                                                {id_serv: 9, img: 'detail.png', qtip: 'Click para ver detalle.', js: 'control.getFormDetalleGestion()'}
-					                                            ]
-					                                        });
-					                                    }
-					                                }
-					                            ],
-					                            defaults:{
-					                                menuDisabled: true
-					                            }
-					                        },
-					                        viewConfig: {
-					                            stripeRows: true,
-					                            enableTextSelection: false,
-					                            markDirty: false
-					                        },
-					                        trackMouseOver: false,
-					                        listeners:{
-					                            afterrender: function(obj){
-					                                control.getImagen('default.png');
-					                            },
-												beforeselect:function(obj, record, index, eOpts ){
-													//console.log(record);
-													control.opcion='U';
-													control.cod_cam=record.get('cod_cam');
-													control.getImagen(record.get('imagen'));
-													Ext.getCmp(control.id+'-txt-nombre').setValue(record.get('nombre'));
-													Ext.getCmp(control.id+'-txt-descripcion').setValue(record.get('descripcion'));
-													Ext.getCmp(control.id+'-date-re').setValue(record.get('fec_crea'));
-													Ext.getCmp(control.id+'-cmb-estado').setValue(record.get('estado'));
-													control.getReloadGridcontrol(record.get('cod_cam'));
-												}
-					                        }
-					                    }
-									]
-								}
-							]
 						}
 					]
 				});
@@ -504,7 +692,7 @@
 					autoScroll:true,
 					closable:true,
 					layout:{
-						type:'fit'
+						type:'border'
 					},
 					items:[
 						panel
@@ -516,6 +704,7 @@
 	                    afterrender: function(obj, e){
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,control.id_menu);
+	                        control.getImg_tiff('escaneado');
 	                    },
 	                    beforeclose:function(obj,opts){
 	                    	global.state_item_menu(control.id_menu, false);
@@ -524,6 +713,31 @@
 
 				}).show();
 			},
+			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
+			    // meta.tdCls = 'cell-icon'; // icon
+			    meta.tdAttr = 'data-qtip="'+val+'"';
+			    return val;
+			},
+			onMaxAllClick: function(){
+		        Ext.suspendLayouts();
+		        this.items.each(function(c){
+		            c.setValue(100);
+		        });
+		        Ext.resumeLayouts(true);
+		    },
+		    
+		    onSaveClick: function(){
+		        Ext.Msg.alert({
+		            title: 'Settings Saved',
+		            msg: this.msgTpl.apply(this.getForm().getValues()),
+		            icon: Ext.Msg.INFO,
+		            buttons: Ext.Msg.OK
+		        }); 
+		    },
+		    
+		    onResetClick: function(){
+		        this.getForm().reset();
+		    },
 			getImagen:function(param){
 				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/control/'+param}});
 			},
@@ -577,21 +791,44 @@
 		            }
                 });
 			},
-			getReloadGridcontrol:function(name){
-				Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				Ext.getCmp(control.id + '-grid').getStore().load(
-	                {params: {vp_nombre:name},
+			getContratos:function(shi_codigo){
+				Ext.getCmp(control.id+'-cbx-contrato').getStore().removeAll();
+				Ext.getCmp(control.id+'-cbx-contrato').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo},
 	                callback:function(){
-	                	Ext.getCmp(control.id+'-form').el.unmask();
+	                	//Ext.getCmp(control.id+'-form').el.unmask();
 	                }
 	            });
 			},
-			getReloadGridcontrol:function(campana){
-				Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				Ext.getCmp(control.id + '-grid-control').getStore().load(
-	                {params: {campana:campana},
+			getReloadGridcontrol:function(name){
+				//control.set_control_clear();
+				//Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(control.id+'-cbx-contrato').getValue();
+				var lote = Ext.getCmp(control.id+'-txt-lote').getValue();
+				var name = Ext.getCmp(control.id+'-txt-control').getValue();
+				var estado = 'A';//Ext.getCmp(control.id+'-txt-estado-filter').getValue();
+				var fecha = Ext.getCmp(control.id+'-txt-fecha-filtro').getRawValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(lote== null || lote==''){
+		        	lote=0;
+		        }
+				if(fecha== null || fecha==''){
+		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				Ext.getCmp(control.id + '-grid').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
-	                	Ext.getCmp(control.id+'-form').el.unmask();
+	                	//Ext.getCmp(control.id+'-form').el.unmask();
 	                }
 	            });
 			},
@@ -603,7 +840,51 @@
 				Ext.getCmp(control.id+'-date-re').setValue('');
 				Ext.getCmp(control.id+'-cmb-estado').setValue('');
 				Ext.getCmp(control.id+'-txt-nombre').focus();
-			}
+			},
+			getImg_tiff: function(file){//(rec,recA){
+				
+				var panel = Ext.getCmp(control.id+'-panel_img');
+                panel.removeAll();
+                panel.add({
+                    html: '<img src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
+                });
+		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
+		        Ext.Ajax.request({
+		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',
+		            params:{manifiesto:rec.get('man_id'),va_id_trama:rec.get('id_trama'),va_prov_codigo:recA.get('prov_codigo')},
+		            success:function(response, options){
+		                myMask.hide();
+		                var file = Ext.decode(response.responseText);
+		                gestor_errores.get_dat_form(file,recA);
+		                var panel = Ext.getCmp(gestor_errores.id+'-panel_img');
+		                panel.removeAll();
+		                panel.add({
+		                    html: '<img src="/imagenes/'+file.img+'.jpg" style="width:100%; height:100%;" >'
+		                });
+		                setTimeout("gestor_errores.delete_tiff('"+file.img+"')", 1200);
+		                panel.doLayout();
+		            }
+		        });*/
+		    },
+		    delete_tiff: function(img){
+		        /*Ext.Ajax.request({
+		            url: gestor_errores.url+'delete_tiff/',
+		            params:{img:img},
+		            success:function(response, options){
+		                var file = response.responseText;                
+		            }
+		        });*/
+		    },
+		    get_error_sel: function(rec_01){
+		        /*var grid = Ext.getCmp(gestor_err.id+'-grid');
+		        var rec = grid.getSelectionModel().getSelected();
+		        gestor_errores.getImg_tiff(rec_01,rec);*/
+		    },
+		    setLimpiar:function(){
+		        /*var panel = Ext.getCmp(gestor_errores.id+'-panel_img');
+		        panel.removeAll();        
+		        panel.doLayout();*/
+		    }
 		}
 		Ext.onReady(control.init,control);
 	}else{

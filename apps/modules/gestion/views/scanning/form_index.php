@@ -76,7 +76,7 @@
                     {name: 'usuario', type: 'string'},
                     {name: 'cantidad', type: 'string'}
                 ],
-                autoLoad:true,
+                autoLoad:false,
                 proxy:{
                     type: 'ajax',
                     url: scanning.url+'get_list/?vp_cod_lote=0',
@@ -372,6 +372,7 @@
 											            	xtype: 'treecolumn',
 						                                    text: 'Nombre',
 						                                    dataIndex: 'lote_nombre',
+						                                    renderer: scanning.renderTip,
 						                                    sortable: true,
 						                                    flex: 1
 						                                },
@@ -403,15 +404,15 @@
 						                                    }
 						                                },*/
 						                                {
-						                                    text: 'Folderes',
+						                                    text: 'Folders',
 						                                    dataIndex: 'tot_folder',
-						                                    width: 80,
+						                                    width: 45,
 						                                    align: 'center'
 						                                },
 						                                {
 						                                    text: 'Páginas',
 						                                    dataIndex: 'tot_pag',
-						                                    width: 80,
+						                                    width: 50,
 						                                    align: 'center'
 						                                }/*,
 						                                {
@@ -654,177 +655,8 @@
 							padding:'5px 5px 5px 5px',
 							items:[
 								{
-									region:'north',
-									border:false,
-									height:60,
-									padding:'5px 20px 5px 20px',
-									bodyStyle: 'background: transparent',
-									layout: 'hbox',
-									items:[
-										{
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_69_111122.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Zoom(+)'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_68_111123.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Zoom(-)'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_153_111058.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Máximizar',
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_152_111059.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Minimizar',
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_icons_update_1564533.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Rotar'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_24_111010.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Guardar'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_90_111056.png',
-						                    flex:1,
-						                    scale: 'large',
-						                    //glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    //text: '[Delete]',
-						                    text: 'Eliminar'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_122_111086.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Cortar'
-						                    //iconAlign: 'top'
-						                }
-									]
-								},
-								{
-									region:'center',
-									id: scanning.id+'-panel_img',
-									border:true,
-									autoScroll:true,
-									padding:'5px 5px 5px 5px'
-								}
-							]
-						},
-						{
-							region:'east',
-							border:true,
-							width:'20%',
-							layout:'border',
-							border:true,
-							padding:'5px 5px 5px 5px',
-							items:[
-								{
-									region:'north',
-									border:true,
-									height:60,
-									padding:'5px 5px 5px 5px',
-									bodyStyle: 'background: transparent',
-									layout: 'hbox',
-									items:[
-										{
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: 'Zoom',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: 'Small',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: 'Small',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: 'Small',
-						                    iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: null,
-						                    flex:1,
-						                    glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    text: 'Small',
-						                    iconAlign: 'top'
-						                }
-									]
-								},
-								{
-									region:'center',
+									region:'west',
+									width:360,
 									layout:'border',
 									border:true,
 									padding:'5px 5px 5px 5px',
@@ -832,66 +664,51 @@
 										{
 											region:'north',
 											border:true,
-											height:'50%',
+											height:60,
 											padding:'5px 5px 5px 5px',
-											layout:'fit',
-											tbar:[
-												{
-										            xtype: 'combobox',
-										            //margin:'5px 5px 5px 5px',
-										            reference: 'states',
-										            publishes: 'value',
-										            fieldLabel: 'Select Lote',
-										            displayField: 'Lote',
-										            anchor: '100%',
-										            store: store,
-										            minChars: 0,
-										            queryMode: 'local',
-										            typeAhead: true
-										        }
-											],
+											bodyStyle: 'background: transparent',
+											layout: 'hbox',
 											items:[
 												{
-							                        xtype: 'grid',
-							                        id: scanning.id + '-grid-scanning',
-							                        store: store,
-							                        columnLines: true,
-							                        columns:{
-							                            items:[
-							                                {
-							                                    text: 'Lote',
-							                                    dataIndex: 'lote',
-							                                    width: 50
-							                                },
-							                                {
-							                                    text: 'Paquete',
-							                                    dataIndex: 'paquete',
-							                                    flex: 1
-							                                }
-							                            ],
-							                            defaults:{
-							                                menuDisabled: true
-							                            }
-							                        },
-							                        viewConfig: {
-							                            stripeRows: true,
-							                            enableTextSelection: false,
-							                            markDirty: false
-							                        },
-							                        trackMouseOver: false,
-							                        listeners:{
-							                            afterrender: function(obj){
-							                                
-							                            }
-							                        }
-							                    }
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_BT_file_text_plus_905568.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Pág.(0)',
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_BT_file_text_minus_905569.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Error.(0)',
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_BT_binder_905575.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Total.(0)',
+								                    //iconAlign: 'top'
+								                },
 											]
 										},
 										{
 											region:'center',
+											layout:'fit',
 											border:true,
 											padding:'5px 5px 5px 5px',
-											layout:'fit',
 											items:[
 												{
 							                        xtype: 'grid',
@@ -901,14 +718,19 @@
 							                        columns:{
 							                            items:[
 							                                {
-							                                    text: 'Lote',
+							                                    text: 'Páginas',
 							                                    dataIndex: 'lote',
 							                                    width: 50
 							                                },
 							                                {
-							                                    text: 'Paquete',
-							                                    dataIndex: 'paquete',
+							                                    text: 'Descripción',
+							                                    dataIndex: 'descripcion',
 							                                    flex: 1
+							                                },
+							                                {
+							                                    text: 'Flag',
+							                                    dataIndex: 'flag',
+							                                    width: 50
 							                                }
 							                            ],
 							                            defaults:{
@@ -928,6 +750,118 @@
 							                        }
 							                    }
 											]
+										}
+									]
+								},
+								{
+									region:'center',
+									border:false,
+									layout:'border',
+									items:[
+										{
+											region:'north',
+											border:true,
+											height:60,
+											padding:'5px 20px 5px 20px',
+											bodyStyle: 'background: transparent',
+											layout: 'hbox',
+											items:[
+												{
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_69_111122.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Zoom(+)'
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_68_111123.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Zoom(-)'
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_153_111058.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Máximizar',
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_152_111059.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Minimizar',
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_icons_update_1564533.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Rotar'
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_24_111010.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Guardar'
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_90_111056.png',
+								                    flex:1,
+								                    scale: 'large',
+								                    //glyph: 72,
+								                    margin:'5px 5px 5px 5px',
+								                    //text: '[Delete]',
+								                    text: 'Eliminar'
+								                    //iconAlign: 'top'
+								                },
+								                {
+								                    xtype: 'button',
+								                    icon: '/images/icon/if_122_111086.png',
+								                    flex:1,
+								                    //glyph: 72,
+								                    scale: 'large',
+								                    margin:'5px 5px 5px 5px',
+								                    //height:50
+								                    text: 'Cortar'
+								                    //iconAlign: 'top'
+								                }
+											]
+										},
+										{
+											region:'center',
+											id: scanning.id+'-panel_img',
+											border:true,
+											autoScroll:true,
+											padding:'5px 5px 5px 5px'
 										}
 									]
 								}
@@ -961,6 +895,11 @@
 					}
 
 				}).show();
+			},
+			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
+			    // meta.tdCls = 'cell-icon'; // icon
+			    meta.tdAttr = 'data-qtip="'+val+'"';
+			    return val;
 			},
 			onMaxAllClick: function(){
 		        Ext.suspendLayouts();
