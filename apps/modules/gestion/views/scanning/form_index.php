@@ -40,6 +40,63 @@
                     {name: 'shi_codigo', type: 'string'},
                     {name: 'shi_nombre', type: 'string'},
                     {name: 'shi_logo', type: 'string'},
+                    {name: 'fec_ingreso', type: 'string'},                    
+                    {name: 'shi_estado', type: 'string'},
+                    {name: 'id_user', type: 'string'},
+                    {name: 'fecha_actual', type: 'string'}
+                ],
+                autoLoad:true,
+                proxy:{
+                    type: 'ajax',
+                    url: scanning.url+'get_list_shipper/',
+                    reader:{
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                },
+                listeners:{
+                    load: function(obj, records, successful, opts){
+                        
+                    }
+                }
+            });
+            var store_contratos = Ext.create('Ext.data.Store',{
+                fields: [
+                    {name: 'fac_cliente', type: 'string'},
+                    {name: 'cod_contrato', type: 'string'},
+                    {name: 'pro_descri', type: 'string'}
+                ],
+                autoLoad:false,
+                proxy:{
+                    type: 'ajax',
+                    url: scanning.url+'get_list_contratos/',
+                    reader:{
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                },
+                listeners:{
+                    load: function(obj, records, successful, opts){
+                        
+                    }
+                }
+            });
+
+		    var myDataLote = [
+				['A','Activo'],
+			    ['I','Inactivo']
+			];
+			var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'estado',
+		        autoLoad: true,
+		        data: myDataLote,
+		        fields: ['code', 'name']
+		    });
+			var store_shipper = Ext.create('Ext.data.Store',{
+                fields: [
+                    {name: 'shi_codigo', type: 'string'},
+                    {name: 'shi_nombre', type: 'string'},
+                    {name: 'shi_logo', type: 'string'},
                     {name: 'fec_ingreso', type: 'string'},
                     {name: 'shi_estado', type: 'string'},
                     {name: 'id_user', type: 'string'},
@@ -85,64 +142,151 @@
 						{
 							region:'west',
 							border:true,
-							width:'20%',
+							width:350,
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
 							items:[
 								{
-									region:'north',
-									border:true,
-									height:60,
-									padding:'5px 5px 5px 5px',
-									bodyStyle: 'background: transparent',
-									layout: 'hbox',
-									items:[
-										{
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_floppy_285657.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Guardar',
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_radial_arrows_1216559.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Actualizar'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_edit-delete_118920.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Eliminar'
-						                    //iconAlign: 'top'
-						                }/*,
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_log_out_678146.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: ' '
-						                }*/
-									]
-								},
+		                            region:'north',
+		                            border:false,
+		                            xtype: 'uePanelS',
+		                            logo: 'BE',
+		                            title: 'Busqueda de Lotes a Escanear',
+		                            legend: 'Seleccione el Lote Registrado',
+		                            width:350,
+		                            height:350,
+		                            items:[
+		                                {
+		                                    xtype:'panel',
+		                                    border:false,
+		                                    bodyStyle: 'background: transparent',
+		                                    padding:'2px 5px 1px 5px',
+		                                    layout:'column',
+		                                    items: [
+		                                    	{
+			                                   		width: 300,border:false,
+			                                    	padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                              {
+				                                            xtype:'combo',
+				                                            fieldLabel: 'Cliente',
+				                                            id:scanning.id+'-cbx-cliente',
+				                                            store: store_shipper,
+				                                            queryMode: 'local',
+				                                            triggerAction: 'all',
+				                                            valueField: 'shi_codigo',
+				                                            displayField: 'shi_nombre',
+				                                            emptyText: '[Seleccione]',
+				                                            labelAlign:'right',
+				                                            //allowBlank: false,
+				                                            labelWidth: 50,
+				                                            width:'100%',
+				                                            anchor:'100%',
+				                                            //readOnly: true,
+				                                            listeners:{
+				                                                afterrender:function(obj, e){
+				                                                    // obj.getStore().load();
+				                                                },
+				                                                select:function(obj, records, eOpts){
+				                                                	Ext.getCmp(scanning.id+'-cbx-contrato').setValue('');
+				                                        			scanning.getContratos(records.get('shi_codigo'));
+				                                                }
+				                                            }
+				                                        }
+			                                 		]
+			                                    },
+			                                    {
+			                                   		width: 300,border:false,
+			                                    	padding:'10px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Contrato',
+			                                                    id:scanning.id+'-cbx-contrato',
+			                                                    store: store_contratos,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'fac_cliente',
+			                                                    displayField: 'pro_descri',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 50,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                			
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
+		                                            width:300,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'N° Lote',
+		                                                    id:scanning.id+'-txt-lote',
+		                                                    labelWidth:50,
+		                                                    maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                            width:300,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Nombre',
+		                                                    id:scanning.id+'-txt-scanning',
+		                                                    labelWidth: 50,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+			                                        width: 300,border:false,
+			                                        padding:'0px 2px 5px 0px',  
+			                                    	bodyStyle: 'background: transparent',
+			                                        items:[
+			                                            {
+			                                                xtype:'datefield',
+			                                                id:scanning.id+'-txt-fecha-filtro',
+			                                                fieldLabel:'Fecha',
+			                                                labelWidth: 50,
+			                                                labelAlign:'right',
+			                                                value:new Date(),
+			                                                format: 'Ymd',
+			                                                //readOnly:true,
+			                                                width: '100%',
+			                                                anchor:'100%'
+			                                            }
+			                                        ]
+			                                    }
+		                                    ]
+		                                }
+		                            ]
+		                        },
 								{
 									region:'center',
 									border:true,
@@ -392,7 +536,7 @@
 						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
 						                    //height:50
-						                    text: 'Gruardar'
+						                    text: 'Guardar'
 						                    //iconAlign: 'top'
 						                },
 						                {
@@ -521,7 +665,7 @@
 											items:[
 												{
 							                        xtype: 'grid',
-							                        id: scanning.id + '-grid-lotizer',
+							                        id: scanning.id + '-grid-scanning',
 							                        store: store,
 							                        columnLines: true,
 							                        columns:{
