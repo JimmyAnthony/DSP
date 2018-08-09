@@ -55,14 +55,18 @@
 					       });*/
 					    },
 	                    load: function(obj, records, successful, opts){
-	                 		Ext.getCmp(tracking.id + '-grid').doLayout();
+	                 		//Ext.getCmp(tracking.id + '-grid').doLayout();
 	                 		//Ext.getCmp(tracking.id + '-grid').getView().getRow(0).style.display = 'none';
-	                 		storeTree.removeAt(0);
-	                 		Ext.getCmp(tracking.id + '-grid').collapseAll();
-		                    Ext.getCmp(tracking.id + '-grid').getRootNode().cascadeBy(function (node) {
-		                          if (node.getDepth() < 1) { node.expand(); }
-		                          if (node.getDepth() == 0) { return false; }
-		                     });
+	                 		try{
+		                 		storeTree.removeAt(0);
+		                 		Ext.getCmp(tracking.id + '-grid').collapseAll();
+			                    Ext.getCmp(tracking.id + '-grid').getRootNode().cascadeBy(function (node) {
+			                          if (node.getDepth() < 1) { node.expand(); }
+			                          if (node.getDepth() == 0) { return false; }
+			                     });
+		                    }catch(e){
+		                    	console.log(e);
+		                    }
 	                    }
 	                }
 	            });
@@ -429,8 +433,7 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){	             	
-									                            	var name = Ext.getCmp(tracking.id+'-txt-tracking').getValue();
-		                               					            tracking.getReloadGridtracking(name);
+		                               					            tracking.getReloadGridtracking();
 									                            }
 									                        }
 									                    }
@@ -574,7 +577,7 @@
 							                            enableTextSelection: false,
 							                            markDirty: false
 							                        },*/
-							                        hideItemsReadFalse: function () {
+							                        /*hideItemsReadFalse: function () {
 													    var me = this,
 													        items = me.getReferences().treelistRef.itemMap;
 
@@ -584,7 +587,7 @@
 													            items[i].destroy();
 													        }
 													    }
-													},
+													},*/
 							                        trackMouseOver: false,
 							                        listeners:{
 							                            afterrender: function(obj){
@@ -763,7 +766,7 @@
 	                }
 	            });
 			},
-			getReloadGridtracking:function(name){
+			getReloadGridtracking:function(){
 				//Ext.getCmp(tracking.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				tracking.getStatusPanel('N');
 				var shi_codigo = Ext.getCmp(tracking.id+'-cbx-cliente').getValue();
@@ -789,12 +792,16 @@
 		            return false;
 		        }
 		        //Ext.getCmp(tracking.id + '-grid').getStore().removeAll();
-				Ext.getCmp(tracking.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
-	                callback:function(){
-	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
-	                }
-	            });
+		        try{
+					Ext.getCmp(tracking.id + '-grid').getStore().load(
+		                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
+		                callback:function(){
+		                	//Ext.getCmp(tracking.id+'-form').el.unmask();
+		                }
+		            });
+	            }catch(e){
+                	console.log(e);
+                }
 			}
 
 		}
