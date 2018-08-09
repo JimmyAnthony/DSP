@@ -33,7 +33,8 @@ class clientController extends AppController {
         foreach ($rs as $index => $value){
             $value_['shi_codigo'] = intval($value['shi_codigo']);
             $value_['shi_nombre'] = utf8_encode(trim($value['shi_nombre']));
-            $value_['fec_ingreso'] = trim($value['fec_ingreso']);
+            $value_['fec_ingreso'] = substr(trim($value['fec_ingreso']),0,10);
+            //substr(trim($value['fec_ingreso']),0,10)
             $value_['shi_estado'] = trim($value['shi_estado']);
             $value_['id_user'] = intval(trim($value['id_user']));
             $value_['fecact'] = utf8_encode(trim($value['fecact']));

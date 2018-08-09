@@ -199,7 +199,7 @@
                             region:'north',
                             layout:'border',
                             border:false,
-                            height:90,
+                            height:100,
                             items:[
 								/*{
 		                            region:'west',
@@ -295,17 +295,23 @@
 		                            title: 'Listado de Clientes',
 		                            legend: 'Búsqueda de Clientes registrados',
 		                            width:1000,
-		                            height:90,
+		                            height:100,
 		                            items:[
 		                                {
 		                                    xtype:'panel',
-		                                    border:false,
+		                                    border:true,
 		                                    bodyStyle: 'background: transparent',
 		                                    padding:'2px 5px 1px 5px',
 		                                    layout:'column',
+		                                    height: 100,
+
+
+
+
 
 		                                    items: [
 		                                        {
+
 		                                            width:300,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
@@ -319,9 +325,10 @@
 		                                                    labelAlign:'right',
 		                                                    width:'100%',
 		                                                    anchor:'100%'
-		                                                }
+		                                                },
 		                                            ]
 		                                        },
+
 		                                        {
 			                                        width: 160,border:false,
 			                                        padding:'0px 2px 0px 0px',  
@@ -333,7 +340,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:60,
 			                                                labelAlign:'right',
-			                                                value:new Date(),
+			                                                value:new Date(' '),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
 			                                                width: '100%',
@@ -365,7 +372,7 @@
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
 			                                                            // obj.getStore().load();
-			                                                            Ext.getCmp(client.id+'-txt-estado-filter').setValue('1');
+			                                                            Ext.getCmp(client.id+'-txt-estado-filter').setValue(' ');
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
 			                                                
@@ -375,7 +382,7 @@
 			                                 		]
 			                                    },
 		                                        {
-		                                            width: 80,border:false,
+		                                            width: 180,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -395,20 +402,120 @@
 									                            click: function(obj, e){	             	
 									                            	var name = Ext.getCmp(client.id+'-txt-cliente').getValue();
 									                            	var fecha = Ext.getCmp(client.id+'-txt-fecha-filtro').getValue();
+									                            	
+
+									                            	
+
+									                            	if(fecha == '0NaNNaNNaN' || fecha == '' ) 
+									                            
+									                            	{
+									                            				fecha = '';
+									                            	} 
+									                          
+
+
 									                            	var estado = Ext.getCmp(client.id+'-txt-estado-filter').getValue();	
 
 
 		                               					            client.getReloadGridlotizer(name,fecha,estado);
 									                            }
 									                        }
-									                    }
-		                                            ]
+									                    },
+									                    {
+															id: client.id + '-cancelar',
+															//margin:'10px 2px 0px 0px',  
+															//bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Limpiar',
+									                        icon: '/images/icon/broom.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){
+																	client.set_lotizer_clear();
+									                            }
+									                        }
+									                    },
+
+									                ]    			
+
+
+		                                            
 		                                        }
 		                                    ]
+   			
+
 		                                }
-		                            ]
+		                            ]/*,
+
+								                	bbar:[       
+								                    '->',
+								                    '-',
+
+									                    {
+															id: client.id + '-nuevo',
+															//margin:'10px 2px 0px 0px',  
+															//bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        //width:80,
+									                        text: 'Nuevo',
+									                        icon: '/images/icon/add_green_button.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });
+									                            },
+									                            click: function(obj, e){
+																	client.getFormMant('I','','1',0);
+									                            }
+									                        }
+									                    }
+									                ]*/
+
+
+
 		                        }
-		                    ]
+		                    ],
+								                	bbar:[  
+								                    '-',								                	     
+									                    {
+															id: client.id + '-nuevo',
+															//margin:'10px 2px 0px 0px',  
+															//bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        //width:80,
+									                        text: 'Nuevo',
+									                        icon: '/images/icon/add_green_button.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){
+																	client.getFormMant('I','','1',0);
+									                            }
+									                        }
+									                    },
+								                    '-'								                	     									                    
+
+									                ]
+
+
 		                },
 						{
 							region:'center',
@@ -419,7 +526,7 @@
 									//width:'100%',
 									layout:'border',
 									items:[
-										{
+										/*{
 											region:'north',
 											border:false,
 											height:70,
@@ -511,7 +618,7 @@
 									                                    id_btn: obj.getId(), 
 									                                    id_menu: gestion_devolucion.id_menu,
 									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
+									                                });
 									                            },
 									                            click: function(obj, e){
 																	client.set_client(3,'¿Está seguro de guardar?');
@@ -520,7 +627,7 @@
 									                        }
 									                    },
 									                    {
-															id: client.id + '-cancelar',
+															//id: client.id + '-cancelar',
 															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 									                        xtype:'button',
 									                        width:80,
@@ -528,12 +635,14 @@
 									                        icon: '/images/icon/broom.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
+									                                //*global.permisos({
+									                                //    id: 15,
+									                                //    id_btn: obj.getId(), 
+									                                //    id_menu: gestion_devolucion.id_menu,
+									                                //    fn: ['panel_asignar_gestion.limpiar']
+									                                //});
+
+									                                
 									                            },
 									                            click: function(obj, e){
 																	client.set_lotizer_clear();
@@ -544,7 +653,7 @@
 			                                        ]
 			                                    }
 											]
-										},
+										},*/
 										{
 											region:'center',
 											border:false,
@@ -632,13 +741,26 @@
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
+						                                        	var clienteform = record.get('shi_nombre');
+						                                        	var estadoform = record.get('shi_estado');
+						                                        	var codigoform = record.get("shi_codigo")
+						                                        	client.shi_nombre = record.get('shi_nombre');
+						                                        	client.shi_estado = record.get('shi_estado');
+						                                        
 						                                        if(record.get('shi_estado') == '1'){
 							                                        metaData.style = "padding: 0px; margin: 0px";
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: client.id_menu,
+
+																	
+
 							                                            icons:[
-							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
+							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
+
+							                                                /*{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},*/
+
+
 							                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
 							                                            ]
 							                                        });
@@ -729,7 +851,7 @@
 			setEditLote:function(index,op){
 				var rec = Ext.getCmp(client.id + '-grid').getStore().getAt(index);
 			/*	client.id_lote=rec.data.id_lote;*/
-				cliente.shi_codigo = Ext.getCmp(client.id+'-shi_codigo').getValue();
+			//	var shi_codigo = Ext.getCmp(client.id+'-shi_codigo').getValue();
 			/*	var fac_cliente = Ext.getCmp(client.id+'-cbx-contrato').getValue();
 				if(rec.data.shi_codigo!=shi_codigo){
 					Ext.getCmp(client.id+'-cbx-cliente').setValue(rec.data.shi_codigo);
@@ -740,7 +862,7 @@
 				client.shi_codigo=rec.data.shi_codigo;
 				client.fac_cliente=rec.data.fac_cliente;
 			*/
-
+				client.shi_codigo = (rec.data.shi_codigo)
 				client.opcion=op;
 				if(op!='D'){
 
@@ -751,18 +873,34 @@
 				  	Ext.getCmp(client.id+'-txt-nombre').focus(true);
 					//console.log(rec.data);
 				}else{
-					client.set_lotizer(2,'¿Está seguro de Desactivar?');
+					client.set_client(2,'¿Está seguro de Desactivar?');
 				}
 			},
 			set_lotizer_clear:function(){
-				Ext.getCmp(client.id+'-txt-nombre').setValue('');
-			  	Ext.getCmp(client.id+'-txt-estado').setValue('1');
+				Ext.getCmp(client.id+'-txt-estado-filter').setValue(' ');
+				Ext.getCmp(client.id+'-txt-fecha-filtro').setValue('Y-m-d');
+				Ext.getCmp(client.id+'-txt-cliente').setValue('');
 			  	//client.id_lote=0;
 			  	client.shi_codigo=0;
 				//client.fac_cliente=0;
 				client.opcion='I';
+				Ext.getCmp(client.id+'-txt-cliente').focus(true);
+			},
+
+			set_lotizer_clearform:function(){
+				Ext.getCmp(client.id+'-txt-nombre').setValue('');
+			  	Ext.getCmp(client.id+'-txt-estado').setValue('1');
+			  	//client.id_lote=0;
+			  	//client.shi_codigo=0;
+				//client.fac_cliente=0;
+				//client.opcion='I';
 				Ext.getCmp(client.id+'-txt-nombre').focus(true);
 			},
+
+
+
+
+
 			setValidaLote:function(){
 				if(client.opcion=='I' || client.opcion=='U'){
 					/*var shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
@@ -808,15 +946,17 @@
 								url: client.url + 'set_client/',
 								params:{
 									vp_op: client.opcion,
-									vp_shi_codigo:client.shi_codigo,/*
+									vp_shi_codigo:client.shi_codigo,
+									/*
 									vp_fac_cliente:client.fac_cliente,
 			                        vp_id_lote:client.id_lote,*/
-			                        vp_nombre:Ext.getCmp(client.id+'-txt-nombre').getValue(),
+			                        vp_nombre:client.shi_nombre,
 			                        /*vp_descripcion:Ext.getCmp(client.id+'-txt-descripcion').getValue(),
 			                        vp_tipdoc:Ext.getCmp(client.id+'-txt-tipdoc').getValue(),
 			                        vp_lote_fecha:Ext.getCmp(client.id+'-txt-fecha').getValue(),
 			                        vp_ctdad:Ext.getCmp(client.id+'-txt-tot_folder').getValue(),*/
-			                        vp_estado:Ext.getCmp(client.id+'-txt-estado').getValue()
+			                        vp_estado:client.shi_estado
+			                        //vp_estado:Ext.getCmp(client.id+'-txt-estado').getValue()
 								},
 								success:function(response,options){
 									var res = Ext.decode(response.responseText);
@@ -829,6 +969,10 @@
 		                                buttons: 1,
 		                                fn: function(btn){
 		                                    if(parseInt(res.error)==1){
+		                                    	if (client.opcion == 'U' || client.opcion == 'I') {
+		                                    	Ext.getCmp(client.id+'-win-form').close();
+		                                    	}
+		                                    	//Ext.getCmp(client.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
 		                                    	client.getReloadGridlotizer('');
 		                                    	client.set_lotizer_clear();
 		                                    }
@@ -871,6 +1015,7 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }*/
+
 				Ext.getCmp(client.id + '-grid').getStore().load(
 	                {params: {vp_name:name,vp_date:fecha,vp_estado:estado},
 	                callback:function(){
@@ -906,7 +1051,22 @@
 				Ext.getCmp(client.id+'-txt-nombre').focus();
 			},
 
-			getFormMant:function(cod_lote,lote,usuario,cantidad){
+			getFormMant:function(op,cliente,estado,codigo){
+				client.shi_codigo = codigo;
+				client.opcion = op;
+				if (op == 'U') {
+					var titulo = 'Edición';
+					var icono = "/images/icon/edit.png";
+					var oculto = "false";
+				} 
+				else
+				{
+					var titulo = 'Nuevo';
+					var icono = "/images/icon/add_green_button.png";	
+					var oculto = "true";
+				}
+
+
 				var myData = [
 				    ['1','Activo'],
 				    ['0','Inactivo']
@@ -921,17 +1081,125 @@
 				Ext.create('Ext.window.Window',{
 	                id:client.id+'-win-form',
 	                plain: true,
-	                title:'Edición',
-	                icon: '/images/icon/edit.png',
+	                title:titulo,
+	                icon: icono,
 	                height: 200,
-	                width: 450,
+	                width: 1000,
 	                resizable:false,
 	                modal: true,
 	                border:false,
 	                closable:true,
 	                padding:20,
 	                items:[
-	                	{
+
+												{
+			                                        xtype: 'fieldset',
+			                                        margin: '5 5 5 10',
+			                                        title:'<b>Mantenimiento Clientes</b>',
+			                                        border:true,
+			                                        bodyStyle: 'background: transparent',
+			                                        padding:'2px 5px 1px 5px',
+			                                        layout:'column',
+			                                        items: [
+			                                            {	
+			                                            	hidden : oculto,	
+			                                                columnWidth: .3,border:false,
+			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+			                                                items:[
+			                                                    {
+			                                                        xtype: 'textfield',
+			                                                        fieldLabel: 'id_Cliente',
+			                                                        //id:client.id+'-txt-nombre',
+			                                                        labelWidth:50,
+			                                                        readOnly:true,
+			                                                        labelAlign:'right',
+			                                                        width:'100%',
+			                                                        anchor:'100%',
+			                                                        value:codigo
+			                                                    }
+			                                                ]
+			                                            },
+
+			                                            {
+			                                                columnWidth: .3,border:false,
+			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+			                                                items:[
+			                                                    {
+			                                                        xtype: 'textfield',
+			                                                        fieldLabel: 'Cliente',
+			                                                        id:client.id+'-txt-nombre',
+			                                                        labelWidth:60,
+			                                                        //readOnly:true,
+			                                                        labelAlign:'right',
+			                                                        width:'100%',
+			                                                        anchor:'100%',
+			                                                        value:cliente
+			                                                    }
+			                                                ]
+			                                            },
+			                                            {
+		                                               		width: 150,border:false,
+		                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+		                                             		items:[
+				                                                    {
+				                                                        xtype:'combo',
+				                                                        fieldLabel: 'Estado',
+				                                                        id:client.id+'-txt-estado',
+				                                                        store: store_estado,
+				                                                        queryMode: 'local',
+				                                                        triggerAction: 'all',
+				                                                        valueField: 'code',
+				                                                        displayField: 'name',
+				                                                        emptyText: '[Seleccione]',
+				                                                        labelAlign:'right',
+				                                                        value:estado,
+				                                                        //allowBlank: false,
+				                                                        labelWidth: 60,
+				                                                        width:'100%',
+				                                                        anchor:'100%',
+				                                                        //readOnly: true,
+				                                                        listeners:{
+				                                                            afterrender:function(obj, e){
+				                                                                // obj.getStore().load();
+				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('1');
+				                                                            },
+				                                                            select:function(obj, records, eOpts){
+				                                                    
+				                                                            }
+				                                                        }
+				                                                    }
+		                                             		]
+		                                                },
+									                    {
+															//id: client.id + '-cancelar',
+															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Limpiar',
+									                        icon: '/images/icon/broom.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                //    id: 15,
+									                                //    id_btn: obj.getId(), 
+									                                //    id_menu: gestion_devolucion.id_menu,
+									                                //    fn: ['panel_asignar_gestion.limpiar']
+									                                //});*/
+
+									                                
+									                            },
+									                            click: function(obj, e){
+																	client.set_lotizer_clearform();
+									                            }
+									                        }
+									                    }
+			                                            
+			                                        ]
+			                                    }
+
+
+
+	                	/*{
 	                        xtype: 'textfield',
 	                        id:client.id+'-grid-client-form',
 	                        fieldLabel: 'Cod_Lote',
@@ -981,29 +1249,37 @@
 	                    
 	                            }
 	                        }
-	                    }
+	                    }*/
 	                ],
 	                bbar:[       
-	                    '->',
-	                    '-',
-	                    {
-	                        xtype:'button',
-	                        text: 'Guardar',
-	                        icon: '/images/icon/save.png',
-	                        listeners:{
-	                            beforerender: function(obj, opts){
-	                                /*global.permisos({
-	                                    id: 15,
-	                                    id_btn: obj.getId(), 
-	                                    id_menu: gestion_devolucion.id_menu,
-	                                    fn: ['panel_asignar_gestion.limpiar']
-	                                });*/
-	                            },
-	                            click: function(obj, e){
-	                            	formularioGestion.setSaveRecordForm(ID);
-	                            }
-	                        }
-	                    },
+		                                                {
+
+															id: client.id + '-grabar',
+															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Grabar',
+									                        icon: '/images/icon/save.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){
+									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
+									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
+									                           		//cliente;
+
+																	client.set_client(3,'¿Está seguro de guardar?');
+
+
+									                            }
+									                        }
+									                    },
 	                    '-',
 	                    {
 	                        xtype:'button',
@@ -1019,7 +1295,7 @@
 	                                });*/
 	                            },
 	                            click: function(obj, e){
-	                                Ext.getCmp(formularioGestion.id+'-win-form').close();
+	                                Ext.getCmp(client.id+'-win-form').close();
 	                            }
 	                        }
 	                    },
@@ -1032,12 +1308,16 @@
 	                    'close':function(){
 	                        //if(panel_asignar_gestion.guarda!=0)gestion_devolucion.buscar();
 	                    }
-	                }
+	                },
+
 	            }).show().center();
+
 			}
 
 		}
 		Ext.onReady(client.init,client);
+		Ext.getCmp(client.id+'-txt-cliente').focus(true);
+
 	}else{
 		tab.setActiveTab(client.id+'-tab');
 	}
