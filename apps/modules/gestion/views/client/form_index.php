@@ -6,10 +6,11 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/client/',
 			opcion:'I',
-			//id_lote:0,
-			//shi_codigo:0,
-			//fac_cliente:0,
+			id_lote:0,
+			shi_codigo:0,
+			fac_cliente:0,
 			init:function(){
+				Ext.tip.QuickTipManager.init();
 /*				Ext.tip.QuickTipManager.init();
 
 				Ext.define('Task', {
@@ -62,9 +63,9 @@
 	                	{name: 'shi_codigo', type: 'string'},
 	                    {name: 'shi_nombre', type: 'string'},
 	                    {name: 'fec_ingreso', type: 'string'},
-	                    {name: 'estado', type: 'string'},
-						{name: 'usr_id', type: 'string'},	                    
-	                    {name: 'fecha_actual', type: 'string'}
+	                    {name: 'shi_estado', type: 'string'},
+						{name: 'id_user', type: 'string'},	                    
+	                    {name: 'fecact', type: 'string'}
 	                ],
 				    autoLoad:false,
 	                proxy: {	
@@ -352,7 +353,7 @@
 			                                                    store: store_estado_lote,
 			                                                    queryMode: 'local',
 			                                                    triggerAction: 'all',
-			                                                    valueField: 'code',
+			                                                    valueField: 'code',	
 			                                                    displayField: 'name',
 			                                                    emptyText: '[Seleccione]',
 			                                                    labelAlign:'right',
@@ -364,7 +365,7 @@
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
 			                                                            // obj.getStore().load();
-			                                                            Ext.getCmp(client.id+'-txt-estado-filter').setValue('L');
+			                                                            Ext.getCmp(client.id+'-txt-estado-filter').setValue('1');
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
 			                                                
@@ -465,58 +466,6 @@
 			                                                ]
 			                                            },
 			                                            {
-			                                                width: 150,border:false,hidden:true,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Total Folders',
-			                                                        id:client.id+'-txt-tot_folder',
-			                                                        labelWidth:100,
-			                                                        //readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        maskRe: /[0-9]/,
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-			                                                width: 1,border:false,hidden:true,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Tipo Doc',
-			                                                        id:client.id+'-txt-tipdoc',
-			                                                        labelWidth:100,
-			                                                        readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-
-			                                            {
-			                                                width: 160,border:false,hidden:true,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype:'datefield',
-			                                                        id:client.id+'-txt-fecha',
-			                                                        fieldLabel:'Fecha',
-			                                                        labelWidth:60,
-			                                                        labelAlign:'right',
-			                                                        value:new Date(),
-			                                                        format: 'Ymd',
-			                                                        readOnly:true,
-			                                                        width: '100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
 		                                               		width: 150,border:false,
 		                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 		                                             		items:[
@@ -539,7 +488,7 @@
 				                                                        listeners:{
 				                                                            afterrender:function(obj, e){
 				                                                                // obj.getStore().load();
-				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('L');
+				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('1');
 				                                                            },
 				                                                            select:function(obj, records, eOpts){
 				                                                    
@@ -565,7 +514,7 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){
-																	client.set_lotizer(3,'¿Está seguro de guardar?');
+																	client.set_client(3,'¿Está seguro de guardar?');
 
 									                            }
 									                        }
@@ -627,83 +576,70 @@
 											            {
 											            	//xtype: 'treecolumn',
 						                                    text: 'id_Cliente',
-						                                  //  id:lotizer.id+'-nombre',
+						                                    id:client.id+'-shi_codigo',
 						                                    dataIndex: 'shi_codigo',
 						                                    sortable: true,
-						                                    flex: 1
+						                                    width: 150
 						                                },
 						                                {
 						                                    text: 'Nombre',
 						                                    dataIndex: 'shi_nombre',
-						                                    flex: 2
+						                                    flex : 2
 						                                },
 						                                {
 						                                    text: 'Fecha Ingreso',
 						                                    dataIndex: 'fec_ingreso',
-						                                    width: 180,
+						                                    width: 200,
 						                                    align: 'center'
 						                                },
 						                                {
 						                                    text: 'id_user',
-						                                    dataIndex: 'usr_id',
-						                                    width: 80,
+						                                    dataIndex: 'id_user',
+						                                    width: 150,
 						                                    align: 'center'
 						                                },
 						                                {
 						                                    text: 'Fecha Update',
-						                                    dataIndex: 'fecha_actual',
-						                                    width: 80,
-						                                    align: 'center'
-						                                },
-						                                {	hidden:true,
-						                                    text: 'Total Pag. Errores',
-						                                    dataIndex: 'tot_errpag',
-						                                    width: 100,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                	hidden:true,
-						                                    text: 'User',
-						                                    dataIndex: 'usr_update',
-						                                    width: 100,
+						                                    dataIndex: 'fecact',
+						                                    width: 200,
 						                                    align: 'center'
 						                                },
 						                                {
 						                                    text: 'Estado',
-						                                    dataIndex: 'estado',
+						                                    dataIndex: 'shi_estado',
 						                                    loocked : true,
-						                                    width: 50,
+						                                    width: 200,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
 						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('estado')=='1')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('estado')=='1')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+						                                        var estado = (record.get('shi_estado')=='1')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        var qtip = (record.get('shi_estado')=='1')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: client.id_menu,
 						                                            icons:[
-						                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+						                                                {id_serv: 9, img: estado, qtip: qtip, js: ""}
 						                                            ]
 						                                        });
 						                                    }
 						                                },
 						                                {
 						                                    text: 'Editar',
-						                                    dataIndex: 'estado',
+						                                    dataIndex: 'shi_estado',
 						                                    //loocked : true,
-						                                    width: 50,
+						                                    width: 200,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
-						                                        if(record.get('estado') == '1'){
+						                                        if(record.get('shi_estado') == '1'){
 							                                        metaData.style = "padding: 0px; margin: 0px";
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: client.id_menu,
 							                                            icons:[
-							                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
-							                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
+							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
+							                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
 							                                            ]
 							                                        });
 							                                    }else{
@@ -792,9 +728,9 @@
 			},
 			setEditLote:function(index,op){
 				var rec = Ext.getCmp(client.id + '-grid').getStore().getAt(index);
-				client.id_lote=rec.data.id_lote;
-				var shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
-				var fac_cliente = Ext.getCmp(client.id+'-cbx-contrato').getValue();
+			/*	client.id_lote=rec.data.id_lote;*/
+				cliente.shi_codigo = Ext.getCmp(client.id+'-shi_codigo').getValue();
+			/*	var fac_cliente = Ext.getCmp(client.id+'-cbx-contrato').getValue();
 				if(rec.data.shi_codigo!=shi_codigo){
 					Ext.getCmp(client.id+'-cbx-cliente').setValue(rec.data.shi_codigo);
 					Ext.getCmp(client.id+'-cbx-contrato').setValue('');
@@ -803,13 +739,15 @@
 				Ext.getCmp(client.id+'-cbx-contrato').setValue(rec.data.fac_cliente);
 				client.shi_codigo=rec.data.shi_codigo;
 				client.fac_cliente=rec.data.fac_cliente;
+			*/
 
 				client.opcion=op;
 				if(op!='D'){
-					Ext.getCmp(client.id+'-txt-nombre').setValue(rec.data.nombre);
-					Ext.getCmp(client.id+'-txt-descripcion').setValue(rec.data.descripcion);
-				  	Ext.getCmp(client.id+'-txt-estado').setValue(rec.data.estado);
-				  	Ext.getCmp(client.id+'-txt-tot_folder').setValue(rec.data.tot_folder);
+
+					Ext.getCmp(client.id+'-txt-nombre').setValue(rec.data.shi_nombre);
+					//Ext.getCmp(client.id+'-txt-descripcion').setValue(rec.data.descripcion);
+				  	Ext.getCmp(client.id+'-txt-estado').setValue(rec.data.shi_estado);
+				  	//Ext.getCmp(client.id+'-txt-tot_folder').setValue(rec.data.tot_folder);
 				  	Ext.getCmp(client.id+'-txt-nombre').focus(true);
 					//console.log(rec.data);
 				}else{
@@ -818,18 +756,16 @@
 			},
 			set_lotizer_clear:function(){
 				Ext.getCmp(client.id+'-txt-nombre').setValue('');
-				Ext.getCmp(client.id+'-txt-descripcion').setValue('');
-			  	Ext.getCmp(client.id+'-txt-estado').setValue('L');
-			  	Ext.getCmp(client.id+'-txt-tot_folder').setValue(0);
-			  	client.id_lote=0;
+			  	Ext.getCmp(client.id+'-txt-estado').setValue('1');
+			  	//client.id_lote=0;
 			  	client.shi_codigo=0;
-				client.fac_cliente=0;
+				//client.fac_cliente=0;
 				client.opcion='I';
 				Ext.getCmp(client.id+'-txt-nombre').focus(true);
 			},
 			setValidaLote:function(){
 				if(client.opcion=='I' || client.opcion=='U'){
-					var shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
+					/*var shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
 					if(shi_codigo== null || shi_codigo==''){
 			            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 			            return false;
@@ -840,7 +776,7 @@
 			            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
 			            return false;
 			        }
-			        client.fac_cliente=fac_cliente;
+			        client.fac_cliente=fac_cliente;*/
 					var nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
 					if(nombre== null || nombre==''){
 			            global.Msg({msg:"Ingrese un nombre por favor.",icon:2,fn:function(){}});
@@ -850,16 +786,16 @@
 			        if(estado== null || estado==''){
 			            global.Msg({msg:"Ingrese un estado por favor.",icon:2,fn:function(){}});
 			            return false; 
-			        }
+			        }/*
 				  	var total = Ext.getCmp(client.id+'-txt-tot_folder').getValue();
 				  	if(total== null || total==0 || total==''){
 			            global.Msg({msg:"Ingrese el total de folderes por favor.",icon:2,fn:function(){}});
 			            return false;
-			        }
+			        }*/
 			    }
 		        return true;
 			},
-			set_lotizer:function(ico,msn){
+			set_client:function(ico,msn){
 				if(!client.setValidaLote())return;
 				global.Msg({
                     msg: msn,
@@ -869,17 +805,17 @@
                     	if (btn == 'yes'){
 	                        Ext.getCmp(client.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 	                        Ext.Ajax.request({
-								url: client.url + 'set_lotizer/',
+								url: client.url + 'set_client/',
 								params:{
 									vp_op: client.opcion,
-									vp_shi_codigo:client.shi_codigo,
+									vp_shi_codigo:client.shi_codigo,/*
 									vp_fac_cliente:client.fac_cliente,
-			                        vp_id_lote:client.id_lote,
+			                        vp_id_lote:client.id_lote,*/
 			                        vp_nombre:Ext.getCmp(client.id+'-txt-nombre').getValue(),
-			                        vp_descripcion:Ext.getCmp(client.id+'-txt-descripcion').getValue(),
+			                        /*vp_descripcion:Ext.getCmp(client.id+'-txt-descripcion').getValue(),
 			                        vp_tipdoc:Ext.getCmp(client.id+'-txt-tipdoc').getValue(),
 			                        vp_lote_fecha:Ext.getCmp(client.id+'-txt-fecha').getValue(),
-			                        vp_ctdad:Ext.getCmp(client.id+'-txt-tot_folder').getValue(),
+			                        vp_ctdad:Ext.getCmp(client.id+'-txt-tot_folder').getValue(),*/
 			                        vp_estado:Ext.getCmp(client.id+'-txt-estado').getValue()
 								},
 								success:function(response,options){

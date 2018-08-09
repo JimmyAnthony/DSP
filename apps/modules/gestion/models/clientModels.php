@@ -37,19 +37,19 @@ class clientModels extends Adodb {
         return $array;
     }
 
-    public function set_lotizer($p){
+    public function set_client($p){
         $p['vp_id_lote'] =(empty($p['vp_id_lote']))?0:$p['vp_id_lote'];
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'set_lotizer');
+        parent::ConnectionOpen($this->dsn, 'set_client');
         parent::SetParameterSP($p['vp_op'], 'varchar');
-        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        //parent::SetParameterSP($p['vp_id_lote'], 'int');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
-        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        /*parent::SetParameterSP($p['vp_fac_cliente'], 'int');*/
         parent::SetParameterSP(utf8_decode(trim($p['vp_nombre'])), 'varchar');
-        parent::SetParameterSP(utf8_decode(trim($p['vp_descripcion'])), 'varchar');
+        /*parent::SetParameterSP(utf8_decode(trim($p['vp_descripcion'])), 'varchar');
         parent::SetParameterSP($p['vp_tipdoc'], 'varchar');
         parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
-        parent::SetParameterSP($p['vp_ctdad'], 'int');
+        parent::SetParameterSP($p['vp_ctdad'], 'int');*/
         parent::SetParameterSP($p['vp_estado'], 'varchar');
         parent::SetParameterSP(USR_ID, 'int');
 

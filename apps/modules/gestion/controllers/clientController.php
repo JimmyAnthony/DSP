@@ -34,9 +34,9 @@ class clientController extends AppController {
             $value_['shi_codigo'] = intval($value['shi_codigo']);
             $value_['shi_nombre'] = utf8_encode(trim($value['shi_nombre']));
             $value_['fec_ingreso'] = trim($value['fec_ingreso']);
-            $value_['estado'] = intval(trim($value['shi_estado']));
-            $value_['usr_id'] = intval(trim($value['id_user']));
-            $value_['fecha_actual'] = utf8_encode(trim($value['fecact']));
+            $value_['shi_estado'] = trim($value['shi_estado']);
+            $value_['id_user'] = intval(trim($value['id_user']));
+            $value_['fecact'] = utf8_encode(trim($value['fecact']));
             $array[]=$value_;
         }
 
@@ -192,10 +192,10 @@ class clientController extends AppController {
         return $this->response($data);
     }
 
-    public function set_lotizer($p){
+    public function set_client($p){
         //$this->valida_mobil($p);
         
-        $rs = $this->objDatos->set_lotizer($p);
+        $rs = $this->objDatos->set_client($p);
         $rs = $rs[0];
         $data = array(
             'success' => true,
