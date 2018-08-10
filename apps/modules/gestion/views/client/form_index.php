@@ -199,7 +199,7 @@
                             region:'north',
                             layout:'border',
                             border:false,
-                            height:130,
+                            height:150,
                             items:[
 								/*{
 		                            region:'west',
@@ -295,7 +295,7 @@
 		                            title: 'Listado de Clientes',
 		                            legend: 'Búsqueda de Clientes registrados',
 		                            width:1000,
-		                            height:100,
+		                            height:40,
 		                            items:[
 		                                {
 		                                    xtype:'panel',
@@ -303,7 +303,7 @@
 		                                    bodyStyle: 'background: transparent',
 		                                    padding:'2px 5px 1px 5px',
 		                                    layout:'column',
-		                                    height: 130,
+		                                    height: 60,
 
 
 
@@ -494,7 +494,8 @@
 															//margin:'10px 2px 0px 0px',  
 															//bodyStyle: 'background: transparent',
 									                        xtype:'button',
-									                        //width:80,
+									                        width:80,
+									                        //height: 30,
 									                        text: 'Nuevo',
 									                        icon: '/images/icon/add_green_button.png',
 									                        listeners:{
@@ -702,7 +703,7 @@
 						                                    align: 'center'
 						                                },
 						                                {
-						                                    text: 'id_user',
+						                                    text: 'usuario',
 						                                    dataIndex: 'id_user',
 						                                    width: 150,
 						                                    align: 'center'

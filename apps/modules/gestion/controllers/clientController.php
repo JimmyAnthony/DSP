@@ -36,7 +36,7 @@ class clientController extends AppController {
             $value_['fec_ingreso'] = substr(trim($value['fec_ingreso']),0,10);
             //substr(trim($value['fec_ingreso']),0,10)
             $value_['shi_estado'] = trim($value['shi_estado']);
-            $value_['id_user'] = intval(trim($value['id_user']));
+            $value_['id_user'] = trim($value['id_user']);
             $value_['fecact'] = utf8_encode(trim($value['fecact']));
             $array[]=$value_;
         }
