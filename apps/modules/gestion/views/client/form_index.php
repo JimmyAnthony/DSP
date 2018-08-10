@@ -199,7 +199,7 @@
                             region:'north',
                             layout:'border',
                             border:false,
-                            height:100,
+                            height:130,
                             items:[
 								/*{
 		                            region:'west',
@@ -299,11 +299,11 @@
 		                            items:[
 		                                {
 		                                    xtype:'panel',
-		                                    border:true,
+		                                    border:false,
 		                                    bodyStyle: 'background: transparent',
 		                                    padding:'2px 5px 1px 5px',
 		                                    layout:'column',
-		                                    height: 100,
+		                                    height: 130,
 
 
 
