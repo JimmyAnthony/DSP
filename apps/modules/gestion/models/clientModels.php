@@ -28,6 +28,20 @@ class clientModels extends Adodb {
         return $array;
     }
 
+public function get_list_clientcontratos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_clientcontratos');
+      // parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+      //  parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP($p['vp_name'], 'varchar');
+        parent::SetParameterSP($p['vp_date'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+
    public function get_lotizer_detalle($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_lotizer_detalle');

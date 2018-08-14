@@ -71,11 +71,11 @@ class clientController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function get_list_lotizer($p){
+    public function get_list_clientcontratos($p){
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json');
-        $this->rs_ = $this->objDatos->get_list_lotizer($p);
+        $this->rs_ = $this->objDatos->get_list_clientcontratos($p);
         if(!empty($this->rs_)){
             return '{"text": ".","children":['.$this->get_recursivo(1).']}';
             
@@ -84,16 +84,15 @@ class clientController extends AppController {
                 array(
                     'text'=>'root',
                     'children'=>array(
-                        'id_lote'=>0,
+                        'shi_codigo'=>0,
                         'iconCls'=>'task',
-                        'tipdoc'=>'',
-                        'nombre'=>'',
-                        'fecha'=>'',
-                        'tot_folder'=>0,
-                        'tot_pag'=>0,
-                        'tot_errpag'=>0,
+                        'shi_nombre'=>'',
+                        'fec_ingreso'=>'',
+                        'shi_estado'=>'1',
                         'id_user'=>0,
-                        'estado'=>'',
+                        'fecact'=>'',
+                        'cod_contrato'=>0,
+                        'pro_descri'=>'',
                         'leaf'=>'true'
                         )
                     )
@@ -106,25 +105,17 @@ class clientController extends AppController {
         foreach ($this->rs_ as $key => $value){
             if ($value['nivel'] == $_nivel){
                 $json.=$coma."{";
-                $json.='"id_lote":"'.$value['id_lote'].'"';
-                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
-                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
-                //$json.=',"read":true';
-                //$json.=',"expanded":true';
+                $json.='"shi_codigo":"'.$value['shi_codigo'].'"';
+                $json.=',"shi_nombre":"'.utf8_encode(trim($value['shi_nombre'])).'"';
                 $json.=',"iconCls":"task"';
-                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
-                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
-                $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
-                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
-                $json.=',"fecha":"'.$value['fecha'].'"';
-                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
-                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
-                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
-                $json.=',"usr_update":"'.$value['usr_update'].'"';
+                $json.=',"fec_ingreso":"'.$value['fec_ingreso'].'"';
+                $json.=',"shi_estado":"'.$value['shi_estado'].'"';
                 $json.=',"id_user":"'.$value['id_user'].'"';
-                $json.=',"estado":"'.$value['estado'].'"';
+                $json.=',"fecact":"'.$value['fecact'].'"';
+                $json.=',"cod_contrato":"'.$value['cod_contrato'].'"';
+                $json.=',"pro_descri":"'.$value['pro_descri'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
-                $js = $this->getRecursividad_children($_nivel,$value['id_lote']);
+                $js = $this->getRecursividad_children($_nivel,$value['shi_codigo'],$value['shi_estado']);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{
@@ -136,26 +127,20 @@ class clientController extends AppController {
         }
         return $json;
     }
-    public function getRecursividad_children($_nivel,$_hijo){
+    public function getRecursividad_children($_nivel,$_hijo,$_stado_lote){
         $coma = '';
         foreach ($this->rs_ as $key => $value){
-            if ($value['nivel'] != $_nivel && $value['id_lote'] == $_hijo){
+            if ($value['nivel'] != $_nivel && $value['shi_codigo'] == $_hijo){
                 $json.=$coma."{";
-                $json.='"id_lote":"'.$value['id_lote'].'"';
-                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
-                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                $json.='"shi_codigo":"'.$value['shi_codigo'].'"';
+                $json.=',"shi_nombre":"'.utf8_encode(trim($value['shi_nombre'])).'"';
                 $json.=',"iconCls":"task"';
-                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
-                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
-                $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
-                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
-                $json.=',"fecha":"'.$value['fecha'].'"';
-                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
-                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
-                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
-                $json.=',"usr_update":"'.$value['usr_update'].'"';
+                $json.=',"fec_ingreso":"'.$value['fec_ingreso'].'"';
+                $json.=',"shi_estado":"'.$value['shi_estado'].'"';
                 $json.=',"id_user":"'.$value['id_user'].'"';
-                $json.=',"estado":"'.$value['estado'].'"';
+                $json.=',"fecact":"'.$value['fecact'].'"';
+                $json.=',"cod_contrato":"'.$value['cod_contrato'].'"';
+                $json.=',"pro_descri":"'.$value['pro_descri'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
                 $js = '';//$this->getRecursividad_children($_nivel,$value['id_lote']);
                 if(!empty($js)){

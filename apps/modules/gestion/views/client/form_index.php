@@ -11,34 +11,27 @@
 			fac_cliente:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
-/*				Ext.tip.QuickTipManager.init();
+				//Ext.tip.QuickTipManager.init();
 
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
 				    fields: [
-				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
-				        {name: 'fac_cliente', type: 'string'},
-	                    {name: 'tipdoc', type: 'string'},
-	                    {name: 'nombre', type: 'string'},
-	                    {name: 'lote_nombre', type: 'string'},
-	                    {name: 'descripcion', type: 'string'},
-	                    {name: 'fecha', type: 'string'},
-	                    {name: 'tot_folder', type: 'string'},
-	                    {name: 'tot_pag', type: 'string'},
-	                    {name: 'tot_errpag', type: 'string'},
+				        {name: 'shi_nombre', type: 'string'},
+	                    {name: 'fec_ingreso', type: 'string'},
+	                    {name: 'shi_estado', type: 'string'},
 	                    {name: 'id_user', type: 'string'},
-	                    {name: 'usr_update', type: 'string'},
-	                    {name: 'fec_update', type: 'string'},
-	                    {name: 'estado', type: 'string'}
+	                    {name: 'fecact', type: 'string'},
+	                    {name: 'cod_contrato', type: 'string'},
+	                    {name: 'pro_descri', type: 'string'}
 				    ]
 				});
-				var storeTree = new Ext.data.TreeStore({
+				var storeTree2 = new Ext.data.TreeStore({
 	                model: 'Task',
 				    autoLoad:false,
 	                proxy: {
 	                    type: 'ajax',
-	                    url: lotizer.url+'get_list_lotizer/'//,
+	                    url: client.url+'get_list_clientcontratos/'
 
 	                },
 	                folderSort: true,
@@ -47,17 +40,17 @@
 
 					    },
 	                    load: function(obj, records, successful, opts){
-	                 		Ext.getCmp(lotizer.id + '-grid').doLayout();
+	                 		Ext.getCmp(client.id + '-gridTree').doLayout();
 	                 		storeTree.removeAt(0);
-	                 		Ext.getCmp(lotizer.id + '-grid').collapseAll();
-		                    Ext.getCmp(lotizer.id + '-grid').getRootNode().cascadeBy(function (node) {
+	                 		Ext.getCmp(client.id + '-gridTree').collapseAll();
+		                    Ext.getCmp(client.id + '-gridTree').getRootNode().cascadeBy(function (node) {
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
 		                     });
 	                    }
 	                }
 	            });
-*/
+
 				var storeTree = new Ext.data.TreeStore({
 	                fields: [
 	                	{name: 'shi_codigo', type: 'string'},
@@ -494,9 +487,9 @@
 															//margin:'10px 2px 0px 0px',  
 															//bodyStyle: 'background: transparent',
 									                        xtype:'button',
-									                        width:80,
+									                        width:150,
 									                        //height: 30,
-									                        text: 'Nuevo',
+									                        text: 'Nuevo Cliente',
 									                        icon: '/images/icon/add_green_button.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
@@ -654,7 +647,10 @@
 			                                        ]
 			                                    }
 											]
-										},*/
+										},
+
+
+
 										{
 											region:'center',
 											border:false,
@@ -676,13 +672,6 @@
 							                        columnLines: true,
 							                        store: storeTree,
 										            columns: [
-											            /*{
-											                xtype: 'treecolumn', //this is so we know which column will show the tree
-											                text: 'Task',
-											                flex: 2,
-											                sortable: true,
-											                dataIndex: 'task'
-											            },*/
 											            {
 											            	//xtype: 'treecolumn',
 						                                    text: 'id_Cliente',
@@ -759,7 +748,7 @@
 							                                            icons:[
 							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
 
-							                                                /*{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},*/
+							                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
 
 
 							                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
@@ -771,11 +760,6 @@
 						                                    }
 						                                }
 											        ],
-							                        /*viewConfig: {
-							                            stripeRows: true,
-							                            enableTextSelection: false,
-							                            markDirty: false
-							                        },*/
 							                        hideItemsReadFalse: function () {
 													    var me = this,
 													        items = me.getReferences().treelistRef.itemMap;
@@ -790,40 +774,270 @@
 							                        trackMouseOver: false,
 							                        listeners:{
 							                            afterrender: function(obj){
-							                                //lotizer.getImagen('default.png');
 							                                
 							                            },
 														beforeselect:function(obj, record, index, eOpts ){
-															//console.log(record);
-															/*lotizer.opcion='U';*/
-															/*lotizer.id_lote=record.get('id_lote');
-															/*lotizer.getImagen(record.get('imagen'));*/
-															/*Ext.getCmp(lotizer.id+'-txt-nombre').setValue(record.get('nombre'));
-															Ext.getCmp(lotizer.id+'-txt-tipdoc').setValue(record.get('tipdoc'));
-															Ext.getCmp(lotizer.id+'-txt-fecha').setValue(record.get('fecha'));
-															Ext.getCmp(lotizer.id+'-txt-estado').setValue(record.get('estado'));
-															Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue(record.get('tot_folder'));
+														}
+							                        }
+							                    }
+											]
+										},*/
 
-															Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(true);
-															Ext.getCmp(lotizer.id+'-txt-tipdoc').setReadOnly(true);
-															Ext.getCmp(lotizer.id+'-txt-fecha').setReadOnly(true);
-															Ext.getCmp(lotizer.id+'-txt-estado').setReadOnly(true);
-															Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(true);
+										
+										{
+											region:'center',
+											border:false,
+											layout:'fit',
+											items:[
+												{
+							                        xtype: 'treepanel',
+											        useArrows: true,
+											        rootVisible: true,
+											        multiSelect: true,
+							                        id: client.id + '-gridTree',
+							                        columnLines: true,
+							                        store: storeTree2,
+										            columns: [
+											            {
+											            	xtype: 'treecolumn',
+						                                    text: 'id_Cliente',
+						                                    dataIndex: 'shi_codigo',
+						                                    sortable: true,
+						                                    width: 80
+						                                },
+						                                {
+						                                    text: 'Nombre',
+						                                    dataIndex: 'shi_nombre',
+						                                    flex: 300
+						                                },
+
+						                                {
+						                                    text: 'Editar Cliente',
+						                                    dataIndex: 'estado',
+						                                    //loocked : true,
+						                                    width: 150,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        if(parseInt(record.get('nivel')) == 1){
+						                                        	var clienteform = record.get('shi_nombre');
+						                                        	var estadoform = record.get('shi_estado');
+						                                        	var codigoform = record.get("shi_codigo")
+						                                        	client.shi_nombre = record.get('shi_nombre');
+						                                        	client.shi_estado = record.get('shi_estado');
+						                                        
+								                                        if(record.get('shi_estado') == '1'){
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: client.id_menu,
+
+																			
+
+									                                            icons:[
+									                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
+
+									                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
 
 
-															var botonTxt = Ext.getCmp('boton').getText();
-															if (botonTxt == 'Guardar' || botonTxt == 'Update') {
-																Ext.getCmp('boton').setText('Editar');
-																Ext.getCmp('boton').setIcon('/images/icon/editar.png');
-															}*/
+									                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
+									                                            ]
+									                                        });
+									                                    }else{
+								                                        	return '';
+								                                        }
+							                                    }else{
+						                                        	return '';
+						                                        }
+						                                    }
+						                                },
 
-															//lotizer.getReloadGridlotizer2(lotizer.id_lote);
+						                                {
+						                                    text: 'id_Contrato',
+						                                    dataIndex: 'cod_contrato',
+						                                    width: 80,
+						                                    align: 'center'
+						                                },
+
+						                                {
+						                                    text: 'Contrato',
+						                                    dataIndex: 'pro_descri',
+						                                    width: 300,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Editar Contrato',
+						                                    dataIndex: 'estadoC',
+						                                    //loocked : true,
+						                                    width: 150,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        if(parseInt(record.get('nivel')) == 1){
+						                                        	var clienteform = record.get('shi_nombre');
+						                                        	var estadoform = record.get('shi_estado');
+						                                        	var codigoform = record.get("shi_codigo")
+						                                        	client.shi_nombre = record.get('shi_nombre');
+						                                        	client.shi_estado = record.get('shi_estado');
+						                                        
+								                                        if(record.get('shi_estado') == '1'){
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: client.id_menu,
+
+																			
+
+									                                            icons:[
+									                                                {id_serv: 9, img: 'add.png', qtip: 'Click para Nuevo Contrato.', js: "client.getFormMant('I','"+clienteform+"','"+estadoform+"','"+codigoform+"')"}
+
+									                                            ]
+									                                        });
+									                                    }
+									                                    else
+									                                    {
+									                                    }
+							                                    }else{
+							                                    	 if(record.get('shi_estado') == '1'){
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: client.id_menu,
+
+																			
+
+									                                            icons:[
+
+									                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Contrato.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
+
+									                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
+
+
+									                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Contrato.', js: "client.setEditLote("+rowIndex+",'D')"}
+									                                            ]
+
+								                                        });
+									                                }        		
+						                                        	//return '';
+						                                        }
+						                                    }
+						                                },
+
+
+
+						                                {
+						                                    text: 'Fecha Ingreso',
+						                                    dataIndex: 'fec_ingreso',
+						                                    width: 150,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'User',
+						                                    dataIndex: 'id_user',
+						                                    width: 120,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Fecha Update',
+						                                    dataIndex: 'fecact',
+						                                    width: 150,
+						                                    align: 'center'
+						                                },
+
+
+
+						                                {
+						                                    text: 'Estado Registro',
+						                                    dataIndex: 'shi_estado',
+						                                    loocked : true,
+						                                    width: 100,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        metaData.style = "padding: 0px; margin: 0px";
+						                                        var estado = (record.get('shi_estado')=='1')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        var qtip = (record.get('shi_estado')=='1')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+						                                        return global.permisos({
+						                                            type: 'link',
+						                                            id_menu: client.id_menu,
+						                                            icons:[
+						                                                {id_serv: 9, img: estado, qtip: qtip, js: ""}
+						                                            ]
+						                                        });
+						                                    }
+						                                }
+
+/*
+						                                {
+						                                    text: 'Editar',
+						                                    dataIndex: 'shi_estado',
+						                                    //loocked : true,
+						                                    width: 200,
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                        //console.log(record);
+						                                        	var clienteform = record.get('shi_nombre');
+						                                        	var estadoform = record.get('shi_estado');
+						                                        	var codigoform = record.get("shi_codigo")
+						                                        	client.shi_nombre = record.get('shi_nombre');
+						                                        	client.shi_estado = record.get('shi_estado');
+						                                        
+						                                        if(record.get('shi_estado') == '1'){
+							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        return global.permisos({
+							                                            type: 'link',
+							                                            id_menu: client.id_menu,
+
+																	
+
+							                                            icons:[
+							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
+
+							                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
+
+
+							                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
+							                                            ]
+							                                        });
+							                                    }else{
+						                                        	return '';
+						                                        }
+						                                    }
+						                                }
+
+*/
+
+
+											        ],
+							                        hideItemsReadFalse: function () {
+													    var me = this,
+													        items = me.getReferences().treelistRef.itemMap;
+
+
+													    for(var i in items){
+													        if(items[i].config.node.data.read == false){
+													            items[i].destroy();
+													        }
+													    }
+													},
+							                        trackMouseOver: false,
+							                        listeners:{
+							                            afterrender: function(obj){
+	
+							                                
+							                            },
+														beforeselect:function(obj, record, index, eOpts ){
 
 														}
 							                        }
 							                    }
 											]
 										}
+										
+
+											
+
+
 									]
 									
 								}
@@ -850,7 +1064,7 @@
 				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});*/
 			},
 			setEditLote:function(index,op){
-				var rec = Ext.getCmp(client.id + '-grid').getStore().getAt(index);
+				var rec = Ext.getCmp(client.id + '-gridTree').getStore().getAt(index);
 			/*	client.id_lote=rec.data.id_lote;*/
 			//	var shi_codigo = Ext.getCmp(client.id+'-shi_codigo').getValue();
 			/*	var fac_cliente = Ext.getCmp(client.id+'-cbx-contrato').getValue();
@@ -1017,7 +1231,7 @@
 		            return false;
 		        }*/
 
-				Ext.getCmp(client.id + '-grid').getStore().load(
+				Ext.getCmp(client.id + '-gridTree').getStore().load(
 	                {params: {vp_name:name,vp_date:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
