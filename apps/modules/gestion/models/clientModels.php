@@ -56,14 +56,8 @@ public function get_list_clientcontratos($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'set_client');
         parent::SetParameterSP($p['vp_op'], 'varchar');
-        //parent::SetParameterSP($p['vp_id_lote'], 'int');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
-        /*parent::SetParameterSP($p['vp_fac_cliente'], 'int');*/
         parent::SetParameterSP(utf8_decode(trim($p['vp_nombre'])), 'varchar');
-        /*parent::SetParameterSP(utf8_decode(trim($p['vp_descripcion'])), 'varchar');
-        parent::SetParameterSP($p['vp_tipdoc'], 'varchar');
-        parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
-        parent::SetParameterSP($p['vp_ctdad'], 'int');*/
         parent::SetParameterSP($p['vp_estado'], 'varchar');
         parent::SetParameterSP(USR_ID, 'int');
 
@@ -71,6 +65,25 @@ public function get_list_clientcontratos($p){
         $array = parent::ExecuteSPArray();
         return $array;
     }
+
+    public function set_contrato($p){
+        $p['vp_id_lote'] =(empty($p['vp_id_lote']))?0:$p['vp_id_lote'];
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_contrato');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP(utf8_decode(trim($p['vp_nombre'])), 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP($p['vp_cod_contrato'], 'int');
+        parent::SetParameterSP(USR_ID, 'int');
+
+         //echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+
+
 
     public function get_list_shipper($p){
         parent::ReiniciarSQL();

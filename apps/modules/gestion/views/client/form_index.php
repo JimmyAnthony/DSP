@@ -11,7 +11,6 @@
 			fac_cliente:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
-				//Ext.tip.QuickTipManager.init();
 
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
@@ -41,7 +40,7 @@
 					    },
 	                    load: function(obj, records, successful, opts){
 	                 		Ext.getCmp(client.id + '-gridTree').doLayout();
-	                 		storeTree.removeAt(0);
+	                 		storeTree2.removeAt(0);
 	                 		Ext.getCmp(client.id + '-gridTree').collapseAll();
 		                    Ext.getCmp(client.id + '-gridTree').getRootNode().cascadeBy(function (node) {
 		                          if (node.getDepth() < 1) { node.expand(); }
@@ -88,31 +87,6 @@
                 proxy:{
                     type: 'ajax',
                     url: client.url+'get_list_lotizer/',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
-            });
-			var store_shipper = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'shi_codigo', type: 'string'},
-                    {name: 'shi_nombre', type: 'string'},
-                    {name: 'shi_logo', type: 'string'},
-                    {name: 'fec_ingreso', type: 'string'},                    
-                    {name: 'shi_estado', type: 'string'},
-                    {name: 'id_user', type: 'string'},
-                    {name: 'fecha_actual', type: 'string'}
-                ],
-                autoLoad:true,
-                proxy:{
-                    type: 'ajax',
-                    url: client.url+'get_list_shipper/',
                     reader:{
                         type: 'json',
                         rootProperty: 'data'
@@ -183,7 +157,7 @@
 				});
 				tab.add({
 					id:client.id+'-tab',
-					border:false,
+					border:true,
 					autoScroll:true,
 					closable:true,
 					layout:'border',
@@ -191,104 +165,18 @@
 						{
                             region:'north',
                             layout:'border',
-                            border:false,
-                            height:150,
+                            border:true,
+                            height:100,
                             items:[
-								/*{
-		                            region:'west',
-		                            border:false,
-		                            xtype: 'uePanelS',
-		                            logo: 'CL',
-		                            title: 'Clientes y Contratos',
-		                            legend: 'Seleccione Clientes Registrados',
-		                            width:600,
-		                            //height:90,
-		                            items:[
-		                                {
-		                                    xtype:'panel',
-		                                    border:false,
-		                                    bodyStyle: 'background: transparent',
-		                                    padding:'2px 5px 1px 5px',
-		                                    layout:'column',
-		                                    items: [
-		                                    	{
-			                                   		width: 250,border:false,
-			                                    	padding:'0px 2px 0px 0px',  
-		                                            bodyStyle: 'background: transparent',
-			                                 		items:[
-			                                                {
-			                                                    xtype:'combo',
-			                                                    fieldLabel: 'Cliente',
-			                                                    id:lotizer.id+'-cbx-cliente',
-			                                                    store: store_shipper,
-			                                                    queryMode: 'local',
-			                                                    triggerAction: 'all',
-			                                                    valueField: 'shi_codigo',
-			                                                    displayField: 'shi_nombre',
-			                                                    emptyText: '[Seleccione]',
-			                                                    labelAlign:'right',
-			                                                    //allowBlank: false,
-			                                                    labelWidth: 50,
-			                                                    width:'100%',
-			                                                    anchor:'100%',
-			                                                    //readOnly: true,
-			                                                    listeners:{
-			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
-			                                                        },
-			                                                        select:function(obj, records, eOpts){
-			                                                        	Ext.getCmp(lotizer.id+'-cbx-contrato').setValue('');
-			                                                			lotizer.getContratos(records.get('shi_codigo'));
-			                                                        }
-			                                                    }
-			                                                }
-			                                 		]
-			                                    },
-			                                    {
-			                                   		width: 270,border:false,
-			                                    	padding:'0px 2px 0px 0px',  
-		                                            bodyStyle: 'background: transparent',
-			                                 		items:[
-			                                                {
-			                                                    xtype:'combo',
-			                                                    fieldLabel: 'Contrato',
-			                                                    id:lotizer.id+'-cbx-contrato',
-			                                                    store: store_contratos,
-			                                                    queryMode: 'local',
-			                                                    triggerAction: 'all',
-			                                                    valueField: 'fac_cliente',
-			                                                    displayField: 'pro_descri',
-			                                                    emptyText: '[Seleccione]',
-			                                                    labelAlign:'right',
-			                                                    //allowBlank: false,
-			                                                    labelWidth: 50,
-			                                                    width:'100%',
-			                                                    anchor:'100%',
-			                                                    //readOnly: true,
-			                                                    listeners:{
-			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
-			                                                        },
-			                                                        select:function(obj, records, eOpts){
-			                                                			
-			                                                        }
-			                                                    }
-			                                                }
-			                                 		]
-			                                    }
-		                                    ]
-		                                }
-		                            ]
-		                        },*/
 		                        {
 		                            region:'center',
-		                            border:false,
+		                            border:true,
 		                            xtype: 'uePanelS',
 		                            logo: 'CL',
 		                            title: 'Listado de Clientes',
 		                            legend: 'Búsqueda de Clientes registrados',
-		                            width:1000,
-		                            height:40,
+		                            width:1500,
+		                            height:100,
 		                            items:[
 		                                {
 		                                    xtype:'panel',
@@ -296,16 +184,14 @@
 		                                    bodyStyle: 'background: transparent',
 		                                    padding:'2px 5px 1px 5px',
 		                                    layout:'column',
-		                                    height: 60,
-
-
-
-
+		                                    height: 100,
+		                                    //width : 1000,
 
 		                                    items: [
 		                                        {
 
-		                                            width:300,border:false,
+		                                            width:350,
+		                                            border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -314,7 +200,6 @@
 		                                                    fieldLabel: 'Cliente',
 		                                                    id:client.id+'-txt-cliente',
 		                                                    labelWidth:55,
-		                                                    //readOnly:true,
 		                                                    labelAlign:'right',
 		                                                    width:'100%',
 		                                                    anchor:'100%'
@@ -333,9 +218,8 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:60,
 			                                                labelAlign:'right',
-			                                                value:new Date(' '),
+			                                                value:new Date(),
 			                                                format: 'Ymd',
-			                                                //readOnly:true,
 			                                                width: '100%',
 			                                                anchor:'100%'
 			                                            }
@@ -357,14 +241,11 @@
 			                                                    displayField: 'name',
 			                                                    emptyText: '[Seleccione]',
 			                                                    labelAlign:'right',
-			                                                    //allowBlank: false,
 			                                                    labelWidth: 50,
 			                                                    width:'100%',
 			                                                    anchor:'100%',
-			                                                    //readOnly: true,
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
 			                                                            Ext.getCmp(client.id+'-txt-estado-filter').setValue(' ');
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
@@ -375,7 +256,9 @@
 			                                 		]
 			                                    },
 		                                        {
-		                                            width: 180,border:false,
+		                                            width: 450,
+		                                            height : 100,
+		                                            border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -385,28 +268,17 @@
 									                        icon: '/images/icon/binocular.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
 									                            },
 									                            click: function(obj, e){	             	
 									                            	var name = Ext.getCmp(client.id+'-txt-cliente').getValue();
 									                            	var fecha = Ext.getCmp(client.id+'-txt-fecha-filtro').getValue();
-									                            	
 
-									                            	
-
-									                            	if(fecha == '0NaNNaNNaN' || fecha == '' ) 
+									                            	if(fecha == ' ' || fecha == '' ) 
 									                            
 									                            	{
 									                            				fecha = '';
 									                            	} 
 									                          
-
-
 									                            	var estado = Ext.getCmp(client.id+'-txt-estado-filter').getValue();	
 
 
@@ -416,20 +288,12 @@
 									                    },
 									                    {
 															id: client.id + '-cancelar',
-															//margin:'10px 2px 0px 0px',  
-															//bodyStyle: 'background: transparent',
 									                        xtype:'button',
 									                        width:80,
 									                        text: 'Limpiar',
 									                        icon: '/images/icon/broom.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
 									                            },
 									                            click: function(obj, e){
 																	client.set_lotizer_clear();
@@ -437,79 +301,50 @@
 									                        }
 									                    },
 
-									                ]    			
-
-
-		                                            
-		                                        }
-		                                    ]
-   			
-
-		                                }
-		                            ]/*,
-
-								                	bbar:[       
-								                    '->',
-								                    '-',
-
 									                    {
 															id: client.id + '-nuevo',
-															//margin:'10px 2px 0px 0px',  
-															//bodyStyle: 'background: transparent',
-									                        xtype:'button',
-									                        //width:80,
-									                        text: 'Nuevo',
-									                        icon: '/images/icon/add_green_button.png',
-									                        listeners:{
-									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });
-									                            },
-									                            click: function(obj, e){
-																	client.getFormMant('I','','1',0);
-									                            }
-									                        }
-									                    }
-									                ]*/
-
-
-
-		                        }
-		                    ],
-								                	bbar:[  
-								                    '-',								                	     
-									                    {
-															id: client.id + '-nuevo',
-															//margin:'10px 2px 0px 0px',  
-															//bodyStyle: 'background: transparent',
 									                        xtype:'button',
 									                        width:150,
-									                        //height: 30,
 									                        text: 'Nuevo Cliente',
 									                        icon: '/images/icon/add_green_button.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
+
 									                            },
 									                            click: function(obj, e){
 																	client.getFormMant('I','','1',0);
 									                            }
 									                        }
 									                    },
-								                    '-'								                	     									                    
-
-									                ]
 
 
+									                    {
+															id: client.id + '-nuevo2',
+									                        xtype:'button',
+									                        width:150,
+									                        text: 'Nuevo Contrato',
+									                        icon: '/images/icon/add.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+
+									                            },
+									                            click: function(obj, e){
+																	client.getFormMant2('I','','A',0,0);
+									                            }
+									                        }
+									                    },
+
+
+									                ]    			
+		                                            
+		                                        }
+		                                    ]
+
+		                                }
+		                            ]
+
+		                        }
+		                    ]
 		                },
 						{
 							region:'center',
@@ -517,272 +352,8 @@
 							items:[
 								{
 									region:'center',
-									//width:'100%',
 									layout:'border',
 									items:[
-										/*{
-											region:'north',
-											border:false,
-											height:70,
-											items:[
-												{
-			                                        xtype: 'fieldset',
-			                                        margin: '5 5 5 10',
-			                                        title:'<b>Mantenimiento Clientes</b>',
-			                                        border:true,
-			                                        bodyStyle: 'background: transparent',
-			                                        padding:'2px 5px 1px 5px',
-			                                        layout:'column',
-			                                        items: [
-			                                            {
-			                                                columnWidth: .3,border:false,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Cliente',
-			                                                        id:client.id+'-txt-nombre',
-			                                                        labelWidth:60,
-			                                                        //readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-			                                                columnWidth: .4,border:false,hidden:true,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Descripción',
-			                                                        id:client.id+'-txt-descripcion',
-			                                                        labelWidth:70,
-			                                                        //readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-		                                               		width: 150,border:false,
-		                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-		                                             		items:[
-				                                                    {
-				                                                        xtype:'combo',
-				                                                        fieldLabel: 'Estado',
-				                                                        id:client.id+'-txt-estado',
-				                                                        store: store_estado_lote,
-				                                                        queryMode: 'local',
-				                                                        triggerAction: 'all',
-				                                                        valueField: 'code',
-				                                                        displayField: 'name',
-				                                                        emptyText: '[Seleccione]',
-				                                                        labelAlign:'right',
-				                                                        //allowBlank: false,
-				                                                        labelWidth: 60,
-				                                                        width:'100%',
-				                                                        anchor:'100%',
-				                                                        //readOnly: true,
-				                                                        listeners:{
-				                                                            afterrender:function(obj, e){
-				                                                                // obj.getStore().load();
-				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('1');
-				                                                            },
-				                                                            select:function(obj, records, eOpts){
-				                                                    
-				                                                            }
-				                                                        }
-				                                                    }
-		                                             		]
-		                                                },
-		                                                {
-															id: client.id + '-grabar',
-															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-									                        xtype:'button',
-									                        width:80,
-									                        text: 'Grabar',
-									                        icon: '/images/icon/save.png',
-									                        listeners:{
-									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });
-									                            },
-									                            click: function(obj, e){
-																	client.set_client(3,'¿Está seguro de guardar?');
-
-									                            }
-									                        }
-									                    },
-									                    {
-															//id: client.id + '-cancelar',
-															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-									                        xtype:'button',
-									                        width:80,
-									                        text: 'Limpiar',
-									                        icon: '/images/icon/broom.png',
-									                        listeners:{
-									                            beforerender: function(obj, opts){
-									                                //*global.permisos({
-									                                //    id: 15,
-									                                //    id_btn: obj.getId(), 
-									                                //    id_menu: gestion_devolucion.id_menu,
-									                                //    fn: ['panel_asignar_gestion.limpiar']
-									                                //});
-
-									                                
-									                            },
-									                            click: function(obj, e){
-																	client.set_lotizer_clear();
-									                            }
-									                        }
-									                    }
-			                                            
-			                                        ]
-			                                    }
-											]
-										},
-
-
-
-										{
-											region:'center',
-											border:false,
-											layout:'fit',
-											items:[
-												{
-							                        xtype: 'grid',
-							                        //collapsible: true,
-											        useArrows: true,
-											        rootVisible: true,
-											        multiSelect: true,
-											        //root:'Task',
-							                        id: client.id + '-grid',
-							                        //height: 370,
-							                        //reserveScrollbar: true,
-							                        //rootVisible: false,
-							                        //store: store,
-							                        //layout:'fit',
-							                        columnLines: true,
-							                        store: storeTree,
-										            columns: [
-											            {
-											            	//xtype: 'treecolumn',
-						                                    text: 'id_Cliente',
-						                                    id:client.id+'-shi_codigo',
-						                                    dataIndex: 'shi_codigo',
-						                                    sortable: true,
-						                                    width: 150
-						                                },
-						                                {
-						                                    text: 'Nombre',
-						                                    dataIndex: 'shi_nombre',
-						                                    flex : 2
-						                                },
-						                                {
-						                                    text: 'Fecha Ingreso',
-						                                    dataIndex: 'fec_ingreso',
-						                                    width: 200,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'usuario',
-						                                    dataIndex: 'id_user',
-						                                    width: 150,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Fecha Update',
-						                                    dataIndex: 'fecact',
-						                                    width: 200,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Estado',
-						                                    dataIndex: 'shi_estado',
-						                                    loocked : true,
-						                                    width: 200,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('shi_estado')=='1')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('shi_estado')=='1')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-						                                        return global.permisos({
-						                                            type: 'link',
-						                                            id_menu: client.id_menu,
-						                                            icons:[
-						                                                {id_serv: 9, img: estado, qtip: qtip, js: ""}
-						                                            ]
-						                                        });
-						                                    }
-						                                },
-						                                {
-						                                    text: 'Editar',
-						                                    dataIndex: 'shi_estado',
-						                                    //loocked : true,
-						                                    width: 200,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        	var clienteform = record.get('shi_nombre');
-						                                        	var estadoform = record.get('shi_estado');
-						                                        	var codigoform = record.get("shi_codigo")
-						                                        	client.shi_nombre = record.get('shi_nombre');
-						                                        	client.shi_estado = record.get('shi_estado');
-						                                        
-						                                        if(record.get('shi_estado') == '1'){
-							                                        metaData.style = "padding: 0px; margin: 0px";
-							                                        return global.permisos({
-							                                            type: 'link',
-							                                            id_menu: client.id_menu,
-
-																	
-
-							                                            icons:[
-							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
-
-							                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
-
-
-							                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
-							                                            ]
-							                                        });
-							                                    }else{
-						                                        	return '';
-						                                        }
-						                                    }
-						                                }
-											        ],
-							                        hideItemsReadFalse: function () {
-													    var me = this,
-													        items = me.getReferences().treelistRef.itemMap;
-
-
-													    for(var i in items){
-													        if(items[i].config.node.data.read == false){
-													            items[i].destroy();
-													        }
-													    }
-													},
-							                        trackMouseOver: false,
-							                        listeners:{
-							                            afterrender: function(obj){
-							                                
-							                            },
-														beforeselect:function(obj, record, index, eOpts ){
-														}
-							                        }
-							                    }
-											]
-										},*/
-
 										
 										{
 											region:'center',
@@ -799,60 +370,22 @@
 							                        store: storeTree2,
 										            columns: [
 											            {
-											            	xtype: 'treecolumn',
+											            	hidden : true,
+											            	//xtype: 'treecolumn',
 						                                    text: 'id_Cliente',
 						                                    dataIndex: 'shi_codigo',
 						                                    sortable: true,
 						                                    width: 80
 						                                },
 						                                {
+						                                	xtype: 'treecolumn',
 						                                    text: 'Nombre',
 						                                    dataIndex: 'shi_nombre',
-						                                    flex: 300
+						                                    flex: 2
 						                                },
 
 						                                {
-						                                    text: 'Editar Cliente',
-						                                    dataIndex: 'estado',
-						                                    //loocked : true,
-						                                    width: 150,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        if(parseInt(record.get('nivel')) == 1){
-						                                        	var clienteform = record.get('shi_nombre');
-						                                        	var estadoform = record.get('shi_estado');
-						                                        	var codigoform = record.get("shi_codigo")
-						                                        	client.shi_nombre = record.get('shi_nombre');
-						                                        	client.shi_estado = record.get('shi_estado');
-						                                        
-								                                        if(record.get('shi_estado') == '1'){
-									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return global.permisos({
-									                                            type: 'link',
-									                                            id_menu: client.id_menu,
-
-																			
-
-									                                            icons:[
-									                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
-
-									                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
-
-
-									                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
-									                                            ]
-									                                        });
-									                                    }else{
-								                                        	return '';
-								                                        }
-							                                    }else{
-						                                        	return '';
-						                                        }
-						                                    }
-						                                },
-
-						                                {
+						                                    hidden: true,
 						                                    text: 'id_Contrato',
 						                                    dataIndex: 'cod_contrato',
 						                                    width: 80,
@@ -862,68 +395,9 @@
 						                                {
 						                                    text: 'Contrato',
 						                                    dataIndex: 'pro_descri',
-						                                    width: 300,
+						                                    flex: 1,
 						                                    align: 'center'
 						                                },
-						                                {
-						                                    text: 'Editar Contrato',
-						                                    dataIndex: 'estadoC',
-						                                    //loocked : true,
-						                                    width: 150,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        if(parseInt(record.get('nivel')) == 1){
-						                                        	var clienteform = record.get('shi_nombre');
-						                                        	var estadoform = record.get('shi_estado');
-						                                        	var codigoform = record.get("shi_codigo")
-						                                        	client.shi_nombre = record.get('shi_nombre');
-						                                        	client.shi_estado = record.get('shi_estado');
-						                                        
-								                                        if(record.get('shi_estado') == '1'){
-									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return global.permisos({
-									                                            type: 'link',
-									                                            id_menu: client.id_menu,
-
-																			
-
-									                                            icons:[
-									                                                {id_serv: 9, img: 'add.png', qtip: 'Click para Nuevo Contrato.', js: "client.getFormMant('I','"+clienteform+"','"+estadoform+"','"+codigoform+"')"}
-
-									                                            ]
-									                                        });
-									                                    }
-									                                    else
-									                                    {
-									                                    }
-							                                    }else{
-							                                    	 if(record.get('shi_estado') == '1'){
-									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return global.permisos({
-									                                            type: 'link',
-									                                            id_menu: client.id_menu,
-
-																			
-
-									                                            icons:[
-
-									                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Contrato.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
-
-									                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
-
-
-									                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Contrato.', js: "client.setEditLote("+rowIndex+",'D')"}
-									                                            ]
-
-								                                        });
-									                                }        		
-						                                        	//return '';
-						                                        }
-						                                    }
-						                                },
-
-
 
 						                                {
 						                                    text: 'Fecha Ingreso',
@@ -944,8 +418,6 @@
 						                                    align: 'center'
 						                                },
 
-
-
 						                                {
 						                                    text: 'Estado Registro',
 						                                    dataIndex: 'shi_estado',
@@ -955,8 +427,17 @@
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
 						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('shi_estado')=='1')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('shi_estado')=='1')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+							                                        if(parseInt(record.get('nivel')) == 1) {	
+						                                        	var estado = (record.get('shi_estado')=='1')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        	var qtip = (record.get('shi_estado')=='1')?'Estado de Cliente Activo.':'Estado de Cliente Inactivo.';
+						                                        }
+						                                        else
+						                                        {
+						                                       		var estado = (record.get('shi_estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        	var qtip = (record.get('shi_estado')=='A')?'Estado de Contrato Activo.':'Estado de Contrato Inactivo.';
+
+						                                        }
+						                                        
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: client.id_menu,
@@ -965,47 +446,79 @@
 						                                            ]
 						                                        });
 						                                    }
-						                                }
+						                                },
 
-/*
+
 						                                {
-						                                    text: 'Editar',
-						                                    dataIndex: 'shi_estado',
-						                                    //loocked : true,
-						                                    width: 200,
+						                                    text: 'Edición',
+						                                    dataIndex: 'estado',
+						                                    width: 150,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
+
+						                                        if(parseInt(record.get('nivel')) == 1){
 						                                        	var clienteform = record.get('shi_nombre');
-						                                        	var estadoform = record.get('shi_estado');
-						                                        	var codigoform = record.get("shi_codigo")
+						                                        	var estadoform = record.get('shi_estado');  	
+						                                        	var codigoform = record.get("shi_codigo");  	
+
 						                                        	client.shi_nombre = record.get('shi_nombre');
 						                                        	client.shi_estado = record.get('shi_estado');
 						                                        
-						                                        if(record.get('shi_estado') == '1'){
-							                                        metaData.style = "padding: 0px; margin: 0px";
-							                                        return global.permisos({
-							                                            type: 'link',
-							                                            id_menu: client.id_menu,
+								                                        if(record.get('shi_estado') == '1'){
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: client.id_menu,
 
-																	
+																			
 
-							                                            icons:[
-							                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
+									                                            icons:[
+									                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Cliente.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"},
 
-							                                               //{id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "client.setEditLote("+rowIndex+",'U')"},
+									                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Cliente.', js: "client.setEditLote("+rowIndex+",'D')"}
+									                                            ]
+									                                        });
+									                                    }else{
 
-
-							                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "client.setEditLote("+rowIndex+",'D')"}
-							                                            ]
-							                                        });
+								                                        	return '';
+								                                        }
 							                                    }else{
-						                                        	return '';
+							                                  		var clienteform = record.get('pro_descri');
+							                                  		var estadoform = record.get('shi_estado');
+							                                  		var codigoform = record.get("shi_codigo");
+							                                  		var contraform = record.get("cod_contrato");
+
+						                                        	client.shi_nombre = record.get('pro_descri');
+						                                        	client.shi_estado = record.get('shi_estado');
+						                                        	//client.cod_contrato = record.get("cod_contrato"):
+
+
+									                                    	if(record.get('shi_estado') == 'A'){
+											                                        metaData.style = "padding: 0px; margin: 0px";
+											                                        return global.permisos({
+											                                            type: 'link',
+											                                            id_menu: client.id_menu,
+
+																					
+
+											                                            icons:[
+
+											                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Contrato.', js: "client.getFormMant2('U','"+clienteform+"','"+estadoform+"','"+codigoform+"','"+contraform+"')"},
+
+
+											                                                {id_serv: 9, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Contrato.', js: "client.setEditLote2("+rowIndex+",'D')"}
+											                                            ]
+
+										                                        });
+											                                }        		
+											                                else {
+											                        			return '';        	
+											                                }	
+						                                        	
 						                                        }
 						                                    }
 						                                }
 
-*/
 
 
 											        ],
@@ -1035,9 +548,6 @@
 										}
 										
 
-											
-
-
 									]
 									
 								}
@@ -1049,7 +559,7 @@
 	                        global.state_item_menu(client.id_menu, true);
 	                    },
 	                    afterrender: function(obj, e){
-	                    	//lotizer.getReloadGridlotizer('');
+
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,client.id_menu);
 	                    },
@@ -1061,43 +571,52 @@
 				}).show();
 			},
 			getImagen:function(param){
-				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});*/
+
 			},
 			setEditLote:function(index,op){
 				var rec = Ext.getCmp(client.id + '-gridTree').getStore().getAt(index);
-			/*	client.id_lote=rec.data.id_lote;*/
-			//	var shi_codigo = Ext.getCmp(client.id+'-shi_codigo').getValue();
-			/*	var fac_cliente = Ext.getCmp(client.id+'-cbx-contrato').getValue();
-				if(rec.data.shi_codigo!=shi_codigo){
-					Ext.getCmp(client.id+'-cbx-cliente').setValue(rec.data.shi_codigo);
-					Ext.getCmp(client.id+'-cbx-contrato').setValue('');
-					client.getContratos(rec.data.shi_codigo);
-				}
-				Ext.getCmp(client.id+'-cbx-contrato').setValue(rec.data.fac_cliente);
-				client.shi_codigo=rec.data.shi_codigo;
-				client.fac_cliente=rec.data.fac_cliente;
-			*/
 				client.shi_codigo = (rec.data.shi_codigo)
 				client.opcion=op;
 				if(op!='D'){
 
 					Ext.getCmp(client.id+'-txt-nombre').setValue(rec.data.shi_nombre);
-					//Ext.getCmp(client.id+'-txt-descripcion').setValue(rec.data.descripcion);
+
 				  	Ext.getCmp(client.id+'-txt-estado').setValue(rec.data.shi_estado);
-				  	//Ext.getCmp(client.id+'-txt-tot_folder').setValue(rec.data.tot_folder);
+
 				  	Ext.getCmp(client.id+'-txt-nombre').focus(true);
-					//console.log(rec.data);
+
 				}else{
 					client.set_client(2,'¿Está seguro de Desactivar?');
 				}
 			},
+			setEditLote2:function(index,op){
+				var rec = Ext.getCmp(client.id + '-gridTree').getStore().getAt(index);
+				client.shi_codigo = (rec.data.shi_codigo)
+				client.cod_contrato = (rec.data.cod_contrato)
+				client.shi_nombre = (rec.data.shi_nombre)
+				client.shi_estado = (rec.data.shi_estado)
+				client.opcion=op;
+				if(op!='D'){
+
+					Ext.getCmp(client.id+'-txt-nombre').setValue(rec.data.shi_nombre);
+
+				  	Ext.getCmp(client.id+'-txt-estado').setValue(rec.data.shi_estado);
+
+				  	Ext.getCmp(client.id+'-txt-nombre').focus(true);
+
+				}else{
+					client.set_contrato(2,'¿Está seguro de Desactivar?');
+				}
+			},
+
+
 			set_lotizer_clear:function(){
 				Ext.getCmp(client.id+'-txt-estado-filter').setValue(' ');
 				Ext.getCmp(client.id+'-txt-fecha-filtro').setValue('Y-m-d');
 				Ext.getCmp(client.id+'-txt-cliente').setValue('');
-			  	//client.id_lote=0;
+
 			  	client.shi_codigo=0;
-				//client.fac_cliente=0;
+
 				client.opcion='I';
 				Ext.getCmp(client.id+'-txt-cliente').focus(true);
 			},
@@ -1105,10 +624,6 @@
 			set_lotizer_clearform:function(){
 				Ext.getCmp(client.id+'-txt-nombre').setValue('');
 			  	Ext.getCmp(client.id+'-txt-estado').setValue('1');
-			  	//client.id_lote=0;
-			  	//client.shi_codigo=0;
-				//client.fac_cliente=0;
-				//client.opcion='I';
 				Ext.getCmp(client.id+'-txt-nombre').focus(true);
 			},
 
@@ -1118,18 +633,6 @@
 
 			setValidaLote:function(){
 				if(client.opcion=='I' || client.opcion=='U'){
-					/*var shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
-					if(shi_codigo== null || shi_codigo==''){
-			            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
-			            return false;
-			        }
-			        client.shi_codigo=shi_codigo;
-					var fac_cliente = Ext.getCmp(client.id+'-cbx-contrato').getValue();
-					if(fac_cliente== null || fac_cliente==''){
-			            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
-			            return false;
-			        }
-			        client.fac_cliente=fac_cliente;*/
 					var nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
 					if(nombre== null || nombre==''){
 			            global.Msg({msg:"Ingrese un nombre por favor.",icon:2,fn:function(){}});
@@ -1139,15 +642,11 @@
 			        if(estado== null || estado==''){
 			            global.Msg({msg:"Ingrese un estado por favor.",icon:2,fn:function(){}});
 			            return false; 
-			        }/*
-				  	var total = Ext.getCmp(client.id+'-txt-tot_folder').getValue();
-				  	if(total== null || total==0 || total==''){
-			            global.Msg({msg:"Ingrese el total de folderes por favor.",icon:2,fn:function(){}});
-			            return false;
-			        }*/
+			        }
 			    }
 		        return true;
 			},
+
 			set_client:function(ico,msn){
 				if(!client.setValidaLote())return;
 				global.Msg({
@@ -1162,22 +661,12 @@
 								params:{
 									vp_op: client.opcion,
 									vp_shi_codigo:client.shi_codigo,
-									/*
-									vp_fac_cliente:client.fac_cliente,
-			                        vp_id_lote:client.id_lote,*/
 			                        vp_nombre:client.shi_nombre,
-			                        /*vp_descripcion:Ext.getCmp(client.id+'-txt-descripcion').getValue(),
-			                        vp_tipdoc:Ext.getCmp(client.id+'-txt-tipdoc').getValue(),
-			                        vp_lote_fecha:Ext.getCmp(client.id+'-txt-fecha').getValue(),
-			                        vp_ctdad:Ext.getCmp(client.id+'-txt-tot_folder').getValue(),*/
 			                        vp_estado:client.shi_estado
-			                        //vp_estado:Ext.getCmp(client.id+'-txt-estado').getValue()
 								},
 								success:function(response,options){
 									var res = Ext.decode(response.responseText);
 									Ext.getCmp(client.id+'-tab').el.unmask();
-									//console.log(res);
-									///*****Terrestre****//
 									global.Msg({
 		                                msg: res.msn,
 		                                icon: parseInt(res.error),
@@ -1187,7 +676,6 @@
 		                                    	if (client.opcion == 'U' || client.opcion == 'I') {
 		                                    	Ext.getCmp(client.id+'-win-form').close();
 		                                    	}
-		                                    	//Ext.getCmp(client.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
 		                                    	client.getReloadGridlotizer('');
 		                                    	client.set_lotizer_clear();
 		                                    }
@@ -1199,48 +687,71 @@
 		            }
                 });
 			},
+
+			set_contrato:function(ico,msn){
+				if(!client.setValidaLote())return;
+				global.Msg({
+                    msg: msn,
+                    icon: ico,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+	                        Ext.getCmp(client.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+	                        Ext.Ajax.request({
+								url: client.url + 'set_contrato/',
+								params:{
+									vp_op: client.opcion,
+									vp_shi_codigo:client.shi_codigo,
+			                        vp_nombre:client.shi_nombre,
+			                        vp_estado:client.shi_estado,
+			                        vp_cod_contrato:client.cod_contrato
+								},
+								success:function(response,options){
+									var res = Ext.decode(response.responseText);
+									Ext.getCmp(client.id+'-tab').el.unmask();
+									global.Msg({
+		                                msg: res.msn,
+		                                icon: parseInt(res.error),
+		                                buttons: 1,
+		                                fn: function(btn){
+		                                    if(parseInt(res.error)==1){
+		                                    	if (client.opcion == 'U' || client.opcion == 'I') {
+		                                    	Ext.getCmp(client.id+'-win-form').close();
+		                                    	}
+		                                    	client.getReloadGridlotizer('');
+		                                    	client.set_lotizer_clear();
+		                                    }
+		                                }
+		                            });
+				    			}
+				    		});
+				    	}
+		            }
+                });
+			},
+
+
 			getContratos:function(shi_codigo){
 				Ext.getCmp(client.id+'-cbx-contrato').getStore().removeAll();
 				Ext.getCmp(client.id+'-cbx-contrato').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo},
 	                callback:function(){
-	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
+
 	                }
 	            });
 			},
 			getReloadGridlotizer:function(name,fecha,estado){
-				//lotizer.set_lotizer_clear();
-				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				/*var shi_codigo = Ext.getCmp(lotizer.id+'-cbx-cliente').getValue();
-				var fac_cliente = Ext.getCmp(lotizer.id+'-cbx-contrato').getValue();*/
-				//var name = Ext.getCmp(lotizer.id+'-nombre').getValue();
-				/*var estado = Ext.getCmp(lotizer.id+'-txt-estado-filter').getValue();
-				var fecha = Ext.getCmp(lotizer.id+'-txt-fecha-filtro').getRawValue();
-
-				if(shi_codigo== null || shi_codigo==''){
-		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
-		            return false;
-		        }
-				if(fac_cliente== null || fac_cliente==''){
-		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
-		            return false;
-		        }
-
-				if(fecha== null || fecha==''){
-		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
-		            return false;
-		        }*/
 
 				Ext.getCmp(client.id + '-gridTree').getStore().load(
 	                {params: {vp_name:name,vp_date:fecha,vp_estado:estado},
 	                callback:function(){
-	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
+
 	                }
 	            });
 			},
 			getReloadGridlotizer2:function(id_lote){
 				Ext.getCmp(client.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				//id:lotizer.id+'-form'
+
 				Ext.getCmp(client.id + '-grid-client').getStore().load(
 	                {params: {vp_id_lote:id_lote},
 	                callback:function(){
@@ -1249,9 +760,6 @@
 	            });
 			},
 			setNuevo:function(){
-				//lotizer.shi_codigo=0;
-				//lotizer.getImagen('default.png');
-//					                        icon: '/images/icon/save.png',
 
 				Ext.getCmp(client.id+'-txt-nombre').setValue('');
 				Ext.getCmp(client.id+'-txt-nombre').setReadOnly(false);
@@ -1270,13 +778,13 @@
 				client.shi_codigo = codigo;
 				client.opcion = op;
 				if (op == 'U') {
-					var titulo = 'Edición';
+					var titulo = 'Edición Cliente';
 					var icono = "/images/icon/edit.png";
 					var oculto = "false";
 				} 
 				else
 				{
-					var titulo = 'Nuevo';
+					var titulo = 'Nuevo Cliente';
 					var icono = "/images/icon/add_green_button.png";	
 					var oculto = "true";
 				}
@@ -1324,7 +832,6 @@
 			                                                    {
 			                                                        xtype: 'textfield',
 			                                                        fieldLabel: 'id_Cliente',
-			                                                        //id:client.id+'-txt-nombre',
 			                                                        labelWidth:50,
 			                                                        readOnly:true,
 			                                                        labelAlign:'right',
@@ -1344,7 +851,6 @@
 			                                                        fieldLabel: 'Cliente',
 			                                                        id:client.id+'-txt-nombre',
 			                                                        labelWidth:60,
-			                                                        //readOnly:true,
 			                                                        labelAlign:'right',
 			                                                        width:'100%',
 			                                                        anchor:'100%',
@@ -1368,14 +874,12 @@
 				                                                        emptyText: '[Seleccione]',
 				                                                        labelAlign:'right',
 				                                                        value:estado,
-				                                                        //allowBlank: false,
 				                                                        labelWidth: 60,
 				                                                        width:'100%',
 				                                                        anchor:'100%',
-				                                                        //readOnly: true,
 				                                                        listeners:{
 				                                                            afterrender:function(obj, e){
-				                                                                // obj.getStore().load();
+
 				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('1');
 				                                                            },
 				                                                            select:function(obj, records, eOpts){
@@ -1386,7 +890,7 @@
 		                                             		]
 		                                                },
 									                    {
-															//id: client.id + '-cancelar',
+
 															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
 									                        xtype:'button',
 									                        width:80,
@@ -1394,13 +898,6 @@
 									                        icon: '/images/icon/broom.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                //    id: 15,
-									                                //    id_btn: obj.getId(), 
-									                                //    id_menu: gestion_devolucion.id_menu,
-									                                //    fn: ['panel_asignar_gestion.limpiar']
-									                                //});*/
-
 									                                
 									                            },
 									                            click: function(obj, e){
@@ -1414,57 +911,6 @@
 
 
 
-	                	/*{
-	                        xtype: 'textfield',
-	                        id:client.id+'-grid-client-form',
-	                        fieldLabel: 'Cod_Lote',
-	                        //disabled:true,
-	                        labelWidth:90,
-	                        labelAlign:'right',
-	                        width:'100%',
-	                        anchor:'100%',
-	                        value:cod_lote
-	                    },
-	                    {
-	                        xtype: 'textfield',
-	                        id:client.id+'-form-descripcion',
-	                        fieldLabel: 'Descripción',
-	                        labelWidth:90,
-	                        labelAlign:'right',
-	                        width:'100%',
-	                        anchor:'100%',
-	                        value:descripcion
-	                    },
-	                    {
-	                        xtype:'combo',
-	                        fieldLabel: 'Estado',
-	                        id:formularioGestion.id+'-form-cmb-estado',
-	                        store: store_estado,
-	                        queryMode: 'local',
-	                        triggerAction: 'all',
-	                        valueField: 'code',
-	                        displayField: 'name',
-	                        emptyText: '[Seleccione]',
-	                        labelAlign:'right',
-	                        //allowBlank: false,
-	                        labelWidth: 90,
-	                        width:'100%',
-	                        anchor:'100%',
-	                        //readOnly: true,
-	                        listeners:{
-	                            afterrender:function(obj, e){
-	                                // obj.getStore().load();
-	                                if(ID==0){
-	                                	obj.setValue(1);
-	                                }else{
-	                                	obj.setValue(estado);
-	                                }
-	                            },
-	                            select:function(obj, records, eOpts){
-	                    
-	                            }
-	                        }
-	                    }*/
 	                ],
 	                bbar:[       
 		                                                {
@@ -1477,17 +923,11 @@
 									                        icon: '/images/icon/save.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
+
 									                            },
 									                            click: function(obj, e){
 									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
 									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
-									                           		//cliente;
 
 																	client.set_client(3,'¿Está seguro de guardar?');
 
@@ -1502,12 +942,7 @@
 	                        icon: '/images/icon/get_back.png',
 	                        listeners:{
 	                            beforerender: function(obj, opts){
-	                                /*global.permisos({
-	                                    id: 15,
-	                                    id_btn: obj.getId(), 
-	                                    id_menu: gestion_devolucion.id_menu,
-	                                    fn: ['panel_asignar_gestion.limpiar']
-	                                });*/
+
 	                            },
 	                            click: function(obj, e){
 	                                Ext.getCmp(client.id+'-win-form').close();
@@ -1518,16 +953,457 @@
 	                ],
 	                listeners:{
 	                    'afterrender':function(obj, e){ 
-	                        //panel_asignar_gestion.getDatos();
+
 	                    },
 	                    'close':function(){
-	                        //if(panel_asignar_gestion.guarda!=0)gestion_devolucion.buscar();
+
 	                    }
 	                },
 
 	            }).show().center();
 
+			},
+
+			getFormMant2:function(op,cliente,estado,codigo,contrato){
+				client.shi_codigo = codigo;
+				client.cod_contrato = contrato;
+				client.opcion = op;
+				if (op == 'U') {
+					var titulo = 'Edición Contrato';
+					var icono = "/images/icon/edit.png";
+					var oculto = "false";
+				} 
+				else
+				{
+					var titulo = 'Nuevo Contrato';
+					var icono = "/images/icon/add.png";	
+					var oculto = "true";
+
+				}
+
+
+					var store_shipper = Ext.create('Ext.data.Store',{
+		                fields: [
+		                    {name: 'shi_codigo', type: 'string'},
+		                    {name: 'shi_nombre', type: 'string'},
+		                    {name: 'shi_logo', type: 'string'},
+		                    {name: 'fec_ingreso', type: 'string'},                    
+		                    {name: 'shi_estado', type: 'string'},
+		                    {name: 'id_user', type: 'string'},
+		                    {name: 'fecha_actual', type: 'string'}
+		                ],
+		                autoLoad:true,
+		                proxy:{
+		                    type: 'ajax',
+		                    url: client.url+'get_list_shipper/',
+		                    reader:{
+		                        type: 'json',
+		                        rootProperty: 'data'
+		                    }
+		                },
+		                listeners:{
+		                    load: function(obj, records, successful, opts){
+		                        
+		                    }
+		                }
+		            });
+
+
+
+				var myData = [
+				    ['A','Activo'],
+				    ['I','Inactivo']
+				];
+				var store_estado = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'estado',
+			        autoLoad: true,
+			        data: myData,
+			        fields: ['code', 'name']
+			    });
+
+				if (op == 'U') {
+
+				Ext.create('Ext.window.Window',{
+	                id:client.id+'-win-form',
+	                plain: true,
+	                title:titulo,
+	                icon: icono,
+	                height: 300,
+	                width: 1500,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:20,
+	                items:[
+
+												{
+			                                        xtype: 'fieldset',
+			                                        margin: '5 5 5 10',
+			                                        title:'<b>Mantenimiento Contratos</b>',
+			                                        border:true,
+			                                        bodyStyle: 'background: transparent',
+			                                        padding:'2px 5px 1px 5px',
+			                                        layout:'column',
+			                                        items: [
+			                                            {	
+			                                            	hidden : true,	
+			                                                columnWidth: .3,border:false,
+			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+			                                                items:[
+			                                                    {
+			                                                        xtype: 'textfield',
+			                                                        fieldLabel: 'id_Contrato',
+			                                                        labelWidth:50,
+			                                                        readOnly:true,
+			                                                        labelAlign:'right',
+			                                                        width:'100%',
+			                                                        anchor:'100%',
+			                                                        value:contrato
+			                                                    }
+			                                                ]
+			                                            },
+
+
+			                                            {
+			                                                columnWidth: .3,border:false,
+			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+			                                                items:[
+			                                                    {
+			                                                        xtype: 'textfield',
+			                                                        fieldLabel: 'Contrato',
+			                                                        id:client.id+'-txt-nombre',
+			                                                        labelWidth:60,
+			                                                        labelAlign:'right',
+			                                                        width:'100%',
+			                                                        anchor:'100%',
+			                                                        value:cliente
+			                                                    }
+			                                                ]
+			                                            },
+			                                            {
+		                                               		width: 150,border:false,
+		                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+		                                             		items:[
+				                                                    {
+				                                                        xtype:'combo',
+				                                                        fieldLabel: 'Estado',
+				                                                        id:client.id+'-txt-estado',
+				                                                        store: store_estado,
+				                                                        queryMode: 'local',
+				                                                        triggerAction: 'all',
+				                                                        valueField: 'code',
+				                                                        displayField: 'name',
+				                                                        emptyText: '[Seleccione]',
+				                                                        labelAlign:'right',
+				                                                        value:estado,
+				                                                        labelWidth: 60,
+				                                                        width:'100%',
+				                                                        anchor:'100%',
+				                                                        listeners:{
+				                                                            afterrender:function(obj, e){
+
+				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('A');
+				                                                            },
+				                                                            select:function(obj, records, eOpts){
+				                                                    
+				                                                            }
+				                                                        }
+				                                                    }
+		                                             		]
+		                                                },
+									                    {
+
+															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Limpiar',
+									                        icon: '/images/icon/broom.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                
+									                            },
+									                            click: function(obj, e){
+																	client.set_lotizer_clearform();
+									                            }
+									                        }
+									                    }
+			                                            
+			                                        ]
+			                                    }
+
+
+
+	                ],
+	                bbar:[       
+		                                                {
+
+															id: client.id + '-grabar',
+															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Grabar',
+									                        icon: '/images/icon/save.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+
+									                            },
+									                            click: function(obj, e){
+									                            	//client.shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
+									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
+									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
+
+																	client.set_contrato(3,'¿Está seguro de guardar?');
+
+
+									                            }
+									                        }
+									                    },
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(client.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+
+	                    },
+	                    'close':function(){
+
+	                    }
+	                },
+
+	            }).show().center();
+
+				}
+				else
+				{
+				Ext.create('Ext.window.Window',{
+	                id:client.id+'-win-form',
+	                plain: true,
+	                title:titulo,
+	                icon: icono,
+	                height: 300,
+	                width: 1500,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:20,
+	                items:[
+
+												{
+			                                        xtype: 'fieldset',
+			                                        margin: '5 5 5 10',
+			                                        title:'<b>Mantenimiento Contratos</b>',
+			                                        border:true,
+			                                        bodyStyle: 'background: transparent',
+			                                        padding:'2px 5px 1px 5px',
+			                                        layout:'column',
+			                                        items: [
+			                                            {	
+			                                            	hidden : true,	
+			                                                columnWidth: .3,border:false,
+			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+			                                                items:[
+			                                                    {
+			                                                        xtype: 'textfield',
+			                                                        fieldLabel: 'id_Contrato',
+			                                                        labelWidth:50,
+			                                                        readOnly:true,
+			                                                        labelAlign:'right',
+			                                                        width:'100%',
+			                                                        anchor:'100%',
+			                                                        value:contrato
+			                                                    }
+			                                                ]
+			                                            },
+
+		                                    	{
+		                                    		
+			                                   		width: 250,border:false,
+			                                    	padding:'10px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                	
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Cliente',
+			                                                    id:client.id+'-cbx-cliente',
+			                                                    store: store_shipper,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'shi_codigo',
+			                                                    displayField: 'shi_nombre',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //hidden: true,
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 50,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                    	beforerender: function(obj, opts){
+					                                                  /*	if (op == 'I') {
+					                                                		setVisible(true);
+					                                                	}*/
+									                            	},
+
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+
+			                                                        	//Ext.getCmp(client.id+'-cbx-contrato').setValue('');
+			                                                			//lotizer.getContratos(records.get('shi_codigo'));
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                 
+			                                    },
+
+			                                            {
+			                                                columnWidth: .3,border:false,
+			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+			                                                items:[
+			                                                    {
+			                                                        xtype: 'textfield',
+			                                                        fieldLabel: 'Contrato',
+			                                                        id:client.id+'-txt-nombre',
+			                                                        labelWidth:60,
+			                                                        labelAlign:'right',
+			                                                        width:'100%',
+			                                                        anchor:'100%',
+			                                                        value:cliente
+			                                                    }
+			                                                ]
+			                                            },
+			                                            {
+		                                               		width: 150,border:false,
+		                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+		                                             		items:[
+				                                                    {
+				                                                        xtype:'combo',
+				                                                        fieldLabel: 'Estado',
+				                                                        id:client.id+'-txt-estado',
+				                                                        store: store_estado,
+				                                                        queryMode: 'local',
+				                                                        triggerAction: 'all',
+				                                                        valueField: 'code',
+				                                                        displayField: 'name',
+				                                                        emptyText: '[Seleccione]',
+				                                                        labelAlign:'right',
+				                                                        value:estado,
+				                                                        labelWidth: 60,
+				                                                        width:'100%',
+				                                                        anchor:'100%',
+				                                                        listeners:{
+				                                                            afterrender:function(obj, e){
+
+				                                                                Ext.getCmp(client.id+'-txt-estado').setValue('A');
+				                                                            },
+				                                                            select:function(obj, records, eOpts){
+				                                                    
+				                                                            }
+				                                                        }
+				                                                    }
+		                                             		]
+		                                                },
+									                    {
+
+															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Limpiar',
+									                        icon: '/images/icon/broom.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                
+									                            },
+									                            click: function(obj, e){
+																	client.set_lotizer_clearform();
+									                            }
+									                        }
+									                    }
+			                                            
+			                                        ]
+			                                    }
+
+
+
+	                ],
+	                bbar:[       
+		                                                {
+
+															id: client.id + '-grabar',
+															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
+									                        xtype:'button',
+									                        width:80,
+									                        text: 'Grabar',
+									                        icon: '/images/icon/save.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+
+									                            },
+									                            click: function(obj, e){
+									                            	client.shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
+									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
+									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
+
+																	client.set_contrato(3,'¿Está seguro de guardar?');
+
+
+									                            }
+									                        }
+									                    },
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(client.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+
+	                    },
+	                    'close':function(){
+
+	                    }
+	                },
+
+	            }).show().center();
+
+				}
+
 			}
+
+
+
+
 
 		}
 		Ext.onReady(client.init,client);

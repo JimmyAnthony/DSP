@@ -50,6 +50,34 @@ class clientController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    
+   public function get_list_shipper($p){
+        $rs = $this->objDatos->get_list_shipper($p);
+        //var_export($rs);
+        $array = array();
+        $lote = 0;
+        foreach ($rs as $index => $value){
+            $value_['shi_codigo'] = intval($value['shi_codigo']);
+            $value_['shi_nombre'] = utf8_encode(trim($value['shi_nombre']));
+            $value_['shi_logo'] = utf8_encode(trim($value['shi_logo']));
+            $value_['fec_ingreso'] = trim($value['fec_ingreso']);
+            $value_['shi_estado'] = intval(trim($value['shi_estado']));
+            $value_['id_user'] = intval(trim($value['id_user']));
+            $value_['fecha_actual'] = utf8_encode(trim($value['fecha_actual']));
+            $array[]=$value_;
+        }
+
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+
     public function get_list_contratos($p){
         $rs = $this->objDatos->get_list_contratos($p);
         //var_export($rs);
@@ -191,4 +219,20 @@ class clientController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+
+    public function set_contrato($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->set_contrato($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => ($rs['status']=='OK')?'1':'0',
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+
 }
