@@ -479,8 +479,17 @@
 									                                            ]
 									                                        });
 									                                    }else{
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: client.id_menu,
 
-								                                        	return '';
+																			
+
+									                                            icons:[
+									                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Cliente.', js: "client.getFormMant('U','"+clienteform+"','"+estadoform+"','"+codigoform+"')"}
+									                                            ]
+									                                        });
 								                                        }
 							                                    }else{
 							                                  		var clienteform = record.get('pro_descri');
@@ -512,7 +521,20 @@
 										                                        });
 											                                }        		
 											                                else {
-											                        			return '';        	
+											                                        metaData.style = "padding: 0px; margin: 0px";
+											                                        return global.permisos({
+											                                            type: 'link',
+											                                            id_menu: client.id_menu,
+
+																					
+
+											                                            icons:[
+
+											                                                {id_serv: 9, img: 'ico_editar.gif', qtip: 'Click para Editar Contrato.', js: "client.getFormMant2('U','"+clienteform+"','"+estadoform+"','"+codigoform+"','"+contraform+"')"}
+											                                            ]
+
+										                                        });
+
 											                                }	
 						                                        	
 						                                        }
@@ -674,7 +696,7 @@
 		                                fn: function(btn){
 		                                    if(parseInt(res.error)==1){
 		                                    	if (client.opcion == 'U' || client.opcion == 'I') {
-		                                    	Ext.getCmp(client.id+'-win-form').close();
+		                                    	//Ext.getCmp(client.id+'-win-form').close();
 		                                    	}
 		                                    	client.getReloadGridlotizer('');
 		                                    	client.set_lotizer_clear();
@@ -716,7 +738,7 @@
 		                                fn: function(btn){
 		                                    if(parseInt(res.error)==1){
 		                                    	if (client.opcion == 'U' || client.opcion == 'I') {
-		                                    	Ext.getCmp(client.id+'-win-form').close();
+		                                    	//Ext.getCmp(client.id+'-win-form').close();
 		                                    	}
 		                                    	client.getReloadGridlotizer('');
 		                                    	client.set_lotizer_clear();
@@ -926,11 +948,12 @@
 
 									                            },
 									                            click: function(obj, e){
+									                            	Ext.getCmp(client.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
 									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
 									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
 
 																	client.set_client(3,'¿Está seguro de guardar?');
-
+																	Ext.getCmp(client.id+'-win-form').close();
 
 									                            }
 									                        }
@@ -1150,11 +1173,13 @@
 									                            },
 									                            click: function(obj, e){
 									                            	//client.shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
+
+									                            	Ext.getCmp(client.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
 									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
 									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
 
 																	client.set_contrato(3,'¿Está seguro de guardar?');
-
+																	Ext.getCmp(client.id+'-win-form').close();
 
 									                            }
 									                        }
@@ -1360,11 +1385,15 @@
 
 									                            },
 									                            click: function(obj, e){
+
+
+									                            	Ext.getCmp(client.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
 									                            	client.shi_codigo = Ext.getCmp(client.id+'-cbx-cliente').getValue();
 									                            	client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
 									                           		client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
 
 																	client.set_contrato(3,'¿Está seguro de guardar?');
+																	Ext.getCmp(client.id+'-win-form').close();	
 
 
 									                            }
