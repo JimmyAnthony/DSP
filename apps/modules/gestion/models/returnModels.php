@@ -15,9 +15,9 @@ class returnModels extends Adodb {
         $this->dsn = Common::read_ini(PATH.'config/config.ini', 'server_main');
     }
 
-    public function get_list_lotizer($p){
+    public function get_list_return($p){
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
+        parent::ConnectionOpen($this->dsn, 'get_list_return');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_fac_cliente'], 'int');
         parent::SetParameterSP($p['vp_lote'], 'int');

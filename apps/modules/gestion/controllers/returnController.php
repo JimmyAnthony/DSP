@@ -71,11 +71,11 @@ class returnController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function get_list_lotizer($p){
+    public function get_list_return($p){
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json');
-        $this->rs_ = $this->objDatos->get_list_lotizer($p);
+        $this->rs_ = $this->objDatos->get_list_return($p);
         if(!empty($this->rs_)){
             return '{"text": ".","children":['.$this->get_recursivo(1).']}';
             
