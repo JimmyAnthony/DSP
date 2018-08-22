@@ -522,24 +522,19 @@
 									                                    fn: ['panel_asignar_gestion.limpiar']
 									                                });*/
 									                            },
-									                            click: function(obj, e){	   
-									                            var records = Ext.getCmp(ireturn.id + '-grid').getView().getChecked();  
-									                            var seleccion =  Ext.getCmp(ireturn.id + '-grid').getStore().getAt(index);
-									                            //getSelectionModel().getSelectedNode();
-																      // var records = Ext.getCmp(ireturn.id + '-grid-lote_nombre').getView().getChecked(),
-																            names = [];
-																                   
-																        Ext.Array.each(records, function(rec){	
-																            names.push(rec.get());
-																        });
-																                    
-																        Ext.MessageBox.show({
-																            title: 'Selected Nodes',
-																            //msg: names.join('<br />'),
-																            msg : seleccion.lote_nombre,
-																            icon: Ext.MessageBox.INFO
-																        });
-
+									                            click: function(obj, e){	
+												                    var records = Ext.getCmp(ireturn.id + '-grid').getView().getChecked(),
+												                        names = [];
+												                    
+												                    Ext.Array.each(records.items, function(rec){
+												                        names.push(rec.get('fecha'));
+												                    });
+												                    
+												                    Ext.MessageBox.show({
+												                        title: 'Selected Nodes',
+												                        msg: names.join('<br />'),
+												                        icon: Ext.MessageBox.INFO
+												                    });
 									                                  	//Ext.getCmp(ireturn.id + '-grid')
 //									                            	var name = Ext.getCmp(ireturn.id+'-txt-lotizer').getValue();
 //		                               					            ireturn	.getReloadGridlotizer(name);
