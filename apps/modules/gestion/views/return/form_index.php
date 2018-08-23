@@ -417,93 +417,6 @@
 		                                    layout:'column',
 
 		                                    items: [
-		                                    	/*{
-		                                            width:100,border:false,
-		                                            padding:'0px 2px 0px 0px',  
-		                                            bodyStyle: 'background: transparent',
-		                                            items:[
-		                                                {
-		                                                    xtype: 'textfield',	
-		                                                    fieldLabel: 'N° Lote',
-		                                                    id:ireturn.id+'-txt-lote',
-		                                                    labelWidth:50,
-		                                                    maskRe: /[0-9]/,
-		                                                    //readOnly:true,
-		                                                    labelAlign:'right',
-		                                                    width:'100%',
-		                                                    anchor:'100%'
-		                                                }
-		                                            ]
-		                                        },
-		                                        {
-		                                            width:300,border:false,
-		                                            padding:'0px 2px 0px 0px',  
-		                                            bodyStyle: 'background: transparent',
-		                                            items:[
-		                                                {
-		                                                    xtype: 'textfield',	
-		                                                    fieldLabel: 'Nombre Lote',
-		                                                    id:ireturn.id+'-txt-lotizer',
-		                                                    labelWidth:80,
-		                                                    //readOnly:true,
-		                                                    labelAlign:'right',
-		                                                    width:'100%',
-		                                                    anchor:'100%'
-		                                                }
-		                                            ]
-		                                        },
-		                                        {
-			                                        width: 160,border:false,
-			                                        padding:'0px 2px 0px 0px',  
-			                                    	bodyStyle: 'background: transparent',
-			                                        items:[
-			                                            {
-			                                                xtype:'datefield',
-			                                                id:ireturn.id+'-txt-fecha-filtro',
-			                                                fieldLabel:'Fecha',
-			                                                labelWidth:60,
-			                                                labelAlign:'right',
-			                                                value:new Date(),
-			                                                format: 'Ymd',
-			                                                //readOnly:true,
-			                                                width: '100%',
-			                                                anchor:'100%'
-			                                            }
-			                                        ]
-			                                    },
-		                                        {
-			                                   		width: 150,border:false,
-			                                    	padding:'0px 2px 0px 0px',  
-			                                    	bodyStyle: 'background: transparent',
-			                                 		items:[
-			                                                {
-			                                                    xtype:'combo',
-			                                                    fieldLabel: 'Estado',
-			                                                    id:ireturn.id+'-txt-estado-filter',
-			                                                    store: store_estado_lote,
-			                                                    queryMode: 'local',
-			                                                    triggerAction: 'all',
-			                                                    valueField: 'code',
-			                                                    displayField: 'name',
-			                                                    emptyText: '[Seleccione]',
-			                                                    labelAlign:'right',
-			                                                    //allowBlank: false,
-			                                                    labelWidth: 50,
-			                                                    width:'100%',
-			                                                    anchor:'100%',
-			                                                    //readOnly: true,
-			                                                    listeners:{
-			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
-			                                                            Ext.getCmp(ireturn.id+'-txt-estado-filter').setValue('A');
-			                                                        },
-			                                                        select:function(obj, records, eOpts){
-			                                                
-			                                                        }
-			                                                    }
-			                                                }
-			                                 		]
-			                                    },*/
 		                                        {
 		                                            width: 150,border:false,
 		                                            padding:'0px 2px 0px 0px',  
@@ -523,21 +436,33 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){	
-												                    var records = Ext.getCmp(ireturn.id + '-grid').getView().getChecked(),
+												                    var records = Ext.getCmp(ireturn.id + '-grid');
+												                    //addRecord = records.getStore().getAt(5);
 												                        names = [];
+												                        names.push(records);  
 												                    
-												                    Ext.Array.each(records.items, function(rec){
-												                        names.push(rec.get('fecha'));
+												                    Ext.each(records, function(index){
+												                    	addRecord = records.getStore().getAt(index);
+												                    	//if (done == true){ 
+
+														                    Ext.MessageBox.show({
+														                        title: 'Selected Nodes',
+														                        //msg: names.join('<br />'),
+														                        msg : names.lote_nombre,
+														                        //msg : records(index),
+														                        icon: Ext.MessageBox.INFO
+														                    });
+														                    		//{names.push(addRecord.data.lote_nombre);}
+														                  //     } else{}
+
 												                    });
-												                    
+												                    /*
 												                    Ext.MessageBox.show({
 												                        title: 'Selected Nodes',
 												                        msg: names.join('<br />'),
+												                        //msg : addRecord.data.lote_nombre,
 												                        icon: Ext.MessageBox.INFO
-												                    });
-									                                  	//Ext.getCmp(ireturn.id + '-grid')
-//									                            	var name = Ext.getCmp(ireturn.id+'-txt-lotizer').getValue();
-//		                               					            ireturn	.getReloadGridlotizer(name);
+												                    });*/
 									                            }
 									                        }
 									                    }
