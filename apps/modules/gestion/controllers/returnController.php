@@ -109,6 +109,7 @@ class returnController extends AppController {
                 $json.='"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                $json.=',"id_det":"'.$value['id_det'].'"';
                 //$json.=',"read":true';
                 //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
@@ -145,6 +146,7 @@ class returnController extends AppController {
                 $json.='"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+               $json.=',"id_det":"'.$value['id_det'].'"';                
                 $json.=',"iconCls":"task"';
                 $json.=',"lot_estado":"'.utf8_encode(trim($_stado_lote)).'"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';

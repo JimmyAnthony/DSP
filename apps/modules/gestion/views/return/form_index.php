@@ -18,6 +18,7 @@
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'id_det', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
@@ -425,7 +426,7 @@
 		                                                {
 									                        xtype:'button',
 									                        text: 'Devolver',
-									                        icon: '/images/icon/binocular.png',
+									                        icon: '/images/icon/if_General_Office_36_2530817.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
 									                                /*global.permisos({
@@ -436,33 +437,39 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){	
-												                    var records = Ext.getCmp(ireturn.id + '-grid');
-												                    //addRecord = records.getStore().getAt(5);
-												                        names = [];
-												                        names.push(records);  
-												                    
-												                    Ext.each(records, function(index){
-												                    	addRecord = records.getStore().getAt(index);
-												                    	//if (done == true){ 
+											                    	var records = Ext.getCmp(ireturn.id + '-grid');
+																    var objectStore = records.getStore(),
+																        dataCollection = [];
+																    if (objectStore.data.items !== undefined) {
+																        $.each(objectStore.data.items, function (index, objectData) {
+																            if (!objectData.data.leaf) {
+																               /* dataCollection['groups'].push({
+																                    display_name: objectData.data.name,
+																                    group: objectData.data.group,
+																                    crudState: objectData.data.crudState,
+																                    unique_id: objectData.data.unique_id
+																                });*/
+																            } else {
+																            	if(objectData.data.done == true) {
+																                dataCollection.push(objectData.data.lote_nombre,objectData.data.id_lote,objectData.data.id_det/*,
+																                    type: objectData.data.type != undefined ? objectData.data.type : 'null',
+																                    crudState: objectData.data.crudState,
+																                    unique_id: objectData.data.unique_id*/
+																                );
+																                }
+																            }
+																        })
 
-														                    Ext.MessageBox.show({
-														                        title: 'Selected Nodes',
-														                        //msg: names.join('<br />'),
-														                        msg : names.lote_nombre,
-														                        //msg : records(index),
-														                        icon: Ext.MessageBox.INFO
-														                    });
-														                    		//{names.push(addRecord.data.lote_nombre);}
-														                  //     } else{}
-
-												                    });
-												                    /*
+																    }
+													                ;
 												                    Ext.MessageBox.show({
 												                        title: 'Selected Nodes',
-												                        msg: names.join('<br />'),
-												                        //msg : addRecord.data.lote_nombre,
+												                        //msg:addRecord.data.lote_nombre,
+												                        msg: dataCollection.join('<br />'),
+												                        //msg : records,
+												                        //.data.lote_nombre,
 												                        icon: Ext.MessageBox.INFO
-												                    });*/
+												                    });
 									                            }
 									                        }
 									                    }
@@ -686,6 +693,21 @@
 						                                    sortable: true,
 						                                    flex: 1
 						                                },
+						                                {
+						                                 	hidden:true,
+						                                    text: 'id_lote',
+						                                    dataIndex: 'id_lote',
+						                                    flex: 1
+						                                },
+						                                {
+						                                	hidden:true,
+						                                    text: 'id_det',
+						                                    dataIndex: 'id_det',
+						                                    flex: 1
+						                                },
+
+
+
 						                                {
 						                                    text: 'Descripción',
 						                                    dataIndex: 'descripcion',
