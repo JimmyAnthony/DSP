@@ -197,6 +197,21 @@ class returnController extends AppController {
         return $this->response($data);
     }
 
+  public function set_return($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->set_return($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => ($rs['status']=='OK')?'1':'0',
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+
     public function set_lotizer($p){
         //$this->valida_mobil($p);
         

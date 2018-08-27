@@ -60,6 +60,24 @@ class returnModels extends Adodb {
         return $array;
     }
 
+    public function set_return($p){
+            $p['vp_id_lote'] =(empty($p['vp_id_lote']))?0:$p['vp_id_lote'];
+            parent::ReiniciarSQL();
+            parent::ConnectionOpen($this->dsn, 'set_return');
+            parent::SetParameterSP(utf8_decode(trim($p['vp_nombre'])), 'varchar');            
+            parent::SetParameterSP($p['vp_id_lote'], 'int');
+            parent::SetParameterSP($p['vp_id_det'], 'int');
+            parent::SetParameterSP(USR_ID, 'int');
+
+             //echo '=>' . parent::getSql().'<br>'; exit();
+            $array = parent::ExecuteSPArray();
+            return $array;
+    }
+
+
+
+
+
     public function get_list_shipper($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_list_shipper');

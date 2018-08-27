@@ -440,8 +440,11 @@
 											                    	var records = Ext.getCmp(ireturn.id + '-grid');
 																    var objectStore = records.getStore(),
 																        dataCollection = [];
+																        //var inic = 0;
 																    if (objectStore.data.items !== undefined) {
+																    	
 																        $.each(objectStore.data.items, function (index, objectData) {
+																        	
 																            if (!objectData.data.leaf) {
 																               /* dataCollection['groups'].push({
 																                    display_name: objectData.data.name,
@@ -451,25 +454,38 @@
 																                });*/
 																            } else {
 																            	if(objectData.data.done == true) {
-																                dataCollection.push(objectData.data.lote_nombre,objectData.data.id_lote,objectData.data.id_det/*,
-																                    type: objectData.data.type != undefined ? objectData.data.type : 'null',
-																                    crudState: objectData.data.crudState,
-																                    unique_id: objectData.data.unique_id*/
-																                );
+																            	var nombre = objectData.data.lote_nombre;
+																            	var id_lote = objectData.data.id_lote;
+																            	var id_det = objectData.data.id_det;
+																            	var arr1 = [nombre,id_lote,id_det] ;
+																            	//var id_det = objectData.data.id_det;
+
+																            	//valuePush.nombre = objectData.data.lote_nombre;
+																            	//valuePush["id_lote:"] = objectData.data.id_lote;
+																            	//valuePush["id_det:"] = objectData.data.id_det;
+																            	dataCollection.push(arr1);
+																            	//inic++;
+																            	
+
+																                /*dataCollection.push(objectData.data.lote_nombre,objectData.data.id_lote,objectData.data.id_det
+																                )*/;
 																                }
 																            }
 																        })
 
-																    }
-													                ;
+																    };
+																    ireturn.getFormMant(dataCollection);
+													                /*
 												                    Ext.MessageBox.show({
 												                        title: 'Selected Nodes',
+												                        width: 500,
 												                        //msg:addRecord.data.lote_nombre,
-												                        msg: dataCollection.join('<br />'),
-												                        //msg : records,
+												                        //msg: dataCollection.join('<br />'),
+												                        //msg : dataCollection[0].join,
+												                        msg : dataCollection,
 												                        //.data.lote_nombre,
 												                        icon: Ext.MessageBox.INFO
-												                    });
+												                    });*/
 									                            }
 									                        }
 									                    }
@@ -1072,82 +1088,170 @@
 				Ext.getCmp(ireturn.id+'-txt-tot_folder').setValue('');
 				Ext.getCmp(ireturn.id+'-txt-tot_folder').setReadOnly(false);
 				Ext.getCmp(ireturn.id+'-txt-nombre').focus();
-			}/*,
-			getFormMant:function(cod_lote,lote,usuario,cantidad){
-				var myData = [
-				    ['1','Activo'],
-				    ['0','Inactivo']
-				];
-				var store_estado = Ext.create('Ext.data.ArrayStore', {
-			        storeId: 'estado',
-			        autoLoad: true,
-			        data: myData,
-			        fields: ['code', 'name']
-			    });
+			},
+
+			set_return:function(ico,msn,storeReturn){
+				
+				global.Msg({
+                    msg: msn,
+                    icon: ico,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+
+						    storeReturn.each(function(record,index) {
+									        ireturn.nombre = record.data.nombre;
+									        ireturn.id_lote = record.data.id_lote;
+									        ireturn.id_det = record.data.id_det;
+
+					                        Ext.getCmp(ireturn.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+					                        Ext.Ajax.request({
+												url: ireturn.url + 'set_return/',
+												params:{
+													//vp_op: client.opcion,
+													//vp_shi_codigo:client.shi_codigo,
+							                        vp_nombre:ireturn.nombre,
+							                        vp_id_lote:ireturn.id_lote,
+							                        vp_id_det:ireturn.id_det
+												},
+												success:function(response,options){
+													var res = Ext.decode(response.responseText);
+													Ext.getCmp(ireturn.id+'-tab').el.unmask();
+													global.Msg({
+						                                msg: res.msn,
+						                                icon: parseInt(res.error),
+						                                buttons: 1,
+						                                fn: function(btn){
+						                                    if(parseInt(res.error)==1){
+						                                    	if (ireturn.opcion == 'U' || ireturn.opcion == 'I') {
+						                                    	//Ext.getCmp(client.id+'-win-form').close();
+						                                    	}
+						                                    	ireturn.getReloadGridlotizer('');
+						                                    	ireturn.set_lotizer_clear();
+						                                    }
+						                                }
+						                            });
+								    			}
+
+							});
+
+
+
+				    		});
+				    	}
+		            }
+                });
+			}
+
+
+
+
+
+
+
+			,
+			getFormMant:function(arrDataCollection){
+
+			Ext.define('TestModel', {
+			    extend: 'Ext.data.Model',
+		        fields: [
+		            { name: "nombre", type: "string" },
+		            { name: "id_lote", type: "int"  },
+		            { name: "id_det", type: "int"  },
+		        ]
+			});
+
+		/*	var myReturn = arrDataCollection;
+
+
+												                    Ext.MessageBox.show({
+												                        title: 'Selected Nodes',
+												                        width: 500,
+												                        //msg:addRecord.data.lote_nombre,
+												                        //msg: dataCollection.join('<br />'),
+												                        //msg : dataCollection[0].join,
+												                        msg : myReturn,
+												                        //.data.lote_nombre,
+												                        icon: Ext.MessageBox.INFO
+												                    });*/
+
+
+			//arrDataCollection;
+
+
+			var store_devolver = Ext.create('Ext.data.ArrayStore', {
+		      //  storeId: 'estado',
+		        autoLoad: true,
+		        model:TestModel,
+		        data: arrDataCollection
+		    });
+
+
+
+		    //store_devolver.loadData(arrDataCollection);
+
 
 				Ext.create('Ext.window.Window',{
-	                id:lotizer.id+'-win-form',
+	                id:ireturn.id+'-win-form',
 	                plain: true,
-	                title:'Edición',
-	                icon: '/images/icon/edit.png',
+	                title:'Devolución',
+	                icon: '/images/icon/if_General_Office_36_2530817.png',
 	                height: 200,
 	                width: 450,
 	                resizable:false,
 	                modal: true,
 	                border:false,
+	                //store:store_devolver,
 	                closable:true,
 	                padding:20,
 	                items:[
 	                	{
-	                        xtype: 'textfield',
-	                        id:lotizer.id+'-grid-lotizer-form',
-	                        fieldLabel: 'Cod_Lote',
+	                        xtype: 'grid',
+	                        id:ireturn.id+'-grid-return-form',
+	                        store:store_devolver,
+	                        //fieldLabel: 'id_lote',
 	                        //disabled:true,
-	                        labelWidth:90,
-	                        labelAlign:'right',
-	                        width:'100%',
-	                        anchor:'100%',
-	                        value:cod_lote
-	                    },
-	                    {
-	                        xtype: 'textfield',
-	                        id:lotizer.id+'-form-descripcion',
-	                        fieldLabel: 'Descripción',
-	                        labelWidth:90,
-	                        labelAlign:'right',
-	                        width:'100%',
-	                        anchor:'100%',
-	                        value:descripcion
-	                    },
-	                    {
-	                        xtype:'combo',
-	                        fieldLabel: 'Estado',
-	                        id:formularioGestion.id+'-form-cmb-estado',
-	                        store: store_estado,
-	                        queryMode: 'local',
-	                        triggerAction: 'all',
-	                        valueField: 'code',
-	                        displayField: 'name',
-	                        emptyText: '[Seleccione]',
-	                        labelAlign:'right',
-	                        //allowBlank: false,
-	                        labelWidth: 90,
-	                        width:'100%',
-	                        anchor:'100%',
-	                        //readOnly: true,
-	                        listeners:{
-	                            afterrender:function(obj, e){
-	                                // obj.getStore().load();
-	                                if(ID==0){
-	                                	obj.setValue(1);
-	                                }else{
-	                                	obj.setValue(estado);
+	                        //labelWidth:90,
+	                        //labelAlign:'right',
+	                        //width:'100%',
+	                        //anchor:'100%',
+	                        //dataIndex: 'name'
+	                        columnLines: true,
+	                        columns:{
+	                            items:[
+	                                {
+	                                    text: 'Nombre',
+	                                    dataIndex: 'nombre',
+	                                    flex: 1
+	                                },
+	                                	                                {
+	                                    text: 'id_lote',
+	                                    dataIndex: 'id_lote',
+	                                    flex: 1
+	                                },
+	                                	                                {
+	                                    text: 'id_det',
+	                                    dataIndex: 'id_det',
+	                                    flex: 1
 	                                }
-	                            },
-	                            select:function(obj, records, eOpts){
-	                    
-	                            }
-	                        }
+	                                ],	
+			                            defaults:{
+			                                menuDisabled: true
+			                            }
+			                        },
+			                        viewConfig: {
+			                            stripeRows: true,
+			                            enableTextSelection: false,
+			                            markDirty: false
+			                        },
+			                        trackMouseOver: false,
+			                        listeners:{
+			                            afterrender: function(obj){
+			                            }
+			                        }
+
+
+
 	                    }
 	                ],
 	                bbar:[       
@@ -1155,19 +1259,23 @@
 	                    '-',
 	                    {
 	                        xtype:'button',
-	                        text: 'Guardar',
+	                        text: 'Devolver',
 	                        icon: '/images/icon/save.png',
 	                        listeners:{
 	                            beforerender: function(obj, opts){
-	                                /*global.permisos({
-	                                    id: 15,
-	                                    id_btn: obj.getId(), 
-	                                    id_menu: gestion_devolucion.id_menu,
-	                                    fn: ['panel_asignar_gestion.limpiar']
-	                                });*/
-	                            /*},
+								},
 	                            click: function(obj, e){
-	                            	formularioGestion.setSaveRecordForm(ID);
+
+									Ext.getCmp(ireturn.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
+	                            	
+	                            	
+
+	                            	//client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
+	                           		//client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
+
+									ireturn.set_return(3,'¿Está seguro de devolver?',store_devolver);
+									Ext.getCmp(ireturn.id+'-win-form').close();	
+
 	                            }
 	                        }
 	                    },
@@ -1178,15 +1286,9 @@
 	                        icon: '/images/icon/get_back.png',
 	                        listeners:{
 	                            beforerender: function(obj, opts){
-	                                /*global.permisos({
-	                                    id: 15,
-	                                    id_btn: obj.getId(), 
-	                                    id_menu: gestion_devolucion.id_menu,
-	                                    fn: ['panel_asignar_gestion.limpiar']
-	                                });*/
-	                            /*},
+	                            },
 	                            click: function(obj, e){
-	                                Ext.getCmp(formularioGestion.id+'-win-form').close();
+	                                Ext.getCmp(ireturn.id+'-win-form').close();
 	                            }
 	                        }
 	                    },
@@ -1201,7 +1303,7 @@
 	                    }
 	                }
 	            }).show().center();
-			}*/
+			}
 
 		}
 		Ext.onReady(ireturn.init,ireturn);
