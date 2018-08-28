@@ -39,25 +39,14 @@
 				    autoLoad:false,
 	                proxy: {
 	                    type: 'ajax',
-	                    url: ireturn.url+'get_list_return/'//,
-	                    //reader:{
-	                    //    type: 'json'//,
-	                    //    //rootProperty: 'data'
-	                    //}
+	                    url: ireturn.url+'get_list_return/'
 	                },
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
-					        /*Ext.apply(operation, {
-					            params: {
-					                to: 'test1',
-		    						from: 'test2'
-					            }
-					       });*/
 					    },
 	                    load: function(obj, records, successful, opts){
 	                 		Ext.getCmp(ireturn.id + '-grid').doLayout();
-	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
 	                 		storeTree.removeAt(0);
 	                 		Ext.getCmp(ireturn.id + '-grid').collapseAll();
 		                    Ext.getCmp(ireturn.id + '-grid').getRootNode().cascadeBy(function (node) {
@@ -217,7 +206,6 @@
 			                                                    //readOnly: true,
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
 			                                                        	Ext.getCmp(ireturn.id+'-cbx-contrato').setValue('');
@@ -247,10 +235,9 @@
 			                                                    labelWidth: 50,
 			                                                    width:'100%',
 			                                                    anchor:'100%',
-			                                                    //readOnly: true,
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
+
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
 			                                                			
@@ -358,7 +345,7 @@
 			                                                    //readOnly: true,
 			                                                    listeners:{
 			                                                        afterrender:function(obj, e){
-			                                                            // obj.getStore().load();
+
 			                                                            Ext.getCmp(ireturn.id+'-txt-estado-filter').setValue('A');
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
@@ -379,12 +366,6 @@
 									                        icon: '/images/icon/binocular.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
 									                            },
 									                            click: function(obj, e){	             	
 									                            	var name = Ext.getCmp(ireturn.id+'-txt-lotizer').getValue();
@@ -429,63 +410,31 @@
 									                        icon: '/images/icon/if_General_Office_36_2530817.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
-									                                /*global.permisos({
-									                                    id: 15,
-									                                    id_btn: obj.getId(), 
-									                                    id_menu: gestion_devolucion.id_menu,
-									                                    fn: ['panel_asignar_gestion.limpiar']
-									                                });*/
 									                            },
 									                            click: function(obj, e){	
 											                    	var records = Ext.getCmp(ireturn.id + '-grid');
 																    var objectStore = records.getStore(),
 																        dataCollection = [];
-																        //var inic = 0;
+
 																    if (objectStore.data.items !== undefined) {
 																    	
 																        $.each(objectStore.data.items, function (index, objectData) {
 																        	
 																            if (!objectData.data.leaf) {
-																               /* dataCollection['groups'].push({
-																                    display_name: objectData.data.name,
-																                    group: objectData.data.group,
-																                    crudState: objectData.data.crudState,
-																                    unique_id: objectData.data.unique_id
-																                });*/
+
 																            } else {
 																            	if(objectData.data.done == true) {
 																            	var nombre = objectData.data.lote_nombre;
 																            	var id_lote = objectData.data.id_lote;
 																            	var id_det = objectData.data.id_det;
 																            	var arr1 = [nombre,id_lote,id_det] ;
-																            	//var id_det = objectData.data.id_det;
-
-																            	//valuePush.nombre = objectData.data.lote_nombre;
-																            	//valuePush["id_lote:"] = objectData.data.id_lote;
-																            	//valuePush["id_det:"] = objectData.data.id_det;
 																            	dataCollection.push(arr1);
-																            	//inic++;
-																            	
-
-																                /*dataCollection.push(objectData.data.lote_nombre,objectData.data.id_lote,objectData.data.id_det
-																                )*/;
 																                }
 																            }
 																        })
 
 																    };
 																    ireturn.getFormMant(dataCollection);
-													                /*
-												                    Ext.MessageBox.show({
-												                        title: 'Selected Nodes',
-												                        width: 500,
-												                        //msg:addRecord.data.lote_nombre,
-												                        //msg: dataCollection.join('<br />'),
-												                        //msg : dataCollection[0].join,
-												                        msg : dataCollection,
-												                        //.data.lote_nombre,
-												                        icon: Ext.MessageBox.INFO
-												                    });*/
 									                            }
 									                        }
 									                    }
@@ -504,175 +453,9 @@
 							items:[
 								{
 									region:'center',
-									//width:'100%',
+
 									layout:'border',
 									items:[
-										/*{
-											region:'north',
-											border:false,
-											height:70,
-											items:[
-												{
-			                                        xtype: 'fieldset',
-			                                        margin: '5 5 5 10',
-			                                        title:'<b>Mantenimiento Lotes</b>',
-			                                        border:true,
-			                                        bodyStyle: 'background: transparent',
-			                                        padding:'2px 5px 1px 5px',
-			                                        layout:'column',
-			                                        items: [
-			                                            {
-			                                                columnWidth: .3,border:false,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Nombre',
-			                                                        id:ireturn.id+'-txt-nombre',
-			                                                        labelWidth:60,
-			                                                        //readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-			                                                columnWidth: .4,border:false,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Descripción',
-			                                                        id:ireturn.id+'-txt-descripcion',
-			                                                        labelWidth:70,
-			                                                        //readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-			                                                width: 150,border:false,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Total Folders',
-			                                                        id:ireturn.id+'-txt-tot_folder',
-			                                                        labelWidth:100,
-			                                                        //readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        maskRe: /[0-9]/,
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-			                                                width: 1,border:false,hidden:true,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype: 'textfield',
-			                                                        fieldLabel: 'Tipo Doc',
-			                                                        id:ireturn.id+'-txt-tipdoc',
-			                                                        labelWidth:100,
-			                                                        readOnly:true,
-			                                                        labelAlign:'right',
-			                                                        width:'100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-
-			                                            {
-			                                                width: 160,border:false,hidden:true,
-			                                                padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-			                                                items:[
-			                                                    {
-			                                                        xtype:'datefield',
-			                                                        id:ireturn.id+'-txt-fecha',
-			                                                        fieldLabel:'Fecha',
-			                                                        labelWidth:60,
-			                                                        labelAlign:'right',
-			                                                        value:new Date(),
-			                                                        format: 'Ymd',
-			                                                        readOnly:true,
-			                                                        width: '100%',
-			                                                        anchor:'100%'
-			                                                    }
-			                                                ]
-			                                            },
-			                                            {
-		                                               		width: 150,border:false,
-		                                                	padding:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-		                                             		items:[
-				                                                    {
-				                                                        xtype:'combo',
-				                                                        fieldLabel: 'Estado',
-				                                                        id:ireturn.id+'-txt-estado',
-				                                                        store: store_estado_lote,
-				                                                        queryMode: 'local',
-				                                                        triggerAction: 'all',
-				                                                        valueField: 'code',
-				                                                        displayField: 'name',
-				                                                        emptyText: '[Seleccione]',
-				                                                        labelAlign:'right',
-				                                                        //allowBlank: false,
-				                                                        labelWidth: 60,
-				                                                        width:'100%',
-				                                                        anchor:'100%',
-				                                                        //readOnly: true,
-				                                                        listeners:{
-				                                                            afterrender:function(obj, e){
-				                                                                // obj.getStore().load();
-				                                                                Ext.getCmp(ireturn.id+'-txt-estado').setValue('A');
-				                                                            },
-				                                                            select:function(obj, records, eOpts){
-				                                                    
-				                                                            }
-				                                                        }
-				                                                    }
-		                                             		]
-		                                                },
-		                                                {
-															id: ireturn.id + '-grabar',
-															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-									                        xtype:'button',
-									                        width:80,
-									                        text: 'Grabar',
-									                        icon: '/images/icon/save.png',
-									                        listeners:{
-									                            beforerender: function(obj, opts){
-									                            },
-									                            click: function(obj, e){
-																	ireturn.set_lotizer(3,'¿Está seguro de guardar?');
-
-									                            }
-									                        }
-									                    },
-									                    {
-															id: ireturn.id + '-cancelar',
-															margin:'10px 2px 0px 0px',  bodyStyle: 'background: transparent',
-									                        xtype:'button',
-									                        width:80,
-									                        text: 'Limpiar',
-									                        icon: '/images/icon/broom.png',
-									                        listeners:{
-									                            beforerender: function(obj, opts){
-									                            },
-									                            click: function(obj, e){
-																	ireturn.set_lotizer_clear();
-									                            }
-									                        }
-									                    }
-			                                            
-			                                        ]
-			                                    }
-											]
-										},*/
 										{
 											region:'center',
 											border:false,
@@ -680,27 +463,13 @@
 											items:[
 												{
 							                        xtype: 'treepanel',
-							                        //collapsible: true,
 											        useArrows: true,
 											        rootVisible: true,
 											        multiSelect: true,
-											        //root:'Task',
 							                        id: ireturn.id + '-grid',
-							                        //height: 370,
-							                        //reserveScrollbar: true,
-							                        //rootVisible: false,
-							                        //store: store,
-							                        //layout:'fit',
 							                        columnLines: true,
 							                        store: storeTree,
 										            columns: [
-											            /*{
-											                xtype: 'treecolumn', //this is so we know which column will show the tree
-											                text: 'Task',
-											                flex: 2,
-											                sortable: true,
-											                dataIndex: 'task'
-											            },*/
 											            {
 											            	xtype: 'treecolumn',
 											            	id: ireturn.id + '-grid-lote_nombre',
@@ -769,82 +538,12 @@
 											                dataIndex: 'done',
 											                width: 55,
 											                stopSelection: false,
-											                menuDisabled: true
-											            }/*, 
-
-						                                {
-						                                    text: 'Total Folder',
-						                                    dataIndex: 'tot_folder',
-						                                    width: 80,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Total Página',
-						                                    dataIndex: 'tot_pag',
-						                                    width: 80,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Total Pag. Errores',
-						                                    dataIndex: 'tot_errpag',
-						                                    width: 100,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'User',
-						                                    dataIndex: 'usr_update',
-						                                    width: 100,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Estado Registro',
-						                                    dataIndex: 'estado',
-						                                    loocked : true,
-						                                    width: 100,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-						                                        return global.permisos({
-						                                            type: 'link',
-						                                            id_menu: ireturn.id_menu,
-						                                            icons:[
-						                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
-						                                            ]
-						                                        });
-						                                    }
-						                                },
-						                                {
-						                                    text: 'Editar',
-						                                    dataIndex: 'estado',
-						                                    //loocked : true,
-						                                    width: 50,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        if(parseInt(record.get('nivel')) == 1){
-							                                        metaData.style = "padding: 0px; margin: 0px";
-							                                        return global.permisos({
-							                                            type: 'link',
-							                                            id_menu: ireturn.id_menu,
-							                                            icons:[
-							                                                {id_serv: 7, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "lotizer.setEditLote("+rowIndex+",'U')"},
-							                                                {id_serv: 7, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "lotizer.setEditLote("+rowIndex+",'D')"}
-							                                            ]
-							                                        });
-							                                    }else{
-						                                        	return '';
-						                                        }
-						                                    }
-						                                }*/
+											                menuDisabled: true/*,
+											                listeners: {
+											                	 checkchange: 'onCheckcolumnCheckChange'
+											                	}*/
+											            }
 											        ],
-							                        /*viewConfig: {
-							                            stripeRows: true,
-							                            enableTextSelection: false,
-							                            markDirty: false
-							                        },*/
 							                        hideItemsReadFalse: function () {
 													    var me = this,
 													        items = me.getReferences().treelistRef.itemMap;
@@ -891,7 +590,6 @@
 	                        global.state_item_menu(ireturn.id_menu, true);
 	                    },
 	                    afterrender: function(obj, e){
-	                    	//lotizer.getReloadGridlotizer('');
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,ireturn.id_menu);
 	                    },
@@ -903,7 +601,7 @@
 				}).show();
 			},
 			getImagen:function(param){
-				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});*/
+
 			},
 			setEditLote:function(index,op){
 				var rec = Ext.getCmp(ireturn.id + '-grid').getStore().getAt(index);
@@ -928,16 +626,12 @@
 
 
 				  	Ext.getCmp(ireturn.id+'-txt-nombre').focus(true);
-					//console.log(rec.data);
+
 				}else{
 					ireturn.set_lotizer(2,'¿Está seguro de Desactivar?');
 				}
 			},
 			set_lotizer_clear:function(){
-				//Ext.getCmp(ireturn.id+'-txt-nombre').setValue('');
-				//Ext.getCmp(ireturn.id+'-txt-descripcion').setValue('');
-			  	//Ext.getCmp(ireturn.id+'-txt-estado').setValue('A');
-			  	//Ext.getCmp(ireturn.id+'-txt-tot_folder').setValue(0);
 			  	ireturn.id_lote=0;
 			  	ireturn.shi_codigo=0;
 				ireturn.fac_cliente=0;
@@ -1002,8 +696,6 @@
 								success:function(response,options){
 									var res = Ext.decode(response.responseText);
 									Ext.getCmp(ireturn.id+'-tab').el.unmask();
-									//console.log(res);
-									///*****Terrestre****//
 									global.Msg({
 		                                msg: res.msn,
 		                                icon: parseInt(res.error),
@@ -1026,13 +718,12 @@
 				Ext.getCmp(ireturn.id+'-cbx-contrato').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo},
 	                callback:function(){
-	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
+
 	                }
 	            });
 			},
 			getReloadGridlotizer:function(name){
 				ireturn.set_lotizer_clear();
-				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
 				var lote = Ext.getCmp(ireturn.id+'-txt-lote').getValue();
@@ -1058,13 +749,13 @@
 				Ext.getCmp(ireturn.id + '-grid').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
-	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
+
 	                }
 	            });
 			},
 			getReloadGridlotizer2:function(id_lote){
 				Ext.getCmp(ireturn.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				//id:lotizer.id+'-form'
+
 				Ext.getCmp(ireturn.id + '-grid-lotizer').getStore().load(
 	                {params: {vp_id_lote:id_lote},
 	                callback:function(){
@@ -1073,9 +764,6 @@
 	            });
 			},
 			setNuevo:function(){
-				//lotizer.shi_codigo=0;
-				//lotizer.getImagen('default.png');
-//					                        icon: '/images/icon/save.png',
 
 				Ext.getCmp(ireturn.id+'-txt-nombre').setValue('');
 				Ext.getCmp(ireturn.id+'-txt-nombre').setReadOnly(false);
@@ -1108,8 +796,6 @@
 					                        Ext.Ajax.request({
 												url: ireturn.url + 'set_return/',
 												params:{
-													//vp_op: client.opcion,
-													//vp_shi_codigo:client.shi_codigo,
 							                        vp_nombre:ireturn.nombre,
 							                        vp_id_lote:ireturn.id_lote,
 							                        vp_id_det:ireturn.id_det
@@ -1124,7 +810,7 @@
 						                                fn: function(btn){
 						                                    if(parseInt(res.error)==1){
 						                                    	if (ireturn.opcion == 'U' || ireturn.opcion == 'I') {
-						                                    	//Ext.getCmp(client.id+'-win-form').close();
+
 						                                    	}
 						                                    	ireturn.getReloadGridlotizer('');
 						                                    	ireturn.set_lotizer_clear();
@@ -1141,14 +827,39 @@
 				    	}
 		            }
                 });
-			}
+			},
 
+			onCheckcolumnCheckChange: function(checkcolumn, rowIndex, checked, eOpts) {
+			    var view = this.getView();
+			    var item = this.getStore().data.items[rowIndex];
+			    var columnName = checkcolumn.dataIndex;
 
+			    // User unchecked a row: refresh the view
+			    if(!checked){
+			        view.refresh();
+			        return;
+			    }
 
+			    // User checked a row: unselect all parents
+			    var parentNode = item.parentNode;
+			    while(typeof parentNode != 'undefined' && parentNode !== null && !parentNode.data.root){
+			        parentNode.set(columnName, false);
+			        parentNode = parentNode.parentNode;
+			    }
 
+			    // Then uncheck all childs (recusif)
+			    (function doChild(children){
+			        if(typeof children == 'undefined' || children === null || children.length <= 0)
+			            return;
 
+			        for(var i=0; i<children.length; i++){
+			            children[i].set(columnName, false);
+			            doChild(children[i].childNodes);    // <= recursivity
+			        }
+			    })(item.childNodes);
 
-
+			    view.refresh();
+			}			
 			,
 			getFormMant:function(arrDataCollection){
 
@@ -1161,35 +872,11 @@
 		        ]
 			});
 
-		/*	var myReturn = arrDataCollection;
-
-
-												                    Ext.MessageBox.show({
-												                        title: 'Selected Nodes',
-												                        width: 500,
-												                        //msg:addRecord.data.lote_nombre,
-												                        //msg: dataCollection.join('<br />'),
-												                        //msg : dataCollection[0].join,
-												                        msg : myReturn,
-												                        //.data.lote_nombre,
-												                        icon: Ext.MessageBox.INFO
-												                    });*/
-
-
-			//arrDataCollection;
-
-
 			var store_devolver = Ext.create('Ext.data.ArrayStore', {
-		      //  storeId: 'estado',
 		        autoLoad: true,
 		        model:TestModel,
 		        data: arrDataCollection
 		    });
-
-
-
-		    //store_devolver.loadData(arrDataCollection);
-
 
 				Ext.create('Ext.window.Window',{
 	                id:ireturn.id+'-win-form',
@@ -1201,7 +888,6 @@
 	                resizable:false,
 	                modal: true,
 	                border:false,
-	                //store:store_devolver,
 	                closable:true,
 	                padding:20,
 	                items:[
@@ -1209,13 +895,6 @@
 	                        xtype: 'grid',
 	                        id:ireturn.id+'-grid-return-form',
 	                        store:store_devolver,
-	                        //fieldLabel: 'id_lote',
-	                        //disabled:true,
-	                        //labelWidth:90,
-	                        //labelAlign:'right',
-	                        //width:'100%',
-	                        //anchor:'100%',
-	                        //dataIndex: 'name'
 	                        columnLines: true,
 	                        columns:{
 	                            items:[
@@ -1267,12 +946,6 @@
 	                            click: function(obj, e){
 
 									Ext.getCmp(ireturn.id+'-win-form').el.mask('Cargando…', 'x-mask-loading');
-	                            	
-	                            	
-
-	                            	//client.shi_estado = Ext.getCmp(client.id+'-txt-estado').getValue();
-	                           		//client.shi_nombre = Ext.getCmp(client.id+'-txt-nombre').getValue();
-
 									ireturn.set_return(3,'¿Está seguro de devolver?',store_devolver);
 									Ext.getCmp(ireturn.id+'-win-form').close();	
 
@@ -1296,10 +969,10 @@
 	                ],
 	                listeners:{
 	                    'afterrender':function(obj, e){ 
-	                        //panel_asignar_gestion.getDatos();
+
 	                    },
 	                    'close':function(){
-	                        //if(panel_asignar_gestion.guarda!=0)gestion_devolucion.buscar();
+
 	                    }
 	                }
 	            }).show().center();
