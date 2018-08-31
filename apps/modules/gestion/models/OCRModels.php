@@ -17,8 +17,48 @@ class OCRModels extends Adodb {
 
     public function get_list($p){
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
+        parent::ConnectionOpen($this->dsn, 'get_ocr_plantillas');
         parent::SetParameterSP($p['vp_cod_lote'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function get_ocr_plantillas($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_ocr_plantillas');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        /*parent::SetParameterSP($p['vp_lote'], 'int');
+        parent::SetParameterSP($p['vp_lote_estado'], 'varchar');
+        parent::SetParameterSP($p['vp_name'], 'varchar');
+        parent::SetParameterSP($p['fecha'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');*/
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+   public function get_ocr_trazos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_ocr_trazos');
+        parent::SetParameterSP($p['vp_cod_plantilla'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function get_list_shipper($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_shipper');
+        parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function get_list_contratos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_contratos');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP(USR_ID, 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
