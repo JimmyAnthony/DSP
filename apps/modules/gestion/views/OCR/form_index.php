@@ -129,14 +129,14 @@
                 }
             });
 
-		    var myDataLote = [
-				['A','Activo'],
-			    ['I','Inactivo']
+		    var myDataTipo = [
+				['S','Texto'],
+			    ['N','Número']
 			];
-			var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
-		        storeId: 'estado',
+			var store_tipo_texto = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'tipo',
 		        autoLoad: true,
-		        data: myDataLote,
+		        data: myDataTipo,
 		        fields: ['code', 'name']
 		    });
 			
@@ -370,6 +370,7 @@
 							region:'center',
 							layout:'border',
 							border:true,
+							autoScroll:true,
 							padding:'5px 5px 5px 5px',
 							items:[
 								{
@@ -476,6 +477,29 @@
 									border:true,
 									autoScroll:true,
 									padding:'5px 5px 5px 5px'
+								},
+								{
+									region:'south',
+									split:true,
+									id: OCR.id+'-panel_texto',
+									height:100,
+									border:true,
+									autoScroll:true,
+									padding:'5px 5px 5px 5px',
+									layout:'fit',
+									items:[
+										{
+                                            xtype: 'textarea',	
+                                            //fieldLabel: 'Texto',
+                                            id:OCR.id+'-txt-texto-plantilla',
+                                            labelWidth:0,
+                                            //maskRe: /[0-9]/,
+                                            //readOnly:true,
+                                            labelAlign:'right',
+                                            width:'100%',
+                                            anchor:'100%'
+                                        }
+									]
 								}
 							]
 						},
@@ -490,44 +514,155 @@
 								{
 									region:'north',
 									border:true,
-									height:60,
+									height:300,
 									padding:'5px 5px 5px 5px',
 									bodyStyle: 'background: transparent',
-									layout: 'hbox',
+									layout: 'border',
 									items:[
 										{
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_BT_file_text_plus_905568.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Pág.(0)',
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_BT_file_text_minus_905569.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Error.(0)',
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_BT_binder_905575.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Total.(0)',
-						                    //iconAlign: 'top'
-						                }
+											region:'north',
+											height:140,
+											border:false,
+											bodyStyle: 'background: transparent',
+		                                    padding:'2px 5px 1px 5px',
+		                                    layout:'column',
+											items:[
+												{
+			                                   		width: '100%',border:false,
+			                                    	padding:'10px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Tipo Texto',
+			                                                    id:OCR.id+'-cbx-tipo-texto',
+			                                                    store: store_tipo_texto,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 70,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            obj.setValue('S');
+			                                                        },
+			                                                        select:function(obj, records, eOpts){ 
+			                                                			
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+												{
+		                                            width:'100%',border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Nombre',
+		                                                    id:OCR.id+'-txt-nombre-trazo',
+		                                                    labelWidth:70,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                            width:'100%',border:false,
+		                                            hidden:true,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            layout:'hbox',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    padding:'0px 0px 10px 0px',  
+		                                                    fieldLabel: 'X',
+		                                                    id:OCR.id+'-txt-x',
+		                                                    labelWidth:50,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'25%',
+		                                                    anchor:'25%'
+		                                                },
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    padding:'0px 0px 10px 0px',  
+		                                                    fieldLabel: 'Y',
+		                                                    id:OCR.id+'-txt-y',
+		                                                    labelWidth:50,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'25%',
+		                                                    anchor:'25%'
+		                                                },
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    padding:'0px 0px 10px 0px',  
+		                                                    fieldLabel: 'W',
+		                                                    id:OCR.id+'-txt-w',
+		                                                    labelWidth:50,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'25%',
+		                                                    anchor:'25%'
+		                                                },
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    padding:'0px 0px 10px 0px',  
+		                                                    fieldLabel: 'H',
+		                                                    id:OCR.id+'-txt-h',
+		                                                    labelWidth:50,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'25%',
+		                                                    anchor:'25%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                        	id: OCR.id + '-panel-img-texto',
+		                                            width:'100%',border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textarea',	
+		                                                    fieldLabel: 'Texto',
+		                                                    id:OCR.id+'-txt-texto-trazo',
+		                                                    labelWidth:70,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+											]
+										},
+										{
+											region:'center',
+											bodyStyle: 'background: transparent',
+											id: OCR.id + '-panel-img-trazos',
+											border:true,
+											items:[]
+										}
 									]
 								},
 								{
@@ -538,7 +673,7 @@
 									items:[
 										{
 					                        xtype: 'grid',
-					                        id: OCR.id + '-grid-paginas',
+					                        id: OCR.id + '-grid-trazos',
 					                        store: store_trazos,
 					                        columnLines: true,
 					                        columns:{
@@ -572,7 +707,10 @@
 					                        listeners:{
 					                            afterrender: function(obj){
 					                                
-					                            }
+					                            },
+												beforeselect:function(obj, record, index, eOpts ){
+													OCR.setViewPanelTrazo(index);
+												}
 					                        }
 					                    }
 									]
@@ -695,6 +833,19 @@
 	                }
 	            });
 			},
+			
+			setViewPanelTrazo:function(index){
+				var record=Ext.getCmp(OCR.id + '-grid-trazos').getStore().getAt(index);
+				Ext.getCmp(OCR.id+'-cbx-tipo-texto').setValue(record.data.tipo);
+				Ext.getCmp(OCR.id+'-txt-nombre-trazo').setValue(record.data.nombre);
+				Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(record.data.texto);
+				Ext.getCmp(OCR.id+'-txt-x').setValue(record.data.x);
+				Ext.getCmp(OCR.id+'-txt-y').setValue(record.data.y);
+				Ext.getCmp(OCR.id+'-txt-w').setValue(record.data.w);
+				Ext.getCmp(OCR.id+'-txt-h').setValue(record.data.h);
+
+
+			},
 			getReloadGridOCR:function(name){
 				//OCR.set_OCR_clear();
 				//Ext.getCmp(OCR.id+'-form').el.mask('Cargando…', 'x-mask-loading');
@@ -728,7 +879,7 @@
 	            });
 			},
 			getReloadGridOCRTRAZOS:function(id){
-				Ext.getCmp(OCR.id + '-grid-paginas').getStore().load(
+				Ext.getCmp(OCR.id + '-grid-trazos').getStore().load(
 	                {params: {vp_cod_plantilla:id},
 	                callback:function(){
 	                	//Ext.getCmp(OCR.id+'-form').el.unmask();
@@ -744,13 +895,86 @@
 				Ext.getCmp(OCR.id+'-cmb-estado').setValue('');
 				Ext.getCmp(OCR.id+'-txt-nombre').focus();
 			},
+			recognize_image:function(id){
+				document.getElementById(id).innerText = "(Recognizing...)"
+				OCRAD(document.getElementById("pic"), {
+					numeric: true
+				}, function(text){
+					
+				});
+			},
+			getDropImg:function(){
+				var image = document.getElementById('imagen-plantilla');//document.querySelector('#imagen-plantilla');
+		      //var data = document.querySelector('#data');
+		      //var canvasData = document.querySelector('#canvasData');
+		      //var cropBoxData = document.querySelector('#cropBoxData');
+		      var cropper = new Cropper(image, {
+		      	//dragMode: 'move',
+		      	center: false,
+		        highlight: false,
+		        cropBoxMovable: false,
+		        cropBoxResizable: false,
+		        ready: function (event) {
+		          // Zoom the image to its natural size
+		          cropper.zoomTo(1);
+		          cropper.movable();
+		          cropper.cropBoxMovable();
+		        },
+
+		        crop: function (event) {
+		          //data.textContent = JSON.stringify(cropper.getData());
+		          //cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
+		          Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(cropper.getCropBoxData()));
+		        },
+
+		        zoom: function (event) {
+		          // Keep the image in its natural size
+		          if (event.detail.oldRatio === 1) {
+		            event.preventDefault();
+		          }
+		        },
+		      });
+			},
+			load_file:function(panel,id) {
+				/*var reader = new FileReader();
+				reader.onload = function(){
+					var img =document.getElementById('imagen-plantilla');
+					//var img = new Image();
+					img.src = reader.result;
+					img.onload = function(){
+						document.getElementById('nose').innerHTML = ''
+						document.getElementById('nose').appendChild(img)
+						OCRAD(img, function(text){
+							//document.getElementById('transcription').className = "done"
+							//document.getElementById('transcription').innerText = text;
+							Ext.getCmp(OCR.id+'-txt-texto-plantilla').setValue(text);
+						})
+					}
+				}
+				reader.readAsDataURL(document.getElementById('picker').files[0])*/
+				Ext.getCmp(OCR.id+panel).el.mask('Cargando Texto…', 'x-mask-loading');
+				var img =document.getElementById(id);
+				if(img!=null){
+					OCRAD(img, function(text){
+						//document.getElementById('transcription').className = "done"
+						//document.getElementById('transcription').innerText = text;
+						Ext.getCmp(OCR.id+panel).el.unmask();
+						Ext.getCmp(OCR.id+'-txt-texto-plantilla').setValue(text);
+						OCR.getDropImg();
+					});
+				}else{
+					setTimeout(function() { OCR.load_file(panel,id); }, 1000);
+				}
+			},
 			getImg_tiff: function(file){//(rec,recA){
 				
 				var panel = Ext.getCmp(OCR.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
+                    html: '<img id="imagen-plantilla" src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
                 });
+                panel.doLayout();
+                OCR.load_file('-panel_texto','imagen-plantilla');
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({
 		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',

@@ -6,6 +6,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/css/inicio_bootstrap.css">
     <link rel="stylesheet" href="/js/iviewer/jquery.iviewer.css" />
+    <link rel="stylesheet" href="/js/cropperjs/cropper.css">
     <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="/js/ext-5.0.1/packages/sencha-charts/build/classic/resources/sencha-charts-all.css" />
     
@@ -38,6 +39,8 @@
     <link rel="stylesheet" href="/js/Gallery-2.16.0/css/blueimp-gallery.css">
     <link rel="stylesheet" href="/js/Gallery-2.16.0/css/blueimp-gallery-indicator.css">
     <link rel="stylesheet" href="/js/Gallery-2.16.0/css/demo.css">
+    <script src="/js/ocrad.js"></script>
+    <script src="/js/cropperjs/cropper.js"></script>
 
 
     <script type="text/javascript">
