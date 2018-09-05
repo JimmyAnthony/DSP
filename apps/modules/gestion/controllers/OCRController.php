@@ -89,7 +89,19 @@ class OCRController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-
+    public function set_ocr_trazos($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->set_ocr_trazos($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
     public function get_list_shipper($p){
         $rs = $this->objDatos->get_list_shipper($p);
         //var_export($rs);

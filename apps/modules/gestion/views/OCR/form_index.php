@@ -6,6 +6,8 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/OCR/',
 			opcion:'I',
+			cod_trazo:0,
+			cod_plantilla:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -513,11 +515,35 @@
 							items:[
 								{
 									region:'north',
+									id:OCR.id+'-panel-trazos-form',
 									border:true,
 									height:300,
 									padding:'5px 5px 5px 5px',
 									bodyStyle: 'background: transparent',
 									layout: 'border',
+									bbar:[
+										'->',
+										{
+					                        xtype:'button',
+					                        width:100,
+					                        text: 'Buscar',
+					                        icon: '/images/icon/save.png',
+					                        listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+					                            	var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
+                       					            OCR.setOCRTrazos(name);
+					                            }
+					                        }
+					                    }
+									],
 									items:[
 										{
 											region:'north',
@@ -774,6 +800,70 @@
 			getImagen:function(param){
 				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/OCR/'+param}});
 			},
+			setOCRTrazos:function(name){
+				var res = Ext.JSON.decode(name);
+				console.log(res);
+				var tipo = Ext.getCmp(OCR.id+'-cbx-tipo-texto').getValue();
+				var nombre = Ext.getCmp(OCR.id+'-txt-nombre-trazo').getValue();
+				var texto = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
+				//OCR.cod_trazo=record.data.cod_trazo;
+				//OCR.cod_plantilla=record.data.cod_plantilla;
+				/*Ext.getCmp(OCR.id+'-txt-x').getValue();
+				Ext.getCmp(OCR.id+'-txt-y').getValue();
+				Ext.getCmp(OCR.id+'-txt-w').getValue();
+				Ext.getCmp(OCR.id+'-txt-h').getValue();*/
+
+				global.Msg({
+                    msg: '¿Está seguro de guardar?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                        Ext.getCmp(OCR.id+'-panel-trazos-form').el.mask('Cargando…', 'x-mask-loading');
+                        Ext.Ajax.request({
+		                    url: OCR.url + 'set_ocr_trazos/',
+		                    params:{
+		                    	vp_op:'I',
+						        vp_cod_trazo:0,
+						        vp_cod_plantilla:OCR.cod_plantilla, 
+						        vp_nombre:nombre,
+						        vp_tipo:tipo,
+						        vp_x:res.top,
+						        vp_y:res.left,
+						        vp_w:res.width,
+						        vp_h:res.height,
+						        vp_path:'',
+						        vp_img:'',
+						        vp_texto:texto,
+						        vp_estado:'A'
+		                    },
+		                    success: function(response, options){
+		                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask(); 
+		                        var res = Ext.JSON.decode(response.responseText);
+		                        if (res.error == 'OK'){
+		                            global.Msg({
+		                                msg: res.msn,
+		                                icon: 1,
+		                                buttons: 1,
+		                                fn: function(btn){
+		                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+		                                }
+		                            });
+		                        } else{
+		                            global.Msg({
+		                                msg: res.msn,
+		                                icon: 0,
+		                                buttons: 1,
+		                                fn: function(btn){
+		                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+		                                }
+		                            });
+		                        }
+		                    }
+		                });
+						
+		            }
+                });
+			},
 			setOCR:function(op){
 
 				global.Msg({
@@ -836,6 +926,8 @@
 			
 			setViewPanelTrazo:function(index){
 				var record=Ext.getCmp(OCR.id + '-grid-trazos').getStore().getAt(index);
+				OCR.cod_trazo=record.data.cod_trazo;
+				OCR.cod_plantilla=record.data.cod_plantilla;
 				Ext.getCmp(OCR.id+'-cbx-tipo-texto').setValue(record.data.tipo);
 				Ext.getCmp(OCR.id+'-txt-nombre-trazo').setValue(record.data.nombre);
 				Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(record.data.texto);

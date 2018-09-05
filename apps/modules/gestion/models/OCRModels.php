@@ -37,7 +37,27 @@ class OCRModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
-
+    public function set_ocr_trazos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_ocr_trazos');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_cod_trazo'], 'int');
+        parent::SetParameterSP($p['vp_cod_plantilla'], 'int');
+        parent::SetParameterSP($p['vp_nombre'], 'varchar');
+        parent::SetParameterSP($p['vp_tipo'], 'varchar');
+        parent::SetParameterSP($p['vp_x'], 'varchar');
+        parent::SetParameterSP($p['vp_y'], 'varchar');
+        parent::SetParameterSP($p['vp_w'], 'varchar');
+        parent::SetParameterSP($p['vp_h'], 'varchar');
+        parent::SetParameterSP($p['vp_path'], 'varchar');
+        parent::SetParameterSP($p['vp_img'], 'varchar');
+        parent::SetParameterSP($p['vp_texto'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
    public function get_ocr_trazos($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_ocr_trazos');
