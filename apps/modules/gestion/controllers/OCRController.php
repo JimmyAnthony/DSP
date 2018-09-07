@@ -91,7 +91,6 @@ class OCRController extends AppController {
     }
     public function set_ocr_trazos($p){
         //$this->valida_mobil($p);
-        
         $rs = $this->objDatos->set_ocr_trazos($p);
         $rs = $rs[0];
         $data = array(

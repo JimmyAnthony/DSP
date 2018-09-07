@@ -43,7 +43,7 @@ class OCRModels extends Adodb {
         parent::SetParameterSP($p['vp_op'], 'varchar');
         parent::SetParameterSP($p['vp_cod_trazo'], 'int');
         parent::SetParameterSP($p['vp_cod_plantilla'], 'int');
-        parent::SetParameterSP($p['vp_nombre'], 'varchar');
+        parent::SetParameterSP(utf8_decode($p['vp_nombre']), 'varchar');
         parent::SetParameterSP($p['vp_tipo'], 'varchar');
         parent::SetParameterSP($p['vp_x'], 'varchar');
         parent::SetParameterSP($p['vp_y'], 'varchar');
@@ -51,7 +51,7 @@ class OCRModels extends Adodb {
         parent::SetParameterSP($p['vp_h'], 'varchar');
         parent::SetParameterSP($p['vp_path'], 'varchar');
         parent::SetParameterSP($p['vp_img'], 'varchar');
-        parent::SetParameterSP($p['vp_texto'], 'varchar');
+        parent::SetParameterSP(utf8_decode($p['vp_texto']), 'varchar');
         parent::SetParameterSP($p['vp_estado'], 'varchar');
         parent::SetParameterSP(USR_ID, 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();

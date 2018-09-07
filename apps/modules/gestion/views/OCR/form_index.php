@@ -523,11 +523,49 @@
 									bodyStyle: 'background: transparent',
 									layout: 'border',
 									bbar:[
+										{
+					                        xtype:'button',
+					                        //width:100,
+					                        text: 'Eliminar',
+					                        icon: '/images/icon/remove.png',
+					                        listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){
+                       					            OCR.setOCRTrazos({op:'D',top: 0,left: 0,width: 0,height: 0});
+					                            }
+					                        }
+					                    },
 										'->',
 										{
 					                        xtype:'button',
-					                        width:100,
-					                        text: 'Buscar',
+					                        //width:100,
+					                        text: 'Nuevo',
+					                        icon: '/images/icon/app_add.png',
+					                        listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){
+					                            	OCR.setNuevo();
+					                            }
+					                        }
+					                    },
+										{
+					                        xtype:'button',
+					                        //width:100,
+					                        text: 'Guardar',
 					                        icon: '/images/icon/save.png',
 					                        listeners:{
 					                            beforerender: function(obj, opts){
@@ -539,9 +577,10 @@
 					                                });*/
 					                            },
 					                            click: function(obj, e){	             	
-					                            	var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
+					                            	//var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
                        					            //OCR.setOCRTrazos(name);
-                       					            OCR.getSizeImg('/scanning/escaneado.jpg','G',Ext.JSON.decode(name),OCR.getResizeOrigin); 
+                       					            var op = OCR.cod_trazo==0?'I':'U';
+                       					            OCR.getSizeImg('/scanning/escaneado.jpg',op,OCR.cropper.getCropBoxData(),OCR.getResizeOrigin);
 					                            }
 					                        }
 					                    }
@@ -689,7 +728,7 @@
 											bodyStyle: 'background: transparent',
 											id: OCR.id + '-panel-img-trazos',
 											border:true,
-											items:[]
+											html: '<div id="imagen-trazo" style="width:100%; height:"100%;overflow: none;" ><canvas id="canvas"></canvas></div>'
 										}
 									]
 								},
@@ -719,7 +758,22 @@
 					                                {
 					                                    text: 'Estado',
 					                                    dataIndex: 'estado',
-					                                    width: 50
+					                                    loocked : true,
+					                                    width: 50,
+					                                    align: 'center',
+					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+					                                        //console.log(record);
+					                                        metaData.style = "padding: 0px; margin: 0px";
+					                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+					                                        var qtip = (record.get('estado')=='A')?'Estado Activo.':'Estado Inactivo.';
+					                                        return global.permisos({
+					                                            type: 'link',
+					                                            id_menu: OCR.id_menu,
+					                                            icons:[
+					                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+					                                            ]
+					                                        });
+					                                    }
 					                                }
 					                            ],
 					                            defaults:{
@@ -824,8 +878,8 @@
                         Ext.Ajax.request({
 		                    url: OCR.url + 'set_ocr_trazos/',
 		                    params:{
-		                    	vp_op:'I',
-						        vp_cod_trazo:0,
+		                    	vp_op:res.op,
+						        vp_cod_trazo:OCR.cod_trazo,
 						        vp_cod_plantilla:OCR.cod_plantilla, 
 						        vp_nombre:nombre,
 						        vp_tipo:tipo,
@@ -873,46 +927,48 @@
                     icon: 3,
                     buttons: 3,
                     fn: function(btn){
-                        Ext.getCmp(OCR.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+                    	if (btn == 'yes'){
+	                        Ext.getCmp(OCR.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 
-						Ext.getCmp(OCR.id+'-form-info').submit({
-		                    url: OCR.url + 'setRegisterCampana/',
-		                    params:{
-		                        vp_op: OCR.opcion,
-		                        vp_shi_codigo:OCR.cod_cam,
-		                        vp_shi_nombre:Ext.getCmp(OCR.id+'-txt-nombre').getValue(),
-		                        vp_shi_descripcion:Ext.getCmp(OCR.id+'-txt-descripcion').getValue(),
-		                        vp_fec_ingreso:Ext.getCmp(OCR.id+'-date-re').getRawValue(),
-		                        vp_estado:Ext.getCmp(OCR.id+'-cmb-estado').getValue()
-		                    },
-		                    success: function( fp, o ){
-		                    	//console.log(o);
-		                        var res = o.result;
-		                        Ext.getCmp(OCR.id+'-form').el.unmask();
-		                        //console.log(res);
-		                        if (parseInt(res.error) == 0){
-		                            global.Msg({
-		                                msg: res.data,
-		                                icon: 1,
-		                                buttons: 1,
-		                                fn: function(btn){
-		                                    OCR.getReloadGridOCR('');
-		                                    OCR.setNuevo();
-		                                }
-		                            });
-		                        } else{
-		                            global.Msg({
-		                                msg: 'Ocurrio un error intentalo nuevamente.',
-		                                icon: 0,
-		                                buttons: 1,
-		                                fn: function(btn){
-		                                    OCR.getReloadGridOCR('');
-		                                    OCR.setNuevo();
-		                                }
-		                            });
-		                        }
-		                    }
-		                });
+							Ext.getCmp(OCR.id+'-form-info').submit({
+			                    url: OCR.url + 'setRegisterCampana/',
+			                    params:{
+			                        vp_op: OCR.opcion,
+			                        vp_shi_codigo:OCR.cod_cam,
+			                        vp_shi_nombre:Ext.getCmp(OCR.id+'-txt-nombre').getValue(),
+			                        vp_shi_descripcion:Ext.getCmp(OCR.id+'-txt-descripcion').getValue(),
+			                        vp_fec_ingreso:Ext.getCmp(OCR.id+'-date-re').getRawValue(),
+			                        vp_estado:Ext.getCmp(OCR.id+'-cmb-estado').getValue()
+			                    },
+			                    success: function( fp, o ){
+			                    	//console.log(o);
+			                        var res = o.result;
+			                        Ext.getCmp(OCR.id+'-form').el.unmask();
+			                        //console.log(res);
+			                        if (parseInt(res.error) == 0){
+			                            global.Msg({
+			                                msg: res.data,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCR('');
+			                                    OCR.setNuevo();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: 'Ocurrio un error intentalo nuevamente.',
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCR('');
+			                                    OCR.setNuevo();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
 		            }
                 });
 			},
@@ -940,11 +996,11 @@
 				OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
 			},
 			getResizeOrigin:function(op,jsona,jsonb){
-				console.log(jsona);
-				console.log(jsonb);
-				var wa = jsona.width /  parseFloat(jsonb.width);
-				var wb = jsona.height / parseFloat(jsonb.height);
+				var container=OCR.cropper.getContainerData()
+				var wa = jsona.width /  parseFloat(container.width);
+				var wb = jsona.height / parseFloat(container.height);
 				if(op=='S'){
+					$('#OCR-panel_img-body').scrollTop(parseFloat(jsonb.top) / wb);
 					OCR.cropper.setCropBoxData({
 		              top: parseFloat(jsonb.top) / wb,
 		              left: parseFloat(jsonb.left)/ wa,
@@ -952,9 +1008,9 @@
 		              height: parseFloat(jsonb.height) / wb
 		            });
 				}else{
-		            //var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
                  	OCR.setOCRTrazos(
                  		{
+                 		  op:op,
 			              top: parseFloat(jsonb.top) * wb,
 			              left: parseFloat(jsonb.left)* wa,
 			              width: parseFloat(jsonb.width)* wa,
@@ -1011,13 +1067,16 @@
 	            });
 			},
 			setNuevo:function(){
-				OCR.shi_codigo=0;
-				OCR.getImagen('default.png');
-				Ext.getCmp(OCR.id+'-txt-nombre').setValue('');
-				Ext.getCmp(OCR.id+'-txt-descripcion').setValue('');
-				Ext.getCmp(OCR.id+'-date-re').setValue('');
-				Ext.getCmp(OCR.id+'-cmb-estado').setValue('');
-				Ext.getCmp(OCR.id+'-txt-nombre').focus();
+				OCR.cod_trazo=0;
+				//OCR.getImagen('default.png');
+				Ext.getCmp(OCR.id+'-cbx-tipo-texto').setValue('S');
+				Ext.getCmp(OCR.id+'-txt-nombre-trazo').setValue('');
+				Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue('');
+				Ext.getCmp(OCR.id+'-txt-x').setValue('');
+				Ext.getCmp(OCR.id+'-txt-y').setValue('');
+				Ext.getCmp(OCR.id+'-txt-w').setValue('');
+				Ext.getCmp(OCR.id+'-txt-h').setValue('');
+				Ext.getCmp(OCR.id+'-txt-nombre-trazo').focus();
 			},
 			recognize_image:function(id){
 				document.getElementById(id).innerText = "(Recognizing...)"
@@ -1045,12 +1104,41 @@
 		          //OCR.cropper.zoomTo(1);
 		          //OCR.cropper.movable();
 		          //OCR.cropper.cropBoxMovable();
+
+		          	var clone = this.cloneNode();
+		          	clone.id='imagen-clonado';
+		          	clone.className = '';
+		            clone.style.cssText = (
+		              'display: block;' +
+		              'width: 100%;' +
+		              'min-width: 0;' +
+		              'min-height: 0;' +
+		              'max-width: none;' +
+		              'max-height: none;'
+		            );
+		            document.getElementById('imagen-trazo').appendChild(clone.cloneNode());
 		        },
 
 		        crop: function (event) {
 		          //data.textContent = JSON.stringify(cropper.getData());
 		          //cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
-		          Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(OCR.cropper.getCropBoxData()));
+		          //Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(OCR.cropper.getCropBoxData()));
+		          	/*var data = event.detail;
+		            var cropper = this.cropper;
+		            var imageData = cropper.getImageData();
+		            var previewAspectRatio = data.width / data.height;
+
+		            var elem = document.getElementById('imagen-clonado');
+		            var previewImage = elem;
+	              	var previewWidth = elem.offsetWidth;
+	              	var previewHeight = previewWidth / previewAspectRatio;
+	              	var imageScaledRatio = data.width / previewWidth;
+
+	              	elem.style.height = previewHeight + 'px';
+	              	previewImage.style.width = imageData.naturalWidth / imageScaledRatio + 'px';
+	              	previewImage.style.height = imageData.naturalHeight / imageScaledRatio + 'px';
+	              	previewImage.style.marginLeft = -data.x / imageScaledRatio + 'px';
+	              	previewImage.style.marginTop = -data.y / imageScaledRatio + 'px';*/
 		        },
 
 		        zoom: function (event) {
