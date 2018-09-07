@@ -8,6 +8,7 @@
 			opcion:'I',
 			cod_trazo:0,
 			cod_plantilla:0,
+			cropper:'',
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -539,7 +540,8 @@
 					                            },
 					                            click: function(obj, e){	             	
 					                            	var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
-                       					            OCR.setOCRTrazos(name);
+                       					            //OCR.setOCRTrazos(name);
+                       					            OCR.getSizeImg('/scanning/escaneado.jpg','G',Ext.JSON.decode(name),OCR.getResizeOrigin); 
 					                            }
 					                        }
 					                    }
@@ -800,8 +802,8 @@
 			getImagen:function(param){
 				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/OCR/'+param}});
 			},
-			setOCRTrazos:function(name){
-				var res = Ext.JSON.decode(name);
+			setOCRTrazos:function(res){
+				//var res = Ext.JSON.decode(name);
 				console.log(res);
 				var tipo = Ext.getCmp(OCR.id+'-cbx-tipo-texto').getValue();
 				var nombre = Ext.getCmp(OCR.id+'-txt-nombre-trazo').getValue();
@@ -827,8 +829,8 @@
 						        vp_cod_plantilla:OCR.cod_plantilla, 
 						        vp_nombre:nombre,
 						        vp_tipo:tipo,
-						        vp_x:res.top,
-						        vp_y:res.left,
+						        vp_y:res.top,
+						        vp_x:res.left,
 						        vp_w:res.width,
 						        vp_h:res.height,
 						        vp_path:'',
@@ -935,8 +937,38 @@
 				Ext.getCmp(OCR.id+'-txt-y').setValue(record.data.y);
 				Ext.getCmp(OCR.id+'-txt-w').setValue(record.data.w);
 				Ext.getCmp(OCR.id+'-txt-h').setValue(record.data.h);
-
-
+				OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+			},
+			getResizeOrigin:function(op,jsona,jsonb){
+				console.log(jsona);
+				console.log(jsonb);
+				var wa = jsona.width /  parseFloat(jsonb.width);
+				var wb = jsona.height / parseFloat(jsonb.height);
+				if(op=='S'){
+					OCR.cropper.setCropBoxData({
+		              top: parseFloat(jsonb.top) / wb,
+		              left: parseFloat(jsonb.left)/ wa,
+		              width: parseFloat(jsonb.width)/ wa,
+		              height: parseFloat(jsonb.height) / wb
+		            });
+				}else{
+		            //var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
+                 	OCR.setOCRTrazos(
+                 		{
+			              top: parseFloat(jsonb.top) * wb,
+			              left: parseFloat(jsonb.left)* wa,
+			              width: parseFloat(jsonb.width)* wa,
+			              height: parseFloat(jsonb.height)* wb
+			            }
+                 	);
+				}
+			},
+			getSizeImg:function(imgSrc,op,json,callback){
+				var newImg = new Image();
+			    newImg.onload = function () {
+			        if (callback != undefined)callback(op,{width: newImg.width, height: newImg.height},json)
+			    }
+			    newImg.src = imgSrc;
 			},
 			getReloadGridOCR:function(name){
 				//OCR.set_OCR_clear();
@@ -1000,23 +1032,25 @@
 		      //var data = document.querySelector('#data');
 		      //var canvasData = document.querySelector('#canvasData');
 		      //var cropBoxData = document.querySelector('#cropBoxData');
-		      var cropper = new Cropper(image, {
+		      OCR.cropper = new Cropper(image, {
 		      	//dragMode: 'move',
-		      	center: false,
-		        highlight: false,
-		        cropBoxMovable: false,
+		      	movable: false,
+		        zoomable: false,
+		        rotatable: false,
+		        scalable: false,
+		        cropBoxMovable: true,
 		        cropBoxResizable: false,
 		        ready: function (event) {
 		          // Zoom the image to its natural size
-		          cropper.zoomTo(1);
-		          cropper.movable();
-		          cropper.cropBoxMovable();
+		          //OCR.cropper.zoomTo(1);
+		          //OCR.cropper.movable();
+		          //OCR.cropper.cropBoxMovable();
 		        },
 
 		        crop: function (event) {
 		          //data.textContent = JSON.stringify(cropper.getData());
 		          //cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
-		          Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(cropper.getCropBoxData()));
+		          Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(OCR.cropper.getCropBoxData()));
 		        },
 
 		        zoom: function (event) {

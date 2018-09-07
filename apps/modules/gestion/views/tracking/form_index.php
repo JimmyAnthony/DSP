@@ -198,7 +198,7 @@
 		                        '<p>Reproceso</p>',
 		                    '</div>',
 		                    '<div class="{clase_box5}">',
-		                    	'<p><img src="/images/icon/if_General_Office_01_2530843.png"/></p>',
+		                    	'<p><img src="/images/menu/if_Logo_Design_1562698.png"/></p>',
 		                        '<hr></hr>',
 		                        '<p>Digitalizado</p>',
 		                    '</div>',

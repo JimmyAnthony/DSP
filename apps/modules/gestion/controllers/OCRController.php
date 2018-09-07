@@ -40,8 +40,8 @@ class OCRController extends AppController {
                 $value_['img'] = utf8_encode(trim($value['img']));
                 $value_['texto'] = utf8_encode(trim($value['texto']));
                 $value_['estado'] = utf8_encode(trim($value['estado']));
-                $value_['width'] = intval($value['width']);
-                $value_['height'] = intval(trim($value['height']));
+                $value_['width'] = intval($value['w']);
+                $value_['height'] = intval(trim($value['h']));
                 $value_['width_formato'] = intval($value['width_formato']);
                 $value_['height_formato'] = intval(trim($value['height_formato']));
                 $value_['fecha'] = trim($value['fecha']);
@@ -68,10 +68,10 @@ class OCRController extends AppController {
                 $value_['cod_plantilla'] = intval(trim($value['cod_plantilla']));
                 $value_['nombre'] = utf8_encode(trim($value['nombre']));
                 $value_['tipo'] = utf8_encode(trim($value['tipo']));
-                $value_['x'] = intval(trim($value['x']));
-                $value_['y'] = intval(trim($value['y']));
-                $value_['x'] = intval(trim($value['x']));
-                $value_['x'] = intval(trim($value['x']));
+                $value_['x'] = floatval(trim($value['x']));
+                $value_['y'] = floatval(trim($value['y']));
+                $value_['w'] = floatval(trim($value['w']));
+                $value_['h'] = floatval(trim($value['h']));
                 $value_['path'] = utf8_encode(trim($value['path']));
                 $value_['img'] = utf8_encode(trim($value['img']));
                 $value_['texto'] = utf8_encode(trim($value['texto']));
