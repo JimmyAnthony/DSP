@@ -11,6 +11,7 @@ class OCRController extends AppController {
 
     private $objDatos;
     private $arrayMenu;
+    private $puntero=0;
 
     public function __construct(){
         /**
@@ -24,7 +25,45 @@ class OCRController extends AppController {
     public function index($p){        
         $this->view('OCR/form_index.php', $p);
     }
+    public function setCopyFile($p){
+        $bool=false;
+        try {
+            if (!file_exists(PATH.'public_html/plantillas/'.$p['vp_shi_codigo'])) {
+                mkdir(PATH.'public_html/plantillas/'.$p['vp_shi_codigo'], 0777, true);
+            }
+            $path_parts = pathinfo($p['vp_imgorigen']);
+            $ext=$path_parts['extension'];
+            copy(PATH.'public_html'.$p['vp_pathorigen'].$p['vp_imgorigen'], PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext);
+            $bool=true;
+        } catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            $bool=false;
+        }
+        return $bool;
+    }
+    public function set_ocr_plantilla($p){
+        $path_parts = pathinfo($p['vp_imgorigen']);
+        $ext=$path_parts['extension'];
+        $p['vp_path']='/plantillas/'.$p['vp_shi_codigo'].'/';
+        $p['vp_img']='.'.$ext;
 
+        $rs = $this->objDatos->set_ocr_plantilla($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+
+        $p['vp_cod_plantilla']=$rs['cod_plantilla'];
+        
+        if($rs['status']!='ER'){
+            $bool=$this->setCopyFile($p);
+        }
+        
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
    public function get_ocr_plantillas($p){
         $rs = $this->objDatos->get_ocr_plantillas($p);
         //var_export($rs);
@@ -38,6 +77,8 @@ class OCRController extends AppController {
                 $value_['tot_trazos'] = intval(trim($value['tot_trazos']));
                 $value_['path'] = utf8_encode(trim($value['path']));
                 $value_['img'] = utf8_encode(trim($value['img']));
+                $value_['pathorigen'] = utf8_encode(trim($value['pathorigen']));
+                $value_['imgorigen'] = utf8_encode(trim($value['imgorigen']));
                 $value_['texto'] = utf8_encode(trim($value['texto']));
                 $value_['estado'] = utf8_encode(trim($value['estado']));
                 $value_['width'] = intval($value['w']);
@@ -153,7 +194,7 @@ class OCRController extends AppController {
         header('Content-type: application/json');
         $this->rs_ = $this->objDatos->get_list_lotizer($p);
         if(!empty($this->rs_)){
-            return '{"text": ".","children":['.$this->get_recursivo(1).']}';
+            return '{"text": ".","children":['.$this->get_recursivo(0,'',true).']}';
             
         }else{
             return json_encode(
@@ -177,22 +218,28 @@ class OCRController extends AppController {
         }
     }
 
-    public function get_recursivo($_nivel){
+    public function get_recursivo($_nivel,$_hijo,$bool){
         $coma = '';
+        //var_export($this->rs_);
         foreach ($this->rs_ as $key => $value){
-            if ($value['nivel'] == $_nivel){
+            if($bool)$_hijo=$value['hijo'];
+
+            if($value['nivel'] > $_nivel && (int)$value['padre'] == (int)$_hijo){
                 $json.=$coma."{";
-                $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.='"hijo":"'.$value['hijo'].'"';
+                $json.=',"padre":"'.$value['padre'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 //$json.=',"read":true';
                 //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
-                $json.=',"lot_estado":"'.utf8_encode(trim($value['lot_estado'])).'"';
+                $json.=',"lot_estado":"'.$value['lot_estado'].'"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';
                 $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
                 $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
                 $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
+                $json.=',"path":"'.utf8_encode(trim($value['path'])).'"';
+                $json.=',"img":"'.utf8_encode(trim($value['img'])).'"';
                 $json.=',"fecha":"'.$value['fecha'].'"';
                 $json.=',"tot_folder":"'.$value['tot_folder'].'"';
                 $json.=',"tot_pag":"'.$value['tot_pag'].'"';
@@ -201,7 +248,8 @@ class OCRController extends AppController {
                 $json.=',"id_user":"'.$value['id_user'].'"';
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
-                $js = $this->getRecursividad_children($_nivel,$value['id_lote']);
+                unset($this->rs_[$key]);
+                $js = $this->get_recursivo($value['nivel'],$value['hijo'],false);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{
@@ -209,41 +257,6 @@ class OCRController extends AppController {
                 }
                 $json.="}";
                 $coma = ",";
-            }
-        }
-        return $json;
-    }
-    public function getRecursividad_children($_nivel,$_hijo){
-        $coma = '';
-        foreach ($this->rs_ as $key => $value){
-            if ($value['nivel'] != $_nivel && $value['id_lote'] == $_hijo){
-                $json.=$coma."{";
-                $json.='"id_lote":"'.$value['id_lote'].'"';
-                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
-                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
-                $json.=',"iconCls":"task"';
-                $json.=',"expanded":true';
-                $json.=',"lot_estado":"'.utf8_encode(trim($value['lot_estado'])).'"';
-                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
-                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
-                $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
-                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
-                $json.=',"fecha":"'.$value['fecha'].'"';
-                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
-                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
-                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
-                $json.=',"usr_update":"'.$value['usr_update'].'"';
-                $json.=',"id_user":"'.$value['id_user'].'"';
-                $json.=',"estado":"'.$value['estado'].'"';
-                $json.=',"nivel":"'.$value['nivel'].'"';
-                $js = '';//$this->getRecursividad_children($_nivel,$value['id_lote']);
-                if(!empty($js)){
-                    $json.=',"children":['.trim($js).']';
-                }else{
-                    $json.=',"leaf":"true"';
-                }
-                $json.="}";
-                 $coma = ",";
             }
         }
         return $json;

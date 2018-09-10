@@ -9,8 +9,82 @@
 			cod_trazo:0,
 			cod_plantilla:0,
 			cropper:'',
+			parametros:{
+				vp_op:'I',
+		        vp_cod_plantilla:0,
+		        vp_shi_codigo:0,
+		        vp_fac_cliente:0,
+		        vp_nombre:'',
+		        vp_cod_formato:1,
+		        vp_width:0,
+		        vp_height:0,
+		        vp_path:'',
+		        vp_img:'',
+		        vp_pathorigen:'',
+		        vp_imgorigen:'',
+		        vp_texto:'',
+		        vp_estado:'A'
+			},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
+
+				Ext.define('Task', {
+				    extend: 'Ext.data.TreeModel',
+				    fields: [
+				        {name: 'hijo', type: 'string'},
+				        {name: 'padre', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+				    ]
+				});
+				OCR.storeTree = new Ext.data.TreeStore({
+	                model: 'Task',
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: OCR.url+'get_list_lotizer/'//,
+	                    //reader:{
+	                    //    type: 'json'//,
+	                    //    //rootProperty: 'data'
+	                    //}
+	                },
+	                folderSort: true,
+	                listeners:{
+	                	beforeload: function (store, operation, opts) {
+					        /*Ext.apply(operation, {
+					            params: {
+					                to: 'test1',
+		    						from: 'test2'
+					            }
+					       });*/
+					    },
+	                    load: function(obj, records, successful, opts){
+	                 		Ext.getCmp(OCR.id + '-grid-lote').doLayout();
+	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		OCR.storeTree.removeAt(0);
+	                 		Ext.getCmp(OCR.id + '-grid-lote').collapseAll();
+		                    Ext.getCmp(OCR.id + '-grid-lote').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                     });
+	                    }
+	                }
+	            });
 
 				var store = Ext.create('Ext.data.Store',{
 	                fields: [
@@ -22,6 +96,8 @@
 	                    {name: 'tot_trazos', type: 'string'},
 	                    {name: 'path', type: 'string'},
 	                    {name: 'img', type: 'string'},
+	                    {name: 'pathorigen', type: 'string'},
+	                    {name: 'imgorigen', type: 'string'},
 	                    {name: 'texto', type: 'string'},
 	                    {name: 'estado', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
@@ -144,13 +220,23 @@
 		    });
 			
 			var myData = [
-			    [1,'Activo'],
-			    [0,'Inactivo']
+			    ['A','Activo'],
+			    ['I','Inactivo']
 			];
 			var store_estado = Ext.create('Ext.data.ArrayStore', {
 		        storeId: 'estado',
 		        autoLoad: true,
 		        data: myData,
+		        fields: ['code', 'name']
+		    });
+		    var myDataFormato = [
+			    [1,'A4'],
+			    [2,'A5']
+			];
+			var store_formato = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'formato',
+		        autoLoad: true,
+		        data: myDataFormato,
 		        fields: ['code', 'name']
 		    });
 
@@ -306,8 +392,7 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){	             	
-									                            	var name = Ext.getCmp(OCR.id+'-txt-OCR').getValue();
-		                               					            OCR.getReloadGridOCR(name);
+		                               					            OCR.getReloadGridOCR();
 									                            }
 									                        }
 									                    }
@@ -319,52 +404,282 @@
 		                        },
 								{
 									region:'center',
-									layout:'fit',
+									layout:'border',
 									border:true,
 									padding:'5px 5px 5px 5px',
 									items:[
 										{
-					                        xtype: 'grid',
-					                        id: OCR.id + '-grid',
-					                        store: store,
-					                        columnLines: true,
-					                        columns:{
-					                            items:[
-					                                {
-					                                    text: 'Nombre',
-					                                    dataIndex: 'nombre',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Formato',
-					                                    dataIndex: 'formato',
-					                                    width: 50
-					                                },
-					                                {
-					                                    text: 'Trazos',
-					                                    dataIndex: 'tot_trazos',
-					                                    width: 60
-					                                }
-					                            ],
-					                            defaults:{
-					                                menuDisabled: true
-					                            }
-					                        },
-					                        viewConfig: {
-					                            stripeRows: true,
-					                            enableTextSelection: false,
-					                            markDirty: false
-					                        },
-					                        trackMouseOver: false,
-					                        listeners:{
-					                            afterrender: function(obj){
-					                                
-					                            },
-												beforeselect:function(obj, record, index, eOpts ){
-													OCR.getReloadGridOCRTRAZOS(record.get('cod_plantilla'));
-												}
-					                        }
-					                    }
+											region:'north',
+											title:'Mantenimiento Plantilla',
+											border:false,
+											bodyStyle: 'background: transparent',
+											padding:'5px 5px 5px 5px',
+											height:210,
+											bbar:[
+												{
+							                        xtype:'button',
+							                        //width:100,
+							                        text: 'Eliminar',
+							                        icon: '/images/icon/remove.png',
+							                        listeners:{
+							                            beforerender: function(obj, opts){
+							                                /*global.permisos({
+							                                    id: 15,
+							                                    id_btn: obj.getId(), 
+							                                    id_menu: gestion_devolucion.id_menu,
+							                                    fn: ['panel_asignar_gestion.limpiar']
+							                                });*/
+							                            },
+							                            click: function(obj, e){
+		                       					            //OCR.setOCRTrazos({op:'D',top: 0,left: 0,width: 0,height: 0});
+							                            }
+							                        }
+							                    },
+												'->',
+												{
+							                        xtype:'button',
+							                        //width:100,
+							                        text: 'Nuevo',
+							                        icon: '/images/icon/app_add.png',
+							                        listeners:{
+							                            beforerender: function(obj, opts){
+							                                /*global.permisos({
+							                                    id: 15,
+							                                    id_btn: obj.getId(), 
+							                                    id_menu: gestion_devolucion.id_menu,
+							                                    fn: ['panel_asignar_gestion.limpiar']
+							                                });*/
+							                            },
+							                            click: function(obj, e){
+							                            	//OCR.setNuevo();
+							                            }
+							                        }
+							                    },
+												{
+							                        xtype:'button',
+							                        //width:100,
+							                        text: 'Guardar',
+							                        icon: '/images/icon/save.png',
+							                        listeners:{
+							                            beforerender: function(obj, opts){
+							                                /*global.permisos({
+							                                    id: 15,
+							                                    id_btn: obj.getId(), 
+							                                    id_menu: gestion_devolucion.id_menu,
+							                                    fn: ['panel_asignar_gestion.limpiar']
+							                                });*/
+							                            },
+							                            click: function(obj, e){	             	
+							                            	//var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
+		                       					            //OCR.setOCRTrazos(name);
+		                       					            //var op = OCR.cod_trazo==0?'I':'U';
+		                       					            //OCR.getSizeImg('/scanning/escaneado.jpg',op,OCR.cropper.getCropBoxData(),OCR.getResizeOrigin);
+		                       					            OCR.setPlantillas();
+							                            }
+							                        }
+							                    }
+											],
+											items:[
+												{
+		                                            width:'100%',border:false,
+		                                            padding:'5px 5px 5px 5px',
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Nombre',
+		                                                    id:OCR.id+'-txt-nombre-plantilla-man',
+		                                                    labelWidth:60,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+												{
+			                                   		width: '100%',border:false,
+			                                    	padding:'5px 5px 5px 5px',
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Formato',
+			                                                    id:OCR.id+'-cbx-formato',
+			                                                    store: store_formato,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 60,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            obj.setValue(1);
+			                                                        },
+			                                                        select:function(obj, records, eOpts){ 
+			                                                			
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
+			                                   		width: '100%',border:false,
+			                                    	padding:'5px 5px 5px 5px',
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Estado',
+			                                                    id:OCR.id+'-cbx-estado-man',
+			                                                    store: store_estado,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 60,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            obj.setValue('A');
+			                                                        },
+			                                                        select:function(obj, records, eOpts){ 
+			                                                			
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
+		                                            width:'100%',border:false,
+		                                            padding:'5px 5px 5px 5px',
+		                                            bodyStyle: 'background: transparent',
+		                                            layout:'hbox',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Imagen',
+		                                                    id:OCR.id+'-txt-imagen-man',
+		                                                    readOnly:true,
+		                                                    //disabled:true,
+		                                                    labelWidth:60,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'90%',
+		                                                    anchor:'90%'
+		                                                },
+		                                                {
+									                        xtype:'button',
+									                        id:OCR.id+'-btn-imagen-man',
+									                        //disabled:true,
+									                        width:'9%',
+		                                                    anchor:'9%',
+									                        text: '',
+									                        icon: '/images/icon/page_find.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){
+									                            	OCR.getFormPage();
+									                            }
+									                        }
+									                    }
+		                                            ]
+		                                        }
+											]
+										},
+										{
+											region:'center',
+											layout:'fit',
+											border:false,
+											padding:'5px 5px 5px 5px',
+											items:[
+												{
+							                        xtype: 'grid',
+							                        id: OCR.id + '-grid',
+							                        store: store,
+							                        columnLines: true,
+							                        columns:{
+							                            items:[
+							                                {
+							                                    text: 'Nombre',
+							                                    dataIndex: 'nombre',
+							                                    flex: 1
+							                                },
+							                                {
+							                                    text: 'Formato',
+							                                    dataIndex: 'formato',
+							                                    width: 50
+							                                },
+							                                {
+							                                    text: 'Trazos',
+							                                    dataIndex: 'tot_trazos',
+							                                    width: 50
+							                                },
+							                                {
+							                                    text: 'Estado',
+							                                    dataIndex: 'estado',
+							                                    loocked : true,
+							                                    width: 50,
+							                                    align: 'center',
+							                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+							                                        //console.log(record);
+							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+							                                        var qtip = (record.get('estado')=='A')?'Estado Activo.':'Estado Inactivo.';
+							                                        return global.permisos({
+							                                            type: 'link',
+							                                            id_menu: OCR.id_menu,
+							                                            icons:[
+							                                                {id_serv: 6, img: estado, qtip: qtip, js: ""}
+							                                            ]
+							                                        });
+							                                    }
+							                                }
+							                            ],
+							                            defaults:{
+							                                menuDisabled: true
+							                            }
+							                        },
+							                        viewConfig: {
+							                            stripeRows: true,
+							                            enableTextSelection: false,
+							                            markDirty: false
+							                        },
+							                        trackMouseOver: false,
+							                        listeners:{
+							                            afterrender: function(obj){
+							                                
+							                            },
+														beforeselect:function(obj, record, index, eOpts ){
+															OCR.setInfoPlantilla(index);
+															OCR.getReloadGridOCRTRAZOS(record.get('cod_plantilla'));
+														}
+							                        }
+							                    }
+											]
+										}
 									]
 								}
 							]
@@ -770,7 +1085,7 @@
 					                                            type: 'link',
 					                                            id_menu: OCR.id_menu,
 					                                            icons:[
-					                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+					                                                {id_serv: 6, img: estado, qtip: qtip, js: ""}
 					                                            ]
 					                                        });
 					                                    }
@@ -819,7 +1134,6 @@
 	                    afterrender: function(obj, e){
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,OCR.id_menu);
-	                        OCR.getImg_tiff('escaneado');
 	                    },
 	                    beforeclose:function(obj,opts){
 	                    	global.state_item_menu(OCR.id_menu, false);
@@ -874,49 +1188,50 @@
                     icon: 3,
                     buttons: 3,
                     fn: function(btn){
-                        Ext.getCmp(OCR.id+'-panel-trazos-form').el.mask('Cargando…', 'x-mask-loading');
-                        Ext.Ajax.request({
-		                    url: OCR.url + 'set_ocr_trazos/',
-		                    params:{
-		                    	vp_op:res.op,
-						        vp_cod_trazo:OCR.cod_trazo,
-						        vp_cod_plantilla:OCR.cod_plantilla, 
-						        vp_nombre:nombre,
-						        vp_tipo:tipo,
-						        vp_y:res.top,
-						        vp_x:res.left,
-						        vp_w:res.width,
-						        vp_h:res.height,
-						        vp_path:'',
-						        vp_img:'',
-						        vp_texto:texto,
-						        vp_estado:'A'
-		                    },
-		                    success: function(response, options){
-		                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask(); 
-		                        var res = Ext.JSON.decode(response.responseText);
-		                        if (res.error == 'OK'){
-		                            global.Msg({
-		                                msg: res.msn,
-		                                icon: 1,
-		                                buttons: 1,
-		                                fn: function(btn){
-		                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
-		                                }
-		                            });
-		                        } else{
-		                            global.Msg({
-		                                msg: res.msn,
-		                                icon: 0,
-		                                buttons: 1,
-		                                fn: function(btn){
-		                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
-		                                }
-		                            });
-		                        }
-		                    }
-		                });
-						
+                    	if (btn == 'yes'){
+	                        Ext.getCmp(OCR.id+'-panel-trazos-form').el.mask('Cargando…', 'x-mask-loading');
+	                        Ext.Ajax.request({
+			                    url: OCR.url + 'set_ocr_trazos/',
+			                    params:{
+			                    	vp_op:res.op,
+							        vp_cod_trazo:OCR.cod_trazo,
+							        vp_cod_plantilla:OCR.cod_plantilla, 
+							        vp_nombre:nombre,
+							        vp_tipo:tipo,
+							        vp_y:res.top,
+							        vp_x:res.left,
+							        vp_w:res.width,
+							        vp_h:res.height,
+							        vp_path:'',
+							        vp_img:'',
+							        vp_texto:texto,
+							        vp_estado:'A'
+			                    },
+			                    success: function(response, options){
+			                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask(); 
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
 		            }
                 });
 			},
@@ -951,7 +1266,7 @@
 			                                icon: 1,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                    OCR.getReloadGridOCR('');
+			                                    OCR.getReloadGridOCR();
 			                                    OCR.setNuevo();
 			                                }
 			                            });
@@ -961,7 +1276,7 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                    OCR.getReloadGridOCR('');
+			                                    OCR.getReloadGridOCR();
 			                                    OCR.setNuevo();
 			                                }
 			                            });
@@ -996,7 +1311,7 @@
 				OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
 			},
 			getResizeOrigin:function(op,jsona,jsonb){
-				var container=OCR.cropper.getContainerData()
+				var container=OCR.cropper.getContainerData();
 				var wa = jsona.width /  parseFloat(container.width);
 				var wb = jsona.height / parseFloat(container.height);
 				if(op=='S'){
@@ -1026,9 +1341,10 @@
 			    }
 			    newImg.src = imgSrc;
 			},
-			getReloadGridOCR:function(name){
+			getReloadGridOCR:function(){
 				//OCR.set_OCR_clear();
 				//Ext.getCmp(OCR.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var name = Ext.getCmp(OCR.id+'-txt-OCR').getValue();
 				var shi_codigo = Ext.getCmp(OCR.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(OCR.id+'-cbx-contrato').getValue();
 				//var lote = Ext.getCmp(OCR.id+'-txt-lote').getValue();
@@ -1077,6 +1393,7 @@
 				Ext.getCmp(OCR.id+'-txt-w').setValue('');
 				Ext.getCmp(OCR.id+'-txt-h').setValue('');
 				Ext.getCmp(OCR.id+'-txt-nombre-trazo').focus();
+				OCR.getDropImg();
 			},
 			recognize_image:function(id){
 				document.getElementById(id).innerText = "(Recognizing...)"
@@ -1180,15 +1497,47 @@
 					setTimeout(function() { OCR.load_file(panel,id); }, 1000);
 				}
 			},
-			getImg_tiff: function(file){//(rec,recA){
-				
+			setInfoPlantilla: function(index){//(rec,recA){
+				var record=Ext.getCmp(OCR.id + '-grid').getStore().getAt(index);
+
+				Ext.getCmp(OCR.id+'-cbx-cliente').setValue(record.data.shi_codigo);
+				Ext.getCmp(OCR.id+'-cbx-contrato').setValue(record.data.fac_cliente);
+				Ext.getCmp(OCR.id+'-txt-nombre-plantilla-man').setValue(record.data.nombre);
+				Ext.getCmp(OCR.id+'-cbx-formato').setValue(record.data.cod_formato);
+				Ext.getCmp(OCR.id+'-cbx-estado-man').setValue(record.data.estado);
+				Ext.getCmp(OCR.id+'-txt-imagen-man').setValue(record.data.imgorigen);
+				Ext.getCmp(OCR.id+'-txt-texto-plantilla').setValue(record.data.texto);
+
+				OCR.parametros.vp_op='U';
+				OCR.cod_plantilla=record.data.cod_plantilla;
+			    OCR.parametros.vp_cod_plantilla=record.data.cod_plantilla;
+			    OCR.parametros.vp_shi_codigo=record.data.shi_codigo;
+			    OCR.parametros.vp_fac_cliente=record.data.fac_cliente;
+			    OCR.parametros.vp_nombre=record.data.nombre;
+			    OCR.parametros.vp_cod_formato=record.data.cod_formato;
+			    OCR.parametros.vp_width=record.data.width;
+			    OCR.parametros.vp_height=record.data.height;
+			    OCR.parametros.vp_path=record.data.path;
+			    OCR.parametros.vp_img=record.data.img;
+			    OCR.parametros.vp_pathorigen=record.data.pathorigen;
+			    OCR.parametros.vp_imgorigen=record.data.imgorigen;
+			    OCR.parametros.vp_texto=record.data.texto;
+			    OCR.parametros.vp_estado=record.data.estado;
+
+
+
 				var panel = Ext.getCmp(OCR.id+'-panel_img');
                 panel.removeAll();
-                panel.add({
-                    html: '<img id="imagen-plantilla" src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
-                });
-                panel.doLayout();
-                OCR.load_file('-panel_texto','imagen-plantilla');
+                if(record.data.img!=''){
+	                panel.add({
+	                    html: '<img id="imagen-plantilla" src="'+record.data.path+record.data.img+'" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
+	                });
+	                panel.doLayout();
+	                OCR.getDropImg();
+	                if(record.data.texto==''){
+	                	OCR.load_file('-panel_texto','imagen-plantilla');
+	                }
+                }
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({
 		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',
@@ -1219,13 +1568,457 @@
 		    get_error_sel: function(rec_01){
 		        /*var grid = Ext.getCmp(gestor_err.id+'-grid');
 		        var rec = grid.getSelectionModel().getSelected();
-		        gestor_errores.getImg_tiff(rec_01,rec);*/
+		        gestor_errores.setInfoPlantilla(rec_01,rec);*/
 		    },
 		    setLimpiar:function(){
 		        /*var panel = Ext.getCmp(gestor_errores.id+'-panel_img');
 		        panel.removeAll();        
 		        panel.doLayout();*/
-		    }
+		    },
+		    getReloadGridlotizer:function(){
+				//lotizer.set_lotizer_clear();
+				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var shi_codigo = Ext.getCmp(OCR.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(OCR.id+'-cbx-contrato').getValue();
+				var lote = Ext.getCmp(OCR.id+'-txt-lote-page').getValue();
+				var name = Ext.getCmp(OCR.id+'-txt-lotizer-page').getValue();
+				var estado = 'A';
+				var fecha = Ext.getCmp(OCR.id+'-txt-fecha-page').getRawValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(lote== null || lote==''){
+		        	lote=0;
+		        }
+				if(fecha== null || fecha==''){
+		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				Ext.getCmp(OCR.id + '-grid-lote').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
+	                callback:function(){
+	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
+	                }
+	            });
+			},
+			getSizeImgPlantilla:function(callback,imgSrc){
+				var newImg = new Image();
+			    newImg.onload = function () {
+			        if (callback != undefined)callback({width: newImg.width, height: newImg.height})
+			    }
+			    newImg.src = imgSrc;
+			},
+			setSizeImgPlantilla:function(json){
+				OCR.parametros.vp_width=json.width;
+			    OCR.parametros.vp_height=json.height;
+			    Ext.getCmp(OCR.id+'-win-form').close();
+			},
+		    setAsignaImagen:function(index){
+		    	var record=OCR.storeTree.getAt(index);
+				Ext.getCmp(OCR.id+'-txt-imagen-man').setValue(record.data.img);
+				OCR.parametros.vp_pathorigen=record.data.path;
+				OCR.parametros.vp_imgorigen=record.data.img;
+				OCR.getSizeImgPlantilla(OCR.setSizeImgPlantilla,record.data.nombre);
+		    },
+		    setNuevoPlantilla:function(){
+				Ext.getCmp(OCR.id+'-txt-nombre-plantilla-man').setValue('');
+				Ext.getCmp(OCR.id+'-cbx-formato').setValue(1);
+				Ext.getCmp(OCR.id+'-cbx-estado-man').setValue('A');
+				Ext.getCmp(OCR.id+'-txt-imagen-man').setValue('');
+				Ext.getCmp(OCR.id+'-txt-texto-plantilla').setValue('');
+
+		    	OCR.parametros={
+					vp_op:'I',
+			        vp_cod_plantilla:0,
+			        vp_shi_codigo:0,
+			        vp_fac_cliente:0,
+			        vp_nombre:'',
+			        vp_cod_formato:1,
+			        vp_width:0,
+			        vp_height:0,
+			        vp_path:'',
+			        vp_img:'',
+			        vp_pathorigen:'',
+			        vp_imgorigen:'',
+			        vp_texto:'',
+			        vp_estado:'A'
+				};
+		    },
+			setPlantillas:function(){
+				
+				var shi_codigo = Ext.getCmp(OCR.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(OCR.id+'-cbx-contrato').getValue();
+				var nombre = Ext.getCmp(OCR.id+'-txt-nombre-plantilla-man').getValue();
+				var formato = Ext.getCmp(OCR.id+'-cbx-formato').getValue();
+				var estado = Ext.getCmp(OCR.id+'-cbx-estado-man').getValue();
+				var imagen = Ext.getCmp(OCR.id+'-txt-imagen-man').getValue();
+				var texto = Ext.getCmp(OCR.id+'-txt-texto-plantilla').getValue();
+
+		    	if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(nombre== null || nombre==''){
+		            global.Msg({msg:"Ingrese un nombre.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(formato== null || formato==0 || formato==''){
+		            global.Msg({msg:"Seleccione un formato.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(estado== null || estado==''){
+		            global.Msg({msg:"Seleccione estado.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(imagen== null || imagen==''){
+		            global.Msg({msg:"Seleccione Imagen de Página Modelo.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
+				OCR.parametros.vp_op=(OCR.parametros.vp_cod_plantilla!=0)?'U':'I';
+			    OCR.parametros.vp_cod_plantilla=OCR.parametros.vp_cod_plantilla;
+			    OCR.parametros.vp_shi_codigo=shi_codigo;
+			    OCR.parametros.vp_fac_cliente=fac_cliente;
+			    OCR.parametros.vp_nombre=nombre;
+			    OCR.parametros.vp_cod_formato=formato;
+			    OCR.parametros.vp_width=OCR.parametros.vp_width;
+			    OCR.parametros.vp_height=OCR.parametros.vp_height;
+			    OCR.parametros.vp_path=OCR.parametros.vp_path;
+			    OCR.parametros.vp_img=OCR.parametros.vp_img;
+			    OCR.parametros.vp_pathorigen=OCR.parametros.vp_pathorigen;
+			    OCR.parametros.vp_imgorigen=imagen;
+			    OCR.parametros.vp_texto=texto;
+			    OCR.parametros.vp_estado=estado;
+
+				global.Msg({
+                    msg: '¿Está seguro de guardar?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+	                        Ext.getCmp(OCR.id+'-form').el.mask('Guardando Formato Plantilla', 'x-mask-loading');
+	                        Ext.Ajax.request({
+			                    url: OCR.url + 'set_ocr_plantilla/',
+			                    params:OCR.parametros,
+			                    success: function(response, options){
+			                    	Ext.getCmp(OCR.id+'-form').el.unmask(); 
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	OCR.setNuevoPlantilla();
+			                                    OCR.getReloadGridOCR();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCR();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+		            }
+                });
+				
+			},
+		    getFormPage:function(){
+		    	var shi_codigo = Ext.getCmp(OCR.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(OCR.id+'-cbx-contrato').getValue();
+		    	if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				var myData = [
+				    ['1','Activo'],
+				    ['0','Inactivo']
+				];
+				var store_estado = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'estado',
+			        autoLoad: true,
+			        data: myData,
+			        fields: ['code', 'name']
+			    });
+
+				Ext.create('Ext.window.Window',{
+	                id:OCR.id+'-win-form',
+	                plain: true,
+	                title:'Buscar Página',
+	                icon: '/images/icon/edit.png',
+	                height: 400,
+	                width: 1000,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:4,
+	                layout:'border',
+	                items:[
+	                	{
+	                		region:'east',
+	                		border:false,
+	                		width:300,
+	                		html: '<div id="imagen-page" style="width:100%; height:"100%;overflow: none;" ><img src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
+	                	},
+	                	{
+	                		region:'center',
+	                		layout:'border',
+	                		border:false,
+	                		items:[
+	                			{
+		                            region:'north',
+		                            border:false,
+		                            xtype: 'uePanelS',
+		                            logo: 'LT',
+		                            title: 'Listado de Páginas',
+		                            legend: 'Búsqueda de páginas registradas',
+		                            height:90,
+		                            width:700,
+		                            items:[
+		                                {
+		                                    xtype:'panel',
+		                                    border:false,
+		                                    bodyStyle: 'background: transparent',
+		                                    padding:'2px 5px 1px 5px',
+		                                    layout:'column',
+
+		                                    items: [
+		                                    	{
+		                                            width:100,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'N° Lote',
+		                                                    id:OCR.id+'-txt-lote-page',
+		                                                    labelWidth:50,
+		                                                    maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                            width:200,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Nombre Lote',
+		                                                    id:OCR.id+'-txt-lotizer-page',
+		                                                    labelWidth:80,
+		                                                    //readOnly:true,
+		                                                    labelAlign:'right',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+			                                        width: 160,border:false,
+			                                        padding:'0px 2px 0px 0px',  
+			                                    	bodyStyle: 'background: transparent',
+			                                        items:[
+			                                            {
+			                                                xtype:'datefield',
+			                                                id:OCR.id+'-txt-fecha-page',
+			                                                fieldLabel:'Fecha',
+			                                                labelWidth:60,
+			                                                labelAlign:'right',
+			                                                value:new Date(),
+			                                                format: 'Ymd',
+			                                                //readOnly:true,
+			                                                width: '100%',
+			                                                anchor:'100%'
+			                                            }
+			                                        ]
+			                                    },
+		                                        {
+		                                            width: 80,border:false,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+									                        xtype:'button',
+									                        text: 'Buscar',
+									                        icon: '/images/icon/binocular.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){	             	
+									                            	//var name = Ext.getCmp(OCR.id+'-txt-lotizer').getValue();
+		                               					            OCR.getReloadGridlotizer();
+									                            }
+									                        }
+									                    }
+		                                            ]
+		                                        }
+		                                    ]
+		                                }
+		                            ]
+		                        },
+	                			{
+			                        xtype: 'treepanel',
+			                        region:'center',
+			                        //collapsible: true,
+							        useArrows: true,
+							        rootVisible: true,
+							        multiSelect: true,
+							        //root:'Task',
+			                        id: OCR.id + '-grid-lote',
+			                        //height: 370,
+			                        //reserveScrollbar: true,
+			                        //rootVisible: false,
+			                        //store: store,
+			                        //layout:'fit',
+			                        columnLines: true,
+			                        store: OCR.storeTree,
+						            columns: [
+							            
+							            {
+							            	xtype: 'treecolumn',
+		                                    text: 'Nombre',
+		                                    dataIndex: 'lote_nombre',
+		                                    sortable: true,
+		                                    flex: 1
+		                                },
+		                                
+		                                {
+		                                    text: 'Total Folder',
+		                                    dataIndex: 'tot_folder',
+		                                    width: 80,
+		                                    align: 'center'
+		                                },
+		                                {
+		                                    text: 'Total Página',
+		                                    dataIndex: 'tot_pag',
+		                                    width: 80,
+		                                    align: 'center'
+		                                },
+		                                {
+		                                    text: 'Total Pag. Errores',
+		                                    dataIndex: 'tot_errpag',
+		                                    width: 100,
+		                                    align: 'center'
+		                                },
+		                                {
+		                                    text: 'Editar',
+		                                    dataIndex: 'estado',
+		                                    //loocked : true,
+		                                    width: 50,
+		                                    align: 'center',
+		                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+		                                        //console.log(record);
+		                                        if(parseInt(record.get('nivel')) == 3){
+			                                        metaData.style = "padding: 0px; margin: 0px";
+			                                        return global.permisos({
+			                                            type: 'link',
+			                                            id_menu: OCR.id_menu,
+			                                            icons:[
+			                                                {id_serv: 6, img: 'basket_put.png', qtip: 'Click para Editar Lote.', js: "OCR.setAsignaImagen("+rowIndex+")"}
+			                                            ]
+			                                        });
+			                                    }else{
+		                                        	return '';
+		                                        }
+		                                    }
+		                                }
+							        ],
+			                        /*viewConfig: {
+			                            stripeRows: true,
+			                            enableTextSelection: false,
+			                            markDirty: false
+			                        },*/
+			                        hideItemsReadFalse: function () {
+									    var me = this,
+									        items = me.getReferences().treelistRef.itemMap;
+
+
+									    for(var i in items){
+									        if(items[i].config.node.data.read == false){
+									            items[i].destroy();
+									        }
+									    }
+									},
+			                        trackMouseOver: false,
+			                        listeners:{
+			                            afterrender: function(obj){
+			                                //lotizer.getImagen('default.png');
+			                                
+			                            },
+										beforeselect:function(obj, record, index, eOpts ){
+											document.getElementById('imagen-page').innerHTML='<img src="'+record.get('nombre')+'" width="100%" height="100%"/>'
+										}
+			                        }
+			                    }
+	                		]
+	                	}
+	                ],
+	                bbar:[       
+	                    '->',
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+	                                /*global.permisos({
+	                                    id: 15,
+	                                    id_btn: obj.getId(), 
+	                                    id_menu: gestion_devolucion.id_menu,
+	                                    fn: ['panel_asignar_gestion.limpiar']
+	                                });*/
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(OCR.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+	                        //panel_asignar_gestion.getDatos();
+	                    },
+	                    'close':function(){
+	                        //if(panel_asignar_gestion.guarda!=0)gestion_devolucion.buscar();
+	                    }
+	                }
+	            }).show().center();
+			}
 		}
 		Ext.onReady(OCR.init,OCR);
 	}else{

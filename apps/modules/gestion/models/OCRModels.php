@@ -23,6 +23,31 @@ class OCRModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function strip_carriage_returns($string){
+        return str_replace(array("\n\r", "\n", "\r","'"), '', $string);
+    }
+    public function set_ocr_plantilla($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_ocr_plantilla');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_cod_plantilla'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP(utf8_decode($p['vp_nombre']), 'varchar');
+        parent::SetParameterSP($p['vp_cod_formato'], 'int');
+        parent::SetParameterSP($p['vp_width'], 'varchar');
+        parent::SetParameterSP($p['vp_height'], 'varchar');
+        parent::SetParameterSP($p['vp_path'], 'varchar');
+        parent::SetParameterSP($p['vp_img'], 'varchar');
+        parent::SetParameterSP($p['vp_pathorigen'], 'varchar');
+        parent::SetParameterSP($p['vp_imgorigen'], 'varchar');
+        parent::SetParameterSP($this->strip_carriage_returns(utf8_decode($p['vp_texto'])), 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+        //echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
     public function get_ocr_plantillas($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_ocr_plantillas');
@@ -62,6 +87,20 @@ class OCRModels extends Adodb {
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_ocr_trazos');
         parent::SetParameterSP($p['vp_cod_plantilla'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function get_list_lotizer($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_lotizer_page');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP($p['vp_lote'], 'int');
+        parent::SetParameterSP($p['vp_lote_estado'], 'varchar');
+        parent::SetParameterSP($p['vp_name'], 'varchar');
+        parent::SetParameterSP($p['fecha'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
