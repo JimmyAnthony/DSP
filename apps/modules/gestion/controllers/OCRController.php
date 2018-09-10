@@ -81,8 +81,8 @@ class OCRController extends AppController {
                 $value_['imgorigen'] = utf8_encode(trim($value['imgorigen']));
                 $value_['texto'] = utf8_encode(trim($value['texto']));
                 $value_['estado'] = utf8_encode(trim($value['estado']));
-                $value_['width'] = intval($value['w']);
-                $value_['height'] = intval(trim($value['h']));
+                $value_['width'] = intval($value['width']);
+                $value_['height'] = intval(trim($value['height']));
                 $value_['width_formato'] = intval($value['width_formato']);
                 $value_['height_formato'] = intval(trim($value['height_formato']));
                 $value_['fecha'] = trim($value['fecha']);
@@ -132,15 +132,69 @@ class OCRController extends AppController {
     }
     public function set_ocr_trazos($p){
         //$this->valida_mobil($p);
+        $img=$p['vp_img'];
+        $path_parts = pathinfo($p['vp_img']);
+        $ext=$path_parts['extension'];
+        $p['vp_path'] = '/plantillas/'.$p['vp_shi_codigo'].'/';
+        $p['vp_img']  = '.'.$ext;
+
         $rs = $this->objDatos->set_ocr_trazos($p);
         $rs = $rs[0];
         $data = array(
             'success' => true,
             'error' => $rs['status'],
+            'cod_trazo' => $rs['cod_trazo'],
+            'img' => $p['vp_path'].$rs['cod_trazo'].'-trazo'.$p['vp_img'],
             'msn' => utf8_encode(trim($rs['response']))
         );
+
+        $p['vp_img'] =$img;
+        $p['vp_cod_trazo']=$rs['cod_trazo'];
+        
+        if($rs['status']!='ER'){
+            $bool=$this->setDropImg($p);
+        }
+
         header('Content-Type: application/json');
         return $this->response($data);
+    }
+    public function setDropImg($p){
+        $bool=false;
+        $img=$p['vp_img'];
+        $path_parts = pathinfo($p['vp_img']);
+        $ext=$path_parts['extension'];
+        $src_original = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext;
+        $src_guardar  = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_trazo'].'-trazo.'.$ext;
+        try {
+            $destImage = imagecreatetruecolor($p['vp_w'], $p['vp_h']);
+            #$sourceImage = imagecreatefromjpeg($src_original);
+
+            switch($ext){
+                case 'bmp': $sourceImage = imagecreatefromwbmp($src_original); break;
+                case 'gif': $sourceImage = imagecreatefromgif($src_original); break;
+                case 'jpg': $sourceImage = imagecreatefromjpeg($src_original); break;
+                case 'png': $sourceImage = imagecreatefrompng($src_original); break;
+                default : return "Unsupported picture type!";
+            }
+            if($ext == "gif" or $ext == "png"){
+                imagecolortransparent($destImage, imagecolorallocatealpha($destImage, 0, 0, 0, 127));
+                imagealphablending($destImage, false);
+                imagesavealpha($destImage, true);
+            }
+
+            imagecopyresampled($destImage, $sourceImage, 0, 0, number_format($p['vp_x'], 4, '.', ''), number_format($p['vp_y'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', '')); 
+
+            switch($ext){
+                case 'bmp': imagewbmp($destImage, $src_guardar); break;
+                case 'gif': imagegif($destImage, $src_guardar); break;
+                case 'jpg': imagejpeg($destImage, $src_guardar); break;
+                case 'png': imagepng($destImage, $src_guardar); break;
+            }
+        } catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            $bool=false;
+        }
+        return $bool;
     }
     public function get_list_shipper($p){
         $rs = $this->objDatos->get_list_shipper($p);

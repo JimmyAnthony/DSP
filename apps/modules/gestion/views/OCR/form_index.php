@@ -418,6 +418,7 @@
 											bbar:[
 												{
 							                        xtype:'button',
+							                        hidden:true,
 							                        //width:100,
 							                        text: 'Eliminar',
 							                        icon: '/images/icon/remove.png',
@@ -451,7 +452,7 @@
 							                                });*/
 							                            },
 							                            click: function(obj, e){
-							                            	//OCR.setNuevo();
+							                            	OCR.setNuevoPlantilla();
 							                            }
 							                        }
 							                    },
@@ -693,6 +694,7 @@
 							items:[
 								{
 									region:'north',
+									hidden:true,
 									border:false,
 									height:60,
 									padding:'5px 20px 5px 20px',
@@ -1195,7 +1197,8 @@
 			                    params:{
 			                    	vp_op:res.op,
 							        vp_cod_trazo:OCR.cod_trazo,
-							        vp_cod_plantilla:OCR.cod_plantilla, 
+							        vp_cod_plantilla:OCR.cod_plantilla,
+							        vp_shi_codigo:OCR.parametros.vp_shi_codigo,
 							        vp_nombre:nombre,
 							        vp_tipo:tipo,
 							        vp_y:res.top,
@@ -1203,12 +1206,14 @@
 							        vp_w:res.width,
 							        vp_h:res.height,
 							        vp_path:'',
-							        vp_img:'',
+							        vp_img:OCR.parametros.vp_img,
+							        vp_width:OCR.parametros.vp_width,
+							        vp_height:OCR.parametros.vp_height,
 							        vp_texto:texto,
 							        vp_estado:'A'
 			                    },
 			                    success: function(response, options){
-			                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask(); 
+			                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
 			                        if (res.error == 'OK'){
 			                            global.Msg({
@@ -1216,6 +1221,16 @@
 			                                icon: 1,
 			                                buttons: 1,
 			                                fn: function(btn){
+			                                	if (parseInt(res.cod_trazo) != 0){
+				                                	var panel = Ext.getCmp(OCR.id + '-panel-img-trazos');
+									                panel.removeAll();
+									                panel.add({
+									                    html: '<img id="imagen-trazo" src="'+res.img+'" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
+									                });
+									                panel.doLayout();
+									                //OCR.getDropImg();
+									                OCR.load_file('-panel_texto','imagen-trazo');
+								            	}
 			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
 			                                }
 			                            });
@@ -1308,7 +1323,23 @@
 				Ext.getCmp(OCR.id+'-txt-y').setValue(record.data.y);
 				Ext.getCmp(OCR.id+'-txt-w').setValue(record.data.w);
 				Ext.getCmp(OCR.id+'-txt-h').setValue(record.data.h);
+
+				var panel = Ext.getCmp(OCR.id + '-panel-img-trazos');
+                panel.removeAll();
+                panel.add({
+                    html: '<img id="imagen-trazo" src="'+record.data.path+record.data.img+'" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
+                });
+                panel.doLayout();
 				OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+
+				var img =document.getElementById('imagen-trazo');
+				if(img!=null){
+					if(record.data.texto==''){
+						OCRAD(img, function(text){
+							Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(text);
+						});
+					}
+				}
 			},
 			getResizeOrigin:function(op,jsona,jsonb){
 				var container=OCR.cropper.getContainerData();
@@ -1375,6 +1406,7 @@
 	            });
 			},
 			getReloadGridOCRTRAZOS:function(id){
+				Ext.getCmp(OCR.id + '-grid-trazos').getStore().removeAll();
 				Ext.getCmp(OCR.id + '-grid-trazos').getStore().load(
 	                {params: {vp_cod_plantilla:id},
 	                callback:function(){
@@ -1649,6 +1681,11 @@
 			        vp_texto:'',
 			        vp_estado:'A'
 				};
+				OCR.setNuevo();
+				Ext.getCmp(OCR.id + '-grid-trazos').getStore().removeAll();
+				var panel = Ext.getCmp(OCR.id+'-panel_img');
+                panel.removeAll();
+                Ext.getCmp(OCR.id+'-txt-nombre-plantilla-man').focus();
 		    },
 			setPlantillas:function(){
 				
