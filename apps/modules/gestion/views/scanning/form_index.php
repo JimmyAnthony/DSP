@@ -6,8 +6,19 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/scanning/',
 			opcion:'I',
+			runner: new Ext.util.TaskRunner(),
+			start:false,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
+
+				scanning.task = scanning.runner.newTask({
+                    run: function(){
+                        scanning.getScanning();
+                    },
+                    interval: (1000 * 30)
+                });
+
+                scanning.task.start();
 
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
@@ -861,7 +872,8 @@
 											id: scanning.id+'-panel_img',
 											border:true,
 											autoScroll:true,
-											padding:'5px 5px 5px 5px'
+											padding:'5px 5px 5px 5px',
+											html: '<img src="" style="width:100%;" >'
 										}
 									]
 								}
@@ -895,6 +907,29 @@
 					}
 
 				}).show();
+			},
+			getScanning:function(){
+				Ext.Ajax.request({
+                    url: scanning.url+'/get_scanner_file/',
+                    params:{
+                    	path:'C:/twain/'
+                    },
+                    success: function(response, options){
+                        //var res = Ext.JSON.decode(response.responseText);
+                        console.log(response);
+                        /*if (parseInt(res.time) == 0 ){
+                            scanning.task.stop();
+                            global.Msg({
+                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
+                                icon: 1,
+                                buttons: 1,
+                                fn: function(btn){
+                                    window.location = '/inicio/index/'
+                                }
+                            });
+                        }*/
+                    }
+                });
 			},
 			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
 			    // meta.tdCls = 'cell-icon'; // icon
@@ -1029,8 +1064,18 @@
 				var panel = Ext.getCmp(scanning.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
+                    html: '<img id="imagen-scaneo" src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
                 });
+
+                var image = document.getElementById('imagen-scaneo');
+				var downloadingImage = new Image();
+				downloadingImage.onload = function(){
+				    image.src = this.src;
+				    //scanning.getDropImg();
+	                //scanning.load_file('-panel_texto','imagen-scaneo'); 
+	                panel.doLayout();
+				};
+				downloadingImage.src = '/scanning/'+file+'.jpg';
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({
 		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',

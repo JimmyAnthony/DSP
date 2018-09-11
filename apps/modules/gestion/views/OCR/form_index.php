@@ -796,7 +796,8 @@
 									id: OCR.id+'-panel_img',
 									border:true,
 									autoScroll:true,
-									padding:'5px 5px 5px 5px'
+									padding:'5px 5px 5px 5px',
+									html:'<img id="imagen-plantilla" src="" style="width:100%; overflow: scroll;" />'
 								},
 								{
 									region:'south',
@@ -897,7 +898,7 @@
 					                            	//var name = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
                        					            //OCR.setOCRTrazos(name);
                        					            var op = OCR.cod_trazo==0?'I':'U';
-                       					            OCR.getSizeImg('/scanning/escaneado.jpg',op,OCR.cropper.getCropBoxData(),OCR.getResizeOrigin);
+                       					            OCR.getSizeImg(OCR.parametros.vp_path+OCR.parametros.vp_img,op,OCR.cropper.getCropBoxData(),OCR.getResizeOrigin);
 					                            }
 					                        }
 					                    }
@@ -1045,7 +1046,7 @@
 											bodyStyle: 'background: transparent',
 											id: OCR.id + '-panel-img-trazos',
 											border:true,
-											html: '<div id="imagen-trazo" style="width:100%; height:"100%;overflow: none;" ><canvas id="canvas"></canvas></div>'
+											html: '<img id="imagen-trazo" src="" style="width:100%; height:100%;overflow: scroll;" />'
 										}
 									]
 								},
@@ -1222,14 +1223,23 @@
 			                                buttons: 1,
 			                                fn: function(btn){
 			                                	if (parseInt(res.cod_trazo) != 0){
-				                                	var panel = Ext.getCmp(OCR.id + '-panel-img-trazos');
+				                                	/*var panel = Ext.getCmp(OCR.id + '-panel-img-trazos');
 									                panel.removeAll();
 									                panel.add({
 									                    html: '<img id="imagen-trazo" src="'+res.img+'" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
 									                });
 									                panel.doLayout();
 									                //OCR.getDropImg();
-									                OCR.load_file('-panel_texto','imagen-trazo');
+									                OCR.load_file('-panel_texto','imagen-trazo');*/
+
+									                var image = document.getElementById('imagen-trazo');
+													var downloadingImage = new Image();
+													downloadingImage.onload = function(){
+													    image.src = this.src;   
+													    //OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+													    OCR.getTextoImage();
+													};
+													downloadingImage.src = res.img;
 								            	}
 			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
 			                                }
@@ -1323,28 +1333,67 @@
 				Ext.getCmp(OCR.id+'-txt-y').setValue(record.data.y);
 				Ext.getCmp(OCR.id+'-txt-w').setValue(record.data.w);
 				Ext.getCmp(OCR.id+'-txt-h').setValue(record.data.h);
-
+				/*
 				var panel = Ext.getCmp(OCR.id + '-panel-img-trazos');
                 panel.removeAll();
                 panel.add({
-                    html: '<img id="imagen-trazo" src="'+record.data.path+record.data.img+'" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
+                    html: '<img id="imagen-trazo" src="'+record.data.path+record.data.img+'" style="width:100%; height:100%;overflow: scroll;" />'//style=""
                 });
                 panel.doLayout();
-				OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+                */
+                /*
+                $("#imagen-trazo").imagesLoaded().done( function( instance ) {
+                	OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+				    if(record.data.texto==''){
+						OCR.getTextoImage();
+					}
+				}).attr('src', record.data.path+record.data.img);*/
 
-				var img =document.getElementById('imagen-trazo');
+				var image = document.getElementById('imagen-trazo');
+				var downloadingImage = new Image();
+				downloadingImage.onload = function(){
+				    image.src = this.src;   
+				    OCR.getSizeImg(OCR.parametros.vp_path+OCR.parametros.vp_img,'S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+				    if(record.data.texto==''){
+						OCR.getTextoImage();
+					}
+				};
+				downloadingImage.src = record.data.path+record.data.img;
+
+				/*var img =document.getElementById('imagen-trazo');
 				if(img!=null){
 					if(record.data.texto==''){
-						OCRAD(img, function(text){
-							Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(text);
-						});
+						OCR.getTextoImage();
 					}
+				}*/
+			},
+			getTextoImage:function(){
+				var img = document.getElementById('imagen-trazo');
+				var tipo = Ext.getCmp(OCR.id+'-cbx-tipo-texto').getValue();
+				var n= (tipo=='S')?false:true;
+				try{
+					OCRAD(img,{
+						numeric: n
+					},
+					function(text){
+						Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(text);
+					});
+				}catch(err) {
+				    console.log(err.message);
 				}
 			},
 			getResizeOrigin:function(op,jsona,jsonb){
 				var container=OCR.cropper.getContainerData();
 				var wa = jsona.width /  parseFloat(container.width);
 				var wb = jsona.height / parseFloat(container.height);
+				console.log('xim');
+				console.log(wa);
+				console.log(wb);
+				console.log(jsona.width);
+				console.log(jsona.height);
+				console.log(container.width);
+				console.log(container.height);
+				console.log('end');
 				if(op=='S'){
 					$('#OCR-panel_img-body').scrollTop(parseFloat(jsonb.top) / wb);
 					OCR.cropper.setCropBoxData({
@@ -1368,7 +1417,9 @@
 			getSizeImg:function(imgSrc,op,json,callback){
 				var newImg = new Image();
 			    newImg.onload = function () {
-			        if (callback != undefined)callback(op,{width: newImg.width, height: newImg.height},json)
+			    	var imgWidth = newImg.width || newImg.naturalWidth;
+					var imgHeight = newImg.height || newImg.naturalHeight;
+			        if (callback != undefined)callback(op,{width: imgWidth, height: imgHeight},json)
 			    }
 			    newImg.src = imgSrc;
 			},
@@ -1425,7 +1476,7 @@
 				Ext.getCmp(OCR.id+'-txt-w').setValue('');
 				Ext.getCmp(OCR.id+'-txt-h').setValue('');
 				Ext.getCmp(OCR.id+'-txt-nombre-trazo').focus();
-				OCR.getDropImg();
+				//OCR.getDropImg();
 			},
 			recognize_image:function(id){
 				document.getElementById(id).innerText = "(Recognizing...)"
@@ -1440,63 +1491,67 @@
 		      //var data = document.querySelector('#data');
 		      //var canvasData = document.querySelector('#canvasData');
 		      //var cropBoxData = document.querySelector('#cropBoxData');
-		      OCR.cropper = new Cropper(image, {
-		      	//dragMode: 'move',
-		      	movable: false,
-		        zoomable: false,
-		        rotatable: false,
-		        scalable: false,
-		        cropBoxMovable: true,
-		        cropBoxResizable: false,
-		        ready: function (event) {
-		          // Zoom the image to its natural size
-		          //OCR.cropper.zoomTo(1);
-		          //OCR.cropper.movable();
-		          //OCR.cropper.cropBoxMovable();
+		      try{
+			      OCR.cropper = new Cropper(image, {
+			      	//dragMode: 'move',
+			      	movable: false,
+			        zoomable: false,
+			        rotatable: false,
+			        scalable: false,
+			        cropBoxMovable: true,
+			        cropBoxResizable: false,
+			        ready: function (event) {
+			          // Zoom the image to its natural size
+			          //OCR.cropper.zoomTo(1);
+			          //OCR.cropper.movable();
+			          //OCR.cropper.cropBoxMovable();
 
-		          	var clone = this.cloneNode();
-		          	clone.id='imagen-clonado';
-		          	clone.className = '';
-		            clone.style.cssText = (
-		              'display: block;' +
-		              'width: 100%;' +
-		              'min-width: 0;' +
-		              'min-height: 0;' +
-		              'max-width: none;' +
-		              'max-height: none;'
-		            );
-		            document.getElementById('imagen-trazo').appendChild(clone.cloneNode());
-		        },
+			          	/*var clone = this.cloneNode();
+			          	clone.id='imagen-clonado';
+			          	clone.className = '';
+			            clone.style.cssText = (
+			              'display: block;' +
+			              'width: 100%;' +
+			              'min-width: 0;' +
+			              'min-height: 0;' +
+			              'max-width: none;' +
+			              'max-height: none;'
+			            );
+			            document.getElementById('imagen-trazo').appendChild(clone.cloneNode());*/
+			        },
 
-		        crop: function (event) {
-		          //data.textContent = JSON.stringify(cropper.getData());
-		          //cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
-		          //Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(OCR.cropper.getCropBoxData()));
-		          	/*var data = event.detail;
-		            var cropper = this.cropper;
-		            var imageData = cropper.getImageData();
-		            var previewAspectRatio = data.width / data.height;
+			        crop: function (event) {
+			          //data.textContent = JSON.stringify(cropper.getData());
+			          //cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
+			          //Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(OCR.cropper.getCropBoxData()));
+			          	/*var data = event.detail;
+			            var cropper = this.cropper;
+			            var imageData = cropper.getImageData();
+			            var previewAspectRatio = data.width / data.height;
 
-		            var elem = document.getElementById('imagen-clonado');
-		            var previewImage = elem;
-	              	var previewWidth = elem.offsetWidth;
-	              	var previewHeight = previewWidth / previewAspectRatio;
-	              	var imageScaledRatio = data.width / previewWidth;
+			            var elem = document.getElementById('imagen-clonado');
+			            var previewImage = elem;
+		              	var previewWidth = elem.offsetWidth;
+		              	var previewHeight = previewWidth / previewAspectRatio;
+		              	var imageScaledRatio = data.width / previewWidth;
 
-	              	elem.style.height = previewHeight + 'px';
-	              	previewImage.style.width = imageData.naturalWidth / imageScaledRatio + 'px';
-	              	previewImage.style.height = imageData.naturalHeight / imageScaledRatio + 'px';
-	              	previewImage.style.marginLeft = -data.x / imageScaledRatio + 'px';
-	              	previewImage.style.marginTop = -data.y / imageScaledRatio + 'px';*/
-		        },
+		              	elem.style.height = previewHeight + 'px';
+		              	previewImage.style.width = imageData.naturalWidth / imageScaledRatio + 'px';
+		              	previewImage.style.height = imageData.naturalHeight / imageScaledRatio + 'px';
+		              	previewImage.style.marginLeft = -data.x / imageScaledRatio + 'px';
+		              	previewImage.style.marginTop = -data.y / imageScaledRatio + 'px';*/
+			        },
 
-		        zoom: function (event) {
-		          // Keep the image in its natural size
-		          if (event.detail.oldRatio === 1) {
-		            event.preventDefault();
-		          }
-		        },
-		      });
+			        zoom: function (event) {
+			          // Keep the image in its natural size
+			          if (event.detail.oldRatio === 1) {
+			            event.preventDefault();
+			          }
+			        },
+			      });
+				}catch(err) {
+				    console.log(err.message);
+				}
 			},
 			load_file:function(panel,id) {
 				/*var reader = new FileReader();
@@ -1562,14 +1617,28 @@
                 panel.removeAll();
                 if(record.data.img!=''){
 	                panel.add({
-	                    html: '<img id="imagen-plantilla" src="'+record.data.path+record.data.img+'" style="width:100%; height:"100%;overflow: scroll;" >'//style=""
+	                    html: '<img id="imagen-plantilla" src="'+record.data.path+record.data.img+'" style="width:100%; height:"100%;overflow: scroll;" />'//style=""
 	                });
 	                panel.doLayout();
-	                OCR.getDropImg();
+	                /*OCR.getDropImg();
 	                if(record.data.texto==''){
 	                	OCR.load_file('-panel_texto','imagen-plantilla');
-	                }
+	                }*/
+	                var image = document.getElementById('imagen-plantilla');
+					var downloadingImage = new Image();
+					downloadingImage.onload = function(){
+					    image.src = this.src;
+					    OCR.getDropImg();
+		                if(record.data.texto==''){
+		                	OCR.load_file('-panel_texto','imagen-plantilla'); 
+		                }
+		                Ext.getCmp(OCR.id+'-panel_img').doLayout();
+					};
+					downloadingImage.src = record.data.path+record.data.img;
+					console.log(record.data.path+record.data.img);
                 }
+
+
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({
 		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',
@@ -1642,7 +1711,9 @@
 			getSizeImgPlantilla:function(callback,imgSrc){
 				var newImg = new Image();
 			    newImg.onload = function () {
-			        if (callback != undefined)callback({width: newImg.width, height: newImg.height})
+			    	var imgWidth = newImg.width || newImg.naturalWidth;
+					var imgHeight = newImg.height || newImg.naturalHeight;
+			        if (callback != undefined)callback({width: imgWidth, height: imgHeight})
 			    }
 			    newImg.src = imgSrc;
 			},

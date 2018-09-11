@@ -46,6 +46,20 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function get_scanner_file($p){
+        if (is_dir($p['path'])){
+          if ($dh = opendir($p['path'])){
+            while (($file = readdir($dh)) !== false){
+              echo "filename:" . $file . "<br>";
+              if($file!='.' or $file!=''){
+                //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
+                rename($p['path'].$file, PATH.'public_html/scanning/'.$file);
+              }
+            }
+            closedir($dh);
+          }
+        }
+    }
     public function get_list_shipper($p){
         $rs = $this->objDatos->get_list_shipper($p);
         //var_export($rs);
