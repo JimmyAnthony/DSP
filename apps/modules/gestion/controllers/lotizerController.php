@@ -21,9 +21,15 @@ class lotizerController extends AppController {
         $this->objDatos = new lotizerModels();
     }
 
+
     public function vista_lotizador($p){        
         $this->view('lotizer/form_index.php', $p);
     }
+
+    public function vista_pdf($code){        
+        $this->view('lotizer/pdf.php', $code);
+    }
+
 
    public function get_list_shipper($p){
         $rs = $this->objDatos->get_list_shipper($p);

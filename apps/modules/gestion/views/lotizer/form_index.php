@@ -707,18 +707,21 @@
 						                                    text: 'Editar',
 						                                    dataIndex: 'estado',
 						                                    //loocked : true,
-						                                    width: 50,
+						                                    width: 120,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
 						                                        if(parseInt(record.get('nivel')) == 1){
 							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        var nombrePdf = (record.get('nombre'));
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: lotizer.id_menu,
 							                                            icons:[
 							                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "lotizer.setEditLote("+rowIndex+",'U')"},
-							                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "lotizer.setEditLote("+rowIndex+",'D')"}
+							                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "lotizer.setEditLote("+rowIndex+",'D')"},
+							                                                {id_serv: 1, img: 'barras.png', qtip: 'Click Código de Barras.', js: "lotizer.getFormMant('"+nombrePdf+"')"}
+
 							                                            ]
 							                                        });
 							                                    }else{
@@ -971,9 +974,6 @@
 	            });
 			},
 			setNuevo:function(){
-				//lotizer.shi_codigo=0;
-				//lotizer.getImagen('default.png');
-//					                        icon: '/images/icon/save.png',
 
 				Ext.getCmp(lotizer.id+'-txt-nombre').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-nombre').setReadOnly(false);
@@ -986,136 +986,41 @@
 				Ext.getCmp(lotizer.id+'-txt-tot_folder').setValue('');
 				Ext.getCmp(lotizer.id+'-txt-tot_folder').setReadOnly(false);
 				Ext.getCmp(lotizer.id+'-txt-nombre').focus();
-			}/*,
-			getFormMant:function(cod_lote,lote,usuario,cantidad){
-				var myData = [
-				    ['1','Activo'],
-				    ['0','Inactivo']
-				];
-				var store_estado = Ext.create('Ext.data.ArrayStore', {
-			        storeId: 'estado',
-			        autoLoad: true,
-			        data: myData,
-			        fields: ['code', 'name']
-			    });
+			},
 
-				Ext.create('Ext.window.Window',{
-	                id:lotizer.id+'-win-form',
-	                plain: true,
-	                title:'Edición',
-	                icon: '/images/icon/edit.png',
-	                height: 200,
-	                width: 450,
-	                resizable:false,
-	                modal: true,
-	                border:false,
-	                closable:true,
-	                padding:20,
-	                items:[
-	                	{
-	                        xtype: 'textfield',
-	                        id:lotizer.id+'-grid-lotizer-form',
-	                        fieldLabel: 'Cod_Lote',
-	                        //disabled:true,
-	                        labelWidth:90,
-	                        labelAlign:'right',
-	                        width:'100%',
-	                        anchor:'100%',
-	                        value:cod_lote
-	                    },
-	                    {
-	                        xtype: 'textfield',
-	                        id:lotizer.id+'-form-descripcion',
-	                        fieldLabel: 'Descripción',
-	                        labelWidth:90,
-	                        labelAlign:'right',
-	                        width:'100%',
-	                        anchor:'100%',
-	                        value:descripcion
-	                    },
-	                    {
-	                        xtype:'combo',
-	                        fieldLabel: 'Estado',
-	                        id:formularioGestion.id+'-form-cmb-estado',
-	                        store: store_estado,
-	                        queryMode: 'local',
-	                        triggerAction: 'all',
-	                        valueField: 'code',
-	                        displayField: 'name',
-	                        emptyText: '[Seleccione]',
-	                        labelAlign:'right',
-	                        //allowBlank: false,
-	                        labelWidth: 90,
-	                        width:'100%',
-	                        anchor:'100%',
-	                        //readOnly: true,
-	                        listeners:{
-	                            afterrender:function(obj, e){
-	                                // obj.getStore().load();
-	                                if(ID==0){
-	                                	obj.setValue(1);
-	                                }else{
-	                                	obj.setValue(estado);
-	                                }
-	                            },
-	                            select:function(obj, records, eOpts){
-	                    
-	                            }
-	                        }
-	                    }
-	                ],
-	                bbar:[       
-	                    '->',
-	                    '-',
-	                    {
-	                        xtype:'button',
-	                        text: 'Guardar',
-	                        icon: '/images/icon/save.png',
-	                        listeners:{
-	                            beforerender: function(obj, opts){
-	                                /*global.permisos({
-	                                    id: 15,
-	                                    id_btn: obj.getId(), 
-	                                    id_menu: gestion_devolucion.id_menu,
-	                                    fn: ['panel_asignar_gestion.limpiar']
-	                                });*/
-	                            /*},
-	                            click: function(obj, e){
-	                            	formularioGestion.setSaveRecordForm(ID);
-	                            }
-	                        }
-	                    },
-	                    '-',
-	                    {
-	                        xtype:'button',
-	                        text: 'Salir',
-	                        icon: '/images/icon/get_back.png',
-	                        listeners:{
-	                            beforerender: function(obj, opts){
-	                                /*global.permisos({
-	                                    id: 15,
-	                                    id_btn: obj.getId(), 
-	                                    id_menu: gestion_devolucion.id_menu,
-	                                    fn: ['panel_asignar_gestion.limpiar']
-	                                });*/
-	                            /*},
-	                            click: function(obj, e){
-	                                Ext.getCmp(formularioGestion.id+'-win-form').close();
-	                            }
-	                        }
-	                    },
-	                    '-'
-	                ],
-	                listeners:{
-	                    'afterrender':function(obj, e){ 
-	                        //panel_asignar_gestion.getDatos();
-	                    },
-	                    'close':function(){
-	                        //if(panel_asignar_gestion.guarda!=0)gestion_devolucion.buscar();
-	                    }
-	                }
-	            }).show().center();
-			}*/
+			getFormMant:function(nombre){
+
+						Ext.Ajax.request({
+					    method: 'POST',
+			    
+					    url: lotizer.url+'vista_pdf/',
+						    params  : {
+						        code:   nombre,
+						    },
+						    success: function(xhr) {
+
+						    	//win.show();
+
+						        window.open('/codigos/' + nombre + '.pdf');
+						    },
+						    failure: function() {
+
+						        alert('AJAX ERROR: Unable to print report, please contact support');
+						    }
+						});
+
+						
+
+						 						
+			}			
+
+						// print_report.php; you code goes here to create PDF
+
+
+						// last line ... close and output PDF document
+						//$pdf->Output('mypdfreport.pdf', 'I'); // I=inline
+
+
 
 		}
 		Ext.onReady(lotizer.init,lotizer);
