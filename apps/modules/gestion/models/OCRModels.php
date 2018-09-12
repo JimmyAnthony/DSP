@@ -11,7 +11,7 @@ class OCRModels extends Adodb {
 
     private $dsn;
 
-    public function __construct(){
+    public function __construct(){ 
         $this->dsn = Common::read_ini(PATH.'config/config.ini', 'server_main');
     }
 

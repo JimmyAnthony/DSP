@@ -22,7 +22,7 @@ class OCRController extends AppController {
         $this->objDatos = new OCRModels();
     }
 
-    public function index($p){        
+    public function index($p){         
         $this->view('OCR/form_index.php', $p);
     }
     public function setCopyFile($p){

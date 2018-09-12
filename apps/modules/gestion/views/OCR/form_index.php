@@ -18,7 +18,7 @@
 		        vp_nombre:'',
 		        vp_cod_formato:1,
 		        vp_width:0,
-		        vp_height:0,
+		        vp_height:0, 
 		        vp_path:'',
 		        vp_img:'',
 		        vp_pathorigen:'',
