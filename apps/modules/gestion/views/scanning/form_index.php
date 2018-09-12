@@ -777,7 +777,7 @@
 									items:[
 										{
 											region:'north',
-											hidden:true,
+											hidden:true, 
 											border:true,
 											height:60,
 											padding:'5px 20px 5px 20px',

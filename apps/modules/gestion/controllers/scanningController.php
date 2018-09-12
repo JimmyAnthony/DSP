@@ -40,7 +40,7 @@ class scanningController extends AppController {
         $data = array(
             'success' => true,
             'error'=>0,
-            'total' => count($array),
+            'total' => count($array), 
             'data' => $array
         );
         header('Content-Type: application/json');
