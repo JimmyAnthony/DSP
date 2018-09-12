@@ -1525,7 +1525,7 @@
 				try{
 					document.getElementById('imagen-trazo').src=''
 				}catch(err) {
-				    console.log(err.message);
+				    console.log(err.message); 
 				}
 				//OCR.getDropImg();
 			},

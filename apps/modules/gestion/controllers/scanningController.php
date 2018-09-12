@@ -54,7 +54,7 @@ class scanningController extends AppController {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
                     }
 
-                    while (($file = readdir($dh)) !== false){
+                    while (($file = readdir($dh)) !== false){ 
                       if($file!='.' or $file!='..'){
                         //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
                         try {

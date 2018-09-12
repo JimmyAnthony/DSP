@@ -137,7 +137,7 @@ class OCRController extends AppController {
             $path_parts = pathinfo(PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_img']);
             $ext=$path_parts['extension'];
             $p['extension']=$ext;
-            $p['vp_path'] = '/plantillas/'.$p['vp_shi_codigo'].'/';
+            $p['vp_path'] = '/plantillas/'.$p['vp_shi_codigo'].'/'; 
             $p['vp_img']  = '.'.$ext;   
         }
 

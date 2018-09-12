@@ -43,7 +43,7 @@ class OCRModels extends Adodb {
         parent::SetParameterSP($p['vp_imgorigen'], 'varchar');
         parent::SetParameterSP($this->strip_carriage_returns(utf8_decode($p['vp_texto'])), 'varchar');
         parent::SetParameterSP($p['vp_estado'], 'varchar');
-        parent::SetParameterSP(USR_ID, 'int');
+        parent::SetParameterSP(USR_ID, 'int'); 
         //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;

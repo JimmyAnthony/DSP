@@ -916,7 +916,7 @@
 			},
 			getScanning:function(){
 				if(!scanning.work){
-					if(parseInt(scanning.shi_codigo)==0){
+					if(parseInt(scanning.shi_codigo)==0){ 
 						return false;
 					}
 					if(parseInt(scanning.id_det)==0){

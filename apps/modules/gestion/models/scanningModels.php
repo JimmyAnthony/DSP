@@ -27,7 +27,7 @@ class scanningModels extends Adodb {
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'set_page');
         parent::SetParameterSP($p['vp_op'], 'varchar');
-        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_id_pag'], 'int'); 
         parent::SetParameterSP($p['vp_id_det'], 'int');
         parent::SetParameterSP($p['vp_id_lote'], 'int');
         parent::SetParameterSP(utf8_decode($p['vp_path']), 'varchar');
