@@ -7,7 +7,10 @@
 			url:'/gestion/scanning/',
 			opcion:'I',
 			runner: new Ext.util.TaskRunner(),
-			start:false,
+			work:false,
+			shi_codigo:0,
+			id_det:0,
+			id_lote:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -26,6 +29,7 @@
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'id_det', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
@@ -479,7 +483,9 @@
 							                                
 							                            },
 														beforeselect:function(obj, record, index, eOpts ){
-															
+															scanning.shi_codigo=record.get('shi_codigo');
+															scanning.id_det=record.get('id_det');
+															scanning.id_lote=record.get('id_lote');
 														}
 							                        }
 							                    }
@@ -909,27 +915,48 @@
 				}).show();
 			},
 			getScanning:function(){
-				Ext.Ajax.request({
-                    url: scanning.url+'/get_scanner_file/',
-                    params:{
-                    	path:'C:/twain/'
-                    },
-                    success: function(response, options){
-                        //var res = Ext.JSON.decode(response.responseText);
-                        console.log(response);
-                        /*if (parseInt(res.time) == 0 ){
-                            scanning.task.stop();
-                            global.Msg({
-                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
-                                icon: 1,
-                                buttons: 1,
-                                fn: function(btn){
-                                    window.location = '/inicio/index/'
-                                }
-                            });
-                        }*/
-                    }
-                });
+				if(!scanning.work){
+					if(parseInt(scanning.shi_codigo)==0){
+						return false;
+					}
+					if(parseInt(scanning.id_det)==0){
+						return false;
+					}
+					if(parseInt(scanning.id_lote)==0){
+						return false;
+					}
+					console.log(scanning.shi_codigo+'-'+scanning.id_det+'-'+scanning.id_lote);
+					scanning.work=!scanning.work;
+
+					Ext.Ajax.request({
+	                    url: scanning.url+'/get_scanner_file/',
+	                    params:{
+	                    	vp_op:'I',
+	                    	vp_shi_codigo:scanning.shi_codigo,
+	                    	vp_id_pag:0,
+	                    	vp_id_det:scanning.id_det,
+	                    	vp_id_lote:scanning.id_lote,
+	                    	path:'C:/twain/',
+	                    	vp_estado:'A'
+	                    },
+	                    success: function(response, options){
+	                        //var res = Ext.JSON.decode(response.responseText);
+	                        scanning.work=!scanning.work;
+	                        console.log(response);
+	                        /*if (parseInt(res.time) == 0 ){
+	                            scanning.task.stop();
+	                            global.Msg({
+	                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
+	                                icon: 1,
+	                                buttons: 1,
+	                                fn: function(btn){
+	                                    window.location = '/inicio/index/'
+	                                }
+	                            });
+	                        }*/
+	                    }
+	                });
+                }
 			},
 			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
 			    // meta.tdCls = 'cell-icon'; // icon

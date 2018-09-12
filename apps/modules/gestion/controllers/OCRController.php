@@ -132,27 +132,50 @@ class OCRController extends AppController {
     }
     public function set_ocr_trazos($p){
         //$this->valida_mobil($p);
-        $img=$p['vp_img'];
-        $path_parts = pathinfo($p['vp_img']);
-        $ext=$path_parts['extension'];
-        $p['vp_path'] = '/plantillas/'.$p['vp_shi_codigo'].'/';
-        $p['vp_img']  = '.'.$ext;
+        if($p['vp_op']!='D'){
+            $img=$p['vp_img'];
+            $path_parts = pathinfo(PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_img']);
+            $ext=$path_parts['extension'];
+            $p['extension']=$ext;
+            $p['vp_path'] = '/plantillas/'.$p['vp_shi_codigo'].'/';
+            $p['vp_img']  = '.'.$ext;   
+        }
 
         $rs = $this->objDatos->set_ocr_trazos($p);
         $rs = $rs[0];
+        if($p['vp_op']!='D'){
+            $imagen = $p['vp_path'].$rs['cod_trazo'].'-trazo'.$p['vp_img'];
+        }else{
+            $imagen = $p['vp_path'].$p['vp_imagen_trazo'];
+        }
+
         $data = array(
             'success' => true,
             'error' => $rs['status'],
             'cod_trazo' => $rs['cod_trazo'],
-            'img' => $p['vp_path'].$rs['cod_trazo'].'-trazo'.$p['vp_img'],
+            'img' => $imagen,
             'msn' => utf8_encode(trim($rs['response']))
         );
 
-        $p['vp_img'] =$img;
-        $p['vp_cod_trazo']=$rs['cod_trazo'];
-        
         if($rs['status']!='ER'){
-            $bool=$this->setDropImg($p);
+            if($p['vp_op']!='D'){
+                $p['vp_img'] =$img;
+                $p['vp_cod_trazo']=$rs['cod_trazo'];
+
+                if($p['vp_op']=='U'){
+                    $file = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_imagen_trazo'];
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
+
+                $bool=$this->setDropImg($p);
+            }else{
+                $file = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_imagen_trazo'];
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
         }
 
         header('Content-Type: application/json');
@@ -161,8 +184,8 @@ class OCRController extends AppController {
     public function setDropImg($p){
         $bool=false;
         $img=$p['vp_img'];
-        $path_parts = pathinfo($p['vp_img']);
-        $ext=$path_parts['extension'];
+        #$path_parts = pathinfo($p['vp_img']);
+        $ext=$p['extension'];
         $src_original = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext;
         $src_guardar  = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_trazo'].'-trazo.'.$ext;
         try {

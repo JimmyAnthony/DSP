@@ -9,6 +9,7 @@
 			cod_trazo:0,
 			cod_plantilla:0,
 			cropper:'',
+			imagen_trazo:'',
 			parametros:{
 				vp_op:'I',
 		        vp_cod_plantilla:0,
@@ -1173,9 +1174,9 @@
 			getImagen:function(param){
 				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/OCR/'+param}});
 			},
-			setOCRTrazos:function(res){
+			setOCRTrazos:function(resp){
 				//var res = Ext.JSON.decode(name);
-				console.log(res);
+				console.log(resp);
 				var tipo = Ext.getCmp(OCR.id+'-cbx-tipo-texto').getValue();
 				var nombre = Ext.getCmp(OCR.id+'-txt-nombre-trazo').getValue();
 				var texto = Ext.getCmp(OCR.id+'-txt-texto-trazo').getValue();
@@ -1185,10 +1186,47 @@
 				Ext.getCmp(OCR.id+'-txt-y').getValue();
 				Ext.getCmp(OCR.id+'-txt-w').getValue();
 				Ext.getCmp(OCR.id+'-txt-h').getValue();*/
+				if(OCR.parametros.vp_shi_codigo==0){
+		            global.Msg({msg:"Seleccione un cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
+				if(OCR.cod_plantilla==0){
+		            global.Msg({msg:"Seleccione una plantilla por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(resp.op=='U' || resp.op=='D'){
+			        if(OCR.cod_trazo==0){
+			            global.Msg({msg:"Seleccione un Trazo por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+			    }
+
+		        if(resp.op=='I' || resp.op=='U'){
+					if(tipo== null || tipo==''){
+			            global.Msg({msg:"Seleccione un tipo por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+
+			        if(nombre== null || nombre==''){
+			            global.Msg({msg:"Ingrese un nombre por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+		        }
+
+				var msg_='¿Está seguro de guardar?';
+				var ico = 3;
+				if(resp.op=='U'){
+					msg_='¿Está seguro de Actualizar?';
+				}
+				if(resp.op=='D'){
+					msg_='¿Está seguro de Eliminar?';
+					ico=2;
+				}
 
 				global.Msg({
-                    msg: '¿Está seguro de guardar?',
-                    icon: 3,
+                    msg: msg_,
+                    icon: ico,
                     buttons: 3,
                     fn: function(btn){
                     	if (btn == 'yes'){
@@ -1196,18 +1234,19 @@
 	                        Ext.Ajax.request({
 			                    url: OCR.url + 'set_ocr_trazos/',
 			                    params:{
-			                    	vp_op:res.op,
+			                    	vp_op:resp.op,
 							        vp_cod_trazo:OCR.cod_trazo,
 							        vp_cod_plantilla:OCR.cod_plantilla,
 							        vp_shi_codigo:OCR.parametros.vp_shi_codigo,
 							        vp_nombre:nombre,
 							        vp_tipo:tipo,
-							        vp_y:res.top,
-							        vp_x:res.left,
-							        vp_w:res.width,
-							        vp_h:res.height,
+							        vp_y:resp.top,
+							        vp_x:resp.left,
+							        vp_w:resp.width,
+							        vp_h:resp.height,
 							        vp_path:'',
 							        vp_img:OCR.parametros.vp_img,
+							        vp_imagen_trazo:OCR.imagen_trazo,
 							        vp_width:OCR.parametros.vp_width,
 							        vp_height:OCR.parametros.vp_height,
 							        vp_texto:texto,
@@ -1231,15 +1270,21 @@
 									                panel.doLayout();
 									                //OCR.getDropImg();
 									                OCR.load_file('-panel_texto','imagen-trazo');*/
-
-									                var image = document.getElementById('imagen-trazo');
-													var downloadingImage = new Image();
-													downloadingImage.onload = function(){
-													    image.src = this.src;   
-													    //OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
-													    OCR.getTextoImage();
-													};
-													downloadingImage.src = res.img;
+									                if(resp.op=='I' || resp.op=='U'){
+									                	OCR.cod_trazo = parseInt(res.cod_trazo);
+										                var image = document.getElementById('imagen-trazo');
+														var downloadingImage = new Image();
+														downloadingImage.onload = function(){
+														    image.src = this.src;
+														    //OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+														    OCR.getTextoImage();
+														};
+														downloadingImage.src = res.img;
+													}else{
+														OCR.setNuevo();
+													}
+								            	}else{
+								            		OCR.setNuevo();
 								            	}
 			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
 			                                }
@@ -1326,6 +1371,7 @@
 				var record=Ext.getCmp(OCR.id + '-grid-trazos').getStore().getAt(index);
 				OCR.cod_trazo=record.data.cod_trazo;
 				OCR.cod_plantilla=record.data.cod_plantilla;
+				OCR.imagen_trazo=record.data.img;
 				Ext.getCmp(OCR.id+'-cbx-tipo-texto').setValue(record.data.tipo);
 				Ext.getCmp(OCR.id+'-txt-nombre-trazo').setValue(record.data.nombre);
 				Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(record.data.texto);
@@ -1476,6 +1522,11 @@
 				Ext.getCmp(OCR.id+'-txt-w').setValue('');
 				Ext.getCmp(OCR.id+'-txt-h').setValue('');
 				Ext.getCmp(OCR.id+'-txt-nombre-trazo').focus();
+				try{
+					document.getElementById('imagen-trazo').src=''
+				}catch(err) {
+				    console.log(err.message);
+				}
 				//OCR.getDropImg();
 			},
 			recognize_image:function(id){

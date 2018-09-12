@@ -47,17 +47,41 @@ class scanningController extends AppController {
         return $this->response($data);
     }
     public function get_scanner_file($p){
-        if (is_dir($p['path'])){
-          if ($dh = opendir($p['path'])){
-            while (($file = readdir($dh)) !== false){
-              echo "filename:" . $file . "<br>";
-              if($file!='.' or $file!=''){
-                //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
-                rename($p['path'].$file, PATH.'public_html/scanning/'.$file);
-              }
+        try {
+            if (is_dir($p['path'])){
+                  if ($dh = opendir($p['path'])){
+                    if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                        mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
+                    }
+
+                    while (($file = readdir($dh)) !== false){
+                      if($file!='.' or $file!='..'){
+                        //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
+                        try {
+                            
+                            $path_parts = pathinfo($p['path'].$file);
+                            $ext=$path_parts['extension'];
+                            $p['vp_img']='-page.'.$ext;
+                            $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
+                            $p['vp_lado']='A';
+                            $rs = $this->objDatos->set_page($p);
+                            $rs = $rs[0];
+                            $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+
+                            if($rs['status']=='OK'){
+                                rename($p['path'].$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                            }
+
+                        } catch (Exception $e) {
+                            echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
+                      }
+                    }
+                    closedir($dh);
+                }
             }
-            closedir($dh);
-          }
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
     }
     public function get_list_shipper($p){
@@ -144,6 +168,7 @@ class scanningController extends AppController {
                 $json.='"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                $json.=',"id_det":"'.$value['id_det'].'"';
                 //$json.=',"read":true';
                 //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
@@ -180,6 +205,7 @@ class scanningController extends AppController {
                 $json.='"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                $json.=',"id_det":"'.$value['id_det'].'"';
                 $json.=',"iconCls":"task"';
                 $json.=',"expanded":true';
                 $json.=',"lot_estado":"'.utf8_encode(trim($value['lot_estado'])).'"';
