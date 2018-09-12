@@ -87,14 +87,14 @@
                 fields: [
                     {name: 'cod_lote', type: 'string'},
                     {name: 'lote', type: 'string'},
-                    {name: 'fecha', type: 'string'},
+                    {name: 'file', type: 'string'},
                     {name: 'usuario', type: 'string'},
                     {name: 'cantidad', type: 'string'}
                 ],
                 autoLoad:false,
                 proxy:{
                     type: 'ajax',
-                    url: scanning.url+'get_list/?vp_cod_lote=0',
+                    url: scanning.url+'get_scanner/',
                     reader:{
                         type: 'json',
                         rootProperty: 'data'
@@ -741,7 +741,7 @@
 							                                },
 							                                {
 							                                    text: 'Descripción',
-							                                    dataIndex: 'descripcion',
+							                                    dataIndex: 'file',
 							                                    flex: 1
 							                                },
 							                                {
@@ -777,6 +777,7 @@
 									items:[
 										{
 											region:'north',
+											hidden:true,
 											border:true,
 											height:60,
 											padding:'5px 20px 5px 20px',
@@ -915,6 +916,15 @@
 				}).show();
 			},
 			getScanning:function(){
+				
+				Ext.getCmp(scanning.id + '-grid-paginas').getStore().removeAll();
+				Ext.getCmp(scanning.id + '-grid-paginas').getStore().load(
+	                {params: {path:'C:/twain/'},
+	                callback:function(){
+	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+	                }
+	            });
+				return false;
 				if(!scanning.work){
 					if(parseInt(scanning.shi_codigo)==0){ 
 						return false;

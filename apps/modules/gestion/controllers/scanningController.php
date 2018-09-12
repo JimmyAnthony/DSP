@@ -46,7 +46,8 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function get_scanner_file($p){
+    public function get_scanner($p){
+        $array = array();
         try {
             if (is_dir($p['path'])){
                   if ($dh = opendir($p['path'])){
@@ -54,7 +55,45 @@ class scanningController extends AppController {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
                     }
 
-                    while (($file = readdir($dh)) !== false){ 
+                    while (false !== ($file = readdir($dh))) {
+                        if(trim($file)!=".." ){
+                            if(trim($file)!="." ){
+                                try {
+                                    $value_['file'] = utf8_encode(trim($file));
+                                    $array[]=$value_;
+
+                                } catch (Exception $e) {
+                                    echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                }
+                            }
+                        }
+                    }
+                    closedir($dh);
+                }
+            }
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function get_scanner_file($p){
+        try {
+            if (is_dir($p['path'])){
+                  if ($dh = opendir($p['path'])){
+                    if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                        mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
+                    }
+                    while (false !== ($file = readdir($dh))) {
+                        echo $file.'xx';
+                    #while (($file = readdir($dh)) !== false){ 
                       if($file!='.' or $file!='..'){
                         //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
                         try {
