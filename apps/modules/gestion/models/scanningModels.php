@@ -23,6 +23,16 @@ class scanningModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function get_load_page($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
     public function set_page($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'set_page');
@@ -32,6 +42,7 @@ class scanningModels extends Adodb {
         parent::SetParameterSP($p['vp_id_lote'], 'int');
         parent::SetParameterSP(utf8_decode($p['vp_path']), 'varchar');
         parent::SetParameterSP(utf8_decode($p['vp_img']), 'varchar');
+        parent::SetParameterSP(utf8_decode($p['vp_imgorigen']), 'varchar');
         parent::SetParameterSP($p['vp_lado'], 'varchar');
         parent::SetParameterSP($p['vp_estado'], 'varchar');
         parent::SetParameterSP(USR_ID, 'int');

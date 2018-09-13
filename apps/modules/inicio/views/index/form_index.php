@@ -113,7 +113,8 @@
             'Ext.data.*',
             'Ext.grid.*',
             'Ext.tree.*',
-            'Ext.ux.CheckColumn'
+            'Ext.ux.CheckColumn',
+            'Ext.ProgressBar'
             //'Ext.ux.GMapPanel'
             
         ]);
