@@ -126,9 +126,9 @@ class scanningController extends AppController {
         try {
             if (is_dir($p['path'])){
                   if ($dh = opendir($p['path'])){
-                    if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                    /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
-                    }
+                    }*/
 
                     while (false !== ($file = readdir($dh))) {
                         if(trim($file)!=".." ){
@@ -137,7 +137,7 @@ class scanningController extends AppController {
                                     $value_['id_pag'] = 0;
                                     $value_['id_det'] = 0;
                                     $value_['id_lote'] = 0;
-                                    $value_['path'] = '';
+                                    $value_['path'] = $p['path'];
                                     $value_['file'] = utf8_encode(trim($file));
                                     $value_['imgorigen'] = utf8_encode(trim($file));
                                     $value_['lado'] = 'A';

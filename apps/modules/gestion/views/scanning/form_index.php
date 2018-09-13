@@ -907,6 +907,9 @@
 									                        listeners:{
 									                            afterrender: function(obj){
 									                                
+									                            },
+									                            beforeselect:function(obj, record, index, eOpts ){
+									                            	scanning.setImageFile(record.get('path'),record.get('file'));
 									                            }
 									                        }
 									                    }
@@ -1046,7 +1049,7 @@
 				                                                    	console.log(overModel);
 				                                                    	console.log(dropPosition);
 				                                                    	console.log(dropHandlers);
-				                                                    	return true;
+				                                                    	//return true;
 				                                                    	scanning.getLoader(true);
 				                                                    	var recordsToSend = [];
 				                                                    	Ext.each(data.records, function (record,i) {
@@ -1104,6 +1107,9 @@
 									                        listeners:{
 									                            afterrender: function(obj){
 									                                
+									                            },
+									                            beforeselect:function(obj, record, index, eOpts ){
+									                            	scanning.setImageFile(record.get('path'),record.get('file'));
 									                            }
 									                        }
 									                    }
@@ -1249,7 +1255,7 @@
 	                    afterrender: function(obj, e){
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,scanning.id_menu);
-	                        scanning.getImg_tiff('escaneado');
+	                        scanning.setImageFile('/scanning/','escaneado');
 
 	                        
 	                        //TMP
@@ -1440,7 +1446,7 @@
 				Ext.getCmp(scanning.id+'-btn-reordenar').setDisabled(bool);
 				Ext.getCmp(scanning.id+'-btn-asignar').setDisabled(bool);
 
-				if(bool){
+				if(!bool){
 					scanning.getReloadPage();
 				}else{
 					Ext.getCmp(scanning.id + '-grid-paginas').getStore().removeAll();
@@ -1574,23 +1580,26 @@
 				Ext.getCmp(scanning.id+'-cmb-estado').setValue('');
 				Ext.getCmp(scanning.id+'-txt-nombre').focus();
 			},
-			getImg_tiff: function(file){//(rec,recA){
+			setImageFile: function(path,file){//(rec,recA){
 				
 				var panel = Ext.getCmp(scanning.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img id="imagen-scaneo" src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
+                    html: '<img id="imagen-scaneo" src="'+path+file+'" style="width:100%;" >'
                 });
 
                 var image = document.getElementById('imagen-scaneo');
-				var downloadingImage = new Image();
-				downloadingImage.onload = function(){
-				    image.src = this.src;
-				    //scanning.getDropImg();
-	                //scanning.load_file('-panel_texto','imagen-scaneo'); 
-	                panel.doLayout();
-				};
-				downloadingImage.src = '/scanning/'+file+'.jpg';
+                if(image!=null){
+					var downloadingImage = new Image();
+					downloadingImage.onload = function(){
+					    image.src = this.src;
+					    //scanning.getDropImg();
+		                //scanning.load_file('-panel_texto','imagen-scaneo'); 
+		                panel.doLayout();
+					};
+					downloadingImage.src = path+file;
+					panel.doLayout();
+				}
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({
 		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',
@@ -1621,7 +1630,7 @@
 		    get_error_sel: function(rec_01){
 		        /*var grid = Ext.getCmp(gestor_err.id+'-grid');
 		        var rec = grid.getSelectionModel().getSelected();
-		        gestor_errores.getImg_tiff(rec_01,rec);*/
+		        gestor_errores.setImageFile(rec_01,rec);*/
 		    },
 		    setLimpiar:function(){
 		        /*var panel = Ext.getCmp(gestor_errores.id+'-panel_img');
