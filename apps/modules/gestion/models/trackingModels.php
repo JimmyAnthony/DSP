@@ -17,7 +17,7 @@ class trackingModels extends Adodb {
 
     public function get_list_lotizer($p){
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
+        parent::ConnectionOpen($this->dsn, 'get_list_lotizer_page');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_fac_cliente'], 'int');
         parent::SetParameterSP($p['vp_lote'], 'int');

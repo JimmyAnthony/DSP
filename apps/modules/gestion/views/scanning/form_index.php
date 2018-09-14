@@ -8,6 +8,7 @@
 			opcion:'I',
 			//runner: new Ext.util.TaskRunner(),
 			work:false,
+			id_pag:0,
 			shi_codigo:0,
 			id_det:0,
 			id_lote:0,
@@ -257,7 +258,7 @@
 		                            border:false,
 		                            xtype: 'uePanelS',
 		                            logo: 'BE',
-		                            title: 'Busqueda de Lotes a Escanear',
+		                            title: 'Panel de Escaneado',
 		                            legend: 'Seleccione el Lote Registrado',
 		                            width:350,
 		                            height:210,
@@ -404,8 +405,7 @@
 									                            },
 									                            click: function(obj, e){
 									                            	scanning.setLibera();
-									                            	var name = Ext.getCmp(scanning.id+'-txt-scanning').getValue();
-		                               					            scanning.getReloadGridscanning(name);
+		                               					            scanning.getReloadGridscanning();
 									                            }
 									                        }
 									                    }
@@ -488,15 +488,9 @@
 						                                    dataIndex: 'tot_pag',
 						                                    width: 50,
 						                                    align: 'center'
-						                                }/*,
-						                                {
-						                                    text: 'Total Pag. Errores',
-						                                    dataIndex: 'tot_errpag',
-						                                    width: 100,
-						                                    align: 'center'
 						                                },
 						                                {
-						                                    text: 'Editar',
+						                                    text: 'Cerrar',
 						                                    dataIndex: 'estado',
 						                                    //loocked : true,
 						                                    width: 50,
@@ -505,19 +499,20 @@
 						                                        //console.log(record);
 						                                        if(parseInt(record.get('nivel')) == 1){
 							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        var shi_codigo=record.get('shi_codigo');
+							                                        var id_lote=record.get('id_lote');
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: scanning.id_menu,
 							                                            icons:[
-							                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "scanning.setEditLote("+rowIndex+",'U')"},
-							                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setEditLote("+rowIndex+",'D')"}
+							                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+id_lote+")"}
 							                                            ]
 							                                        });
 							                                    }else{
 						                                        	return '';
 						                                        }
 						                                    }
-						                                }*/
+						                                }
 											        ],
 							                        /*viewConfig: {
 							                            stripeRows: true,
@@ -944,7 +939,8 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){
-									                            	scanning.work=!scanning.work;
+									                            	//scanning.work=!scanning.work;
+									                            	scanning.getScanning();
 									                            }
 									                        }
 									                    }
@@ -957,8 +953,7 @@
 									                        scale: 'large',
 									                        //iconAlign: 'top',
 									                        //disabled:true,
-									                        width:'99%',
-		                                                    anchor:'99%',
+									                        flex:1,
 									                        text: 'Reordenar',
 									                        icon: '/images/icon/if_stock_reverse-order_94695.png',
 									                        listeners:{
@@ -974,7 +969,27 @@
 									                            	//scanning.work=!scanning.work;
 									                            }
 									                        }
-									                    }
+									                    },
+									                    {
+										                    xtype: 'button',
+										                    icon: '/images/icon/if_edit-delete_118920.png',
+										                    flex:1,
+										                    //glyph: 72,
+										                    scale: 'large',
+										                    margin:'5px 5px 5px 5px',
+										                    //height:50
+										                    text: 'Eliminar Todo',
+										                    style : {'font-weight' : 'bold'},
+										                    listeners:{
+										                    	afterrender:function(obj){
+										                    		obj.setStyle({'font-weight' : 'bold'});
+										                    	},
+										                    	click: function(obj, e){
+									                            	scanning.setRemoveFile(true);
+									                            }
+										                    }
+										                    //iconAlign: 'top'
+										                }
 													],
 													items:[
 														{
@@ -1015,7 +1030,7 @@
 									                                            type: 'link',
 									                                            id_menu: scanning.id_menu,
 									                                            icons:[
-									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setEditLote("+rowIndex+",'D')"}
+									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveFile(false)"}
 
 									                                            ]
 									                                        });
@@ -1109,6 +1124,7 @@
 									                                
 									                            },
 									                            beforeselect:function(obj, record, index, eOpts ){
+									                            	scanning.id_pag=record.get('id_pag');
 									                            	scanning.setImageFile(record.get('path'),record.get('file'));
 									                            }
 									                        }
@@ -1256,7 +1272,7 @@
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,scanning.id_menu);
 	                        scanning.setImageFile('/scanning/','escaneado');
-
+	                        scanning.getScanningFile();
 	                        
 	                        //TMP
 							/*scanning.shi_codigo=1;
@@ -1272,16 +1288,156 @@
 
 				}).show();
 			},
+			setCerrarEscaneado:function(shi_codigo,id_lote){
+				if(parseInt(shi_codigo)==0){ 
+					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(id_lote)==0){
+					global.Msg({msg:"Seleccione un Lote.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				global.Msg({
+                    msg: '¿Seguro de cerrar Lote?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(scanning.id+'-form').el.mask('Cerrando Lote…', 'x-mask-loading');
+	                        scanning.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:scanning.url+'set_lotizer/',
+			                    params:{
+			                    	vp_op:'S',
+			                    	vp_shi_codigo:shi_codigo,
+			                    	vp_id_lote:id_lote
+			                    },
+			                    success: function(response, options){
+			                        Ext.getCmp(scanning.id+'-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        scanning.getLoader(false);
+			                        scanning.setLibera();
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	scanning.getReloadGridscanning();
+			                                	//scanning.getScanningFile();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	scanning.getReloadGridscanning();
+			                                    //scanning.getScanningFile();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+
+			},
+			setChangeRow:function(){
+				var count = Ext.getCmp(scanning.id + '-grid-paginas').getStore().getCount();
+				Ext.getCmp(scanning.id + '-grid').getStore().each(function(record, idx) {
+				    val = record.get('id_det');
+				    if(scanning.id_det==parseInt(val)){
+					    record.set('tot_pag', count); 
+					    record.commit();
+				    }
+				});
+			},
+			setRemoveFile:function(bool){
+				if(parseInt(scanning.shi_codigo)==0){ 
+					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(scanning.id_det)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(scanning.id_lote)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(!bool){
+					if(parseInt(scanning.id_pag)==0){
+						global.Msg({msg:"Seleccione una página.",icon:2,fn:function(){}});
+						return false;
+					}
+				}
+
+				
+				global.Msg({
+                    msg: '¿Seguro de eliminar página(s)?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(scanning.id+'-form').el.mask('Elinando Páginas…', 'x-mask-loading');
+	                        scanning.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:scanning.url+'set_remove_file/',
+			                    params:{
+			                    	vp_op:'D',
+			                    	vp_shi_codigo:scanning.shi_codigo,
+			                    	vp_id_pag:(bool)?0:scanning.id_pag,
+			                    	vp_id_det:scanning.id_det,
+			                    	vp_id_lote:scanning.id_lote
+			                    },
+			                    success: function(response, options){
+			                        Ext.getCmp(scanning.id+'-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        scanning.getLoader(false);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	scanning.getReloadPage();
+			                                	//scanning.getScanningFile();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	scanning.getReloadPage();
+			                                    //scanning.getScanningFile();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+			},
 			getReloadPage:function(){
+				scanning.id_pag=0;
 				Ext.getCmp(scanning.id + '-grid-paginas').getStore().removeAll();
 				Ext.getCmp(scanning.id + '-grid-paginas').getStore().load({
                 	params:{
+                		vp_id_pag:0,
                 		vp_shi_codigo:scanning.shi_codigo,
                     	vp_id_det:scanning.id_det,
                     	vp_id_lote:scanning.id_lote
 	                },
 	                callback:function(){
 	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+	                	scanning.setChangeRow();
 	                }
 	            });
 			},
@@ -1358,70 +1514,66 @@
 		        });
 			},
 			getScanning:function(){
-				if(scanning.work){
-					Ext.getCmp(scanning.id + '-progressbar').wait({
-			            interval: 200,
-			            //duration: 5000,
-			            increment: 15,
-			            fn:function() {
-			                //btn3.dom.disabled = false;
-			                //Ext.fly('p3text').update('Done');
-			            }
-			        });
-
-					Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
-					Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
-		                {params: {path:'C:/twain/'},
-		                callback:function(){
-		                	//Ext.getCmp(scanning.id+'-form').el.unmask();
-		                	Ext.getCmp(scanning.id + '-progressbar').hide();
-		                }
-		            });
+				if(parseInt(scanning.shi_codigo)==0){ 
+					return false;
 				}
-				return false;
-				if(!scanning.work){
-					if(parseInt(scanning.shi_codigo)==0){ 
-						return false;
-					}
-					if(parseInt(scanning.id_det)==0){
-						return false;
-					}
-					if(parseInt(scanning.id_lote)==0){
-						return false;
-					}
-					console.log(scanning.shi_codigo+'-'+scanning.id_det+'-'+scanning.id_lote);
-					scanning.work=!scanning.work;
+				if(parseInt(scanning.id_det)==0){
+					return false;
+				}
+				if(parseInt(scanning.id_lote)==0){
+					return false;
+				}
+				console.log(scanning.shi_codigo+'-'+scanning.id_det+'-'+scanning.id_lote);
 
-					Ext.Ajax.request({
-	                    url: scanning.url+'/get_scanner_file/',
-	                    params:{
-	                    	vp_op:'I',
-	                    	vp_shi_codigo:scanning.shi_codigo,
-	                    	vp_id_pag:0,
-	                    	vp_id_det:scanning.id_det,
-	                    	vp_id_lote:scanning.id_lote,
-	                    	path:'C:/twain/',
-	                    	vp_estado:'A'
-	                    },
-	                    success: function(response, options){
-
-	                        //var res = Ext.JSON.decode(response.responseText);
-	                        scanning.work=!scanning.work;
-	                        console.log(response);
-	                        /*if (parseInt(res.time) == 0 ){
-	                            scanning.task.stop();
-	                            global.Msg({
-	                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
-	                                icon: 1,
-	                                buttons: 1,
-	                                fn: function(btn){
-	                                    window.location = '/inicio/index/'
-	                                }
-	                            });
-	                        }*/
-	                    }
-	                });
-                }
+				global.Msg({
+                    msg: 'Seguro de Asignar todas las Páginas?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(scanning.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
+							scanning.getLoader(true);
+							Ext.Ajax.request({
+			                    url: scanning.url+'/get_scanner_file/',
+			                    params:{
+			                    	vp_op:'I',
+			                    	vp_shi_codigo:scanning.shi_codigo,
+			                    	vp_id_pag:0,
+			                    	vp_id_det:scanning.id_det,
+			                    	vp_id_lote:scanning.id_lote,
+			                    	path:'C:/twain/',
+			                    	vp_estado:'A'
+			                    },
+			                    success: function(response, options){
+                                    Ext.getCmp(scanning.id+'-form').el.unmask();
+                                    var res = Ext.JSON.decode(response.responseText);
+                                    scanning.getLoader(false);
+                                    if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	scanning.getReloadPage();
+			                                	scanning.getScanningFile();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	scanning.getReloadPage();
+			                                    scanning.getScanningFile();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
 			},
 			setLibera:function(){
 				scanning.shi_codigo=0;
@@ -1510,7 +1662,7 @@
 		                                icon: 1,
 		                                buttons: 1,
 		                                fn: function(btn){
-		                                    scanning.getReloadGridscanning('');
+		                                    scanning.getReloadGridscanning();
 		                                    scanning.setNuevo();
 		                                }
 		                            });
@@ -1520,7 +1672,7 @@
 		                                icon: 0,
 		                                buttons: 1,
 		                                fn: function(btn){
-		                                    scanning.getReloadGridscanning('');
+		                                    scanning.getReloadGridscanning();
 		                                    scanning.setNuevo();
 		                                }
 		                            });
@@ -1539,7 +1691,7 @@
 	                }
 	            });
 			},
-			getReloadGridscanning:function(name){
+			getReloadGridscanning:function(){
 				//scanning.set_scanning_clear();
 				//Ext.getCmp(scanning.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();

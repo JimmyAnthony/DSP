@@ -15,7 +15,8 @@
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
 				    fields: [
-				        {name: 'id_lote', type: 'string'},
+				        {name: 'hijo', type: 'string'},
+				        {name: 'padre', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
@@ -23,6 +24,8 @@
 	                    {name: 'nombre', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
 	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'tot_folder', type: 'string'},
 	                    {name: 'tot_pag', type: 'string'},
@@ -55,18 +58,15 @@
 					       });*/
 					    },
 	                    load: function(obj, records, successful, opts){
-	                 		//Ext.getCmp(tracking.id + '-grid').doLayout();
-	                 		//Ext.getCmp(tracking.id + '-grid').getView().getRow(0).style.display = 'none';
-	                 		try{
-		                 		storeTree.removeAt(0);
-		                 		Ext.getCmp(tracking.id + '-grid').collapseAll();
-			                    Ext.getCmp(tracking.id + '-grid').getRootNode().cascadeBy(function (node) {
-			                          if (node.getDepth() < 1) { node.expand(); }
-			                          if (node.getDepth() == 0) { return false; }
-			                     });
-		                    }catch(e){
-		                    	console.log(e);
-		                    }
+	                 		Ext.getCmp(tracking.id + '-grid-tracking').doLayout();
+	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		storeTree.removeAt(0);
+	                 		Ext.getCmp(tracking.id + '-grid-tracking').collapseAll();
+		                    Ext.getCmp(tracking.id + '-grid-tracking').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                    });
+		                    Ext.getCmp(tracking.id + '-grid-tracking').expandAll();
 	                    }
 	                }
 	            });
@@ -466,7 +466,7 @@
 											        rootVisible: true,
 											        multiSelect: true,
 											        //root:'Task',
-							                        id: tracking.id + '-grid',
+							                        id: tracking.id + '-grid-tracking',
 							                        //height: 370,
 							                        //reserveScrollbar: true,
 							                        //rootVisible: false,
@@ -501,22 +501,39 @@
 						                                    width: 100,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
 						                                        metaData.style = "padding: 0px; margin: 0px";
+						                                        var estado = 'basket_put.png';
 						                                        if(parseInt(record.get('nivel'))==1){
-							                                        var estado = (record.get('lot_estado')=='LT')?'baggage_cart_box.png':'contraer.png';
-							                                        var qtip = (record.get('lot_estado')=='LT')?'Lotizado.':'Lote en otro Estado.';
-						                                        }else{
-						                                        	var estado = (record.get('lot_estado')=='LT')?'basket_put_gray.png':'basket_put.png';
-							                                        var qtip = (record.get('lot_estado')=='LT')?'Folder Vacio.':'Folder en otro Estado.';
-						                                        }
-						                                        
-
+							                                        switch(record.get('lot_estado')){
+															        	case 'N':
+															        		estado='';
+															        	break;
+															        	case 'LT':
+															        		estado='baggage_cart_box.png';
+															        	break;
+															        	case 'ES':
+															        		estado='print.png';
+															        	break;
+															        	case 'CO':
+															        		estado='console.png';
+															        	break;
+															        	case 'RE':
+															        		estado='1348695561_stock_mail-send-receive.png';
+															        	break;
+															        	case 'FI':
+															        		estado='approval.png';
+															        	break;
+															        	case 'DE':
+															        		estado='compartir.png';
+															        	break;
+															        }
+														        }
+						                                        var qtip = record.get('descripcion');
 						                                        return global.permisos({
 						                                            type: 'link',
-						                                            id_menu: lotizer.id_menu,
+						                                            id_menu: tracking.id_menu,
 						                                            icons:[
-						                                                {id_serv: 1, img: estado, qtip: qtip, js: ""}
+						                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
 						                                            ]
 						                                        });
 						                                    }
@@ -577,7 +594,7 @@
 							                            enableTextSelection: false,
 							                            markDirty: false
 							                        },*/
-							                        /*hideItemsReadFalse: function () {
+							                        hideItemsReadFalse: function () {
 													    var me = this,
 													        items = me.getReferences().treelistRef.itemMap;
 
@@ -587,7 +604,7 @@
 													            items[i].destroy();
 													        }
 													    }
-													},*/
+													},
 							                        trackMouseOver: false,
 							                        listeners:{
 							                            afterrender: function(obj){
@@ -596,6 +613,9 @@
 							                            },
 														beforeselect:function(obj, record, index, eOpts ){
 															tracking.getStatusPanel(record.get('lot_estado'));
+															
+															document.getElementById('imagen-tracking').innerHTML='<img src="'+record.get('path')+record.get('img')+'" width="100%" height="100%"/>'
+
 															//console.log(record);
 															/*tracking.opcion='U';*/
 															/*tracking.id_lote=record.get('id_lote');
@@ -669,45 +689,10 @@
 								},
 								{
 									region:'east',
-									title:'PÁGINAS',
+									title:'Imagen',
 									//width:'100%',
 									width:500,
-									layout:'fit',
-									items:[
-										{
-					                        xtype: 'dataview',
-					                        id: tracking.id+'-paginas',
-					                        layout:'fit',
-					                        store: store_imagen,
-					                        autoScroll: true,
-					                        loadMask:true,
-					                        autoHeight: false,
-					                        tpl: [
-								                '<tpl for=".">',
-								                    '<div class="dataview-multisort-item">',
-								                        '<img src="/images/icon/{clase_box1}.png" />',
-								                        '<h3>{name}</h3>',
-								                    '</div>',
-								                '</tpl>'
-								            ],
-					                        multiSelect: false,
-					                        singleSelect: false,
-					                        loadingText:'Cargando Estados...',
-					                        emptyText: '<div class="databox_list_pointer"><div class="databox_none_data" ></div><div class="databox_title_clear_data">NO TIENE NINGUNA PÁGINA</div></div>',
-					                        itemSelector: 'div.dataview-multisort-item',
-					                        trackOver: true,
-					                        //overItemCls: 'databox_list_pointer-hover',
-					                        listeners: {
-					                            'itemclick': function(view, record, item, idx, event, opts) {
-					                                tracking.getImagen(record.get('clase_box1')+'.png');
-					                            },
-					                            'afterrender':function(){
-					                                /*Ext.getCmp(config.id+'-nov-lista').refresh();
-					                                Ext.getCmp(config.id+'-nov-lista').refresh();*/
-					                            }
-					                        }
-					                    }
-									]
+									html: '<div id="imagen-tracking" style="width:100%; height:"100%;overflow: none;" ><img src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
 								}
 							]
 						}
@@ -791,17 +776,13 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
-		        //Ext.getCmp(tracking.id + '-grid').getStore().removeAll();
-		        try{
-					Ext.getCmp(tracking.id + '-grid').getStore().load(
-		                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
-		                callback:function(){
-		                	//Ext.getCmp(tracking.id+'-form').el.unmask();
-		                }
-		            });
-	            }catch(e){
-                	console.log(e);
-                }
+		        //Ext.getCmp(tracking.id + '-grid-tracking').getStore().removeAll();
+		        Ext.getCmp(tracking.id + '-grid-tracking').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
+	                callback:function(){
+	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
+	                }
+	            });
 			}
 
 		}

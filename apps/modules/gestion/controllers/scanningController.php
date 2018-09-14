@@ -72,10 +72,23 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function set_lotizer($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->set_lotizer($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
     public function set_remove_scanner_file_one($p){
         $array = array();
-        if (file_exists($p['path'].$p['file'])){
-            unlink($p['path'].$p['file']);
+        if (file_exists(PATH.'public_html/tmp/'.$p['file'])){
+            unlink(PATH.'public_html/tmp/'.$p['file']);
         }
         $data = array(
             'success' => true,
@@ -86,18 +99,40 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function set_remove_file($p){
+
+        $rs = $this->objDatos->get_load_page($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+                $p['vp_op'] = 'D';
+                $p['vp_id_pag'] = intval($value['id_pag']);
+
+                $rs = $this->objDatos->set_page($p);
+                $rs = $rs[0];
+                $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+                if($rs['status']=='OK'){
+                    if (file_exists(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])))){
+                        unlink(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])));
+                    }
+                }
+        }
+        
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
     public function set_remove_scanner_file($p){
         $array = array();
         try {
-            if (is_dir($p['path'])){
-                  if ($dh = opendir($p['path'])){
+            if (is_dir(PATH.'public_html/tmp/')){
+                  if ($dh = opendir(PATH.'public_html/tmp/')){
                     
                     while (false !== ($file = readdir($dh))) {
                         if(trim($file)!=".." ){
                             if(trim($file)!="." ){
                                 try {
-                                    if (file_exists($p['path'].$file)) {
-                                        unlink($p['path'].$file);
+                                    if (file_exists(PATH.'public_html/tmp/'.$file)) {
+                                        unlink(PATH.'public_html/tmp/'.$file);
                                     }
                                 } catch (Exception $e) {
                                     //echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -123,9 +158,39 @@ class scanningController extends AppController {
     }
     public function get_scanner($p){
         $array = array();
+        if (!file_exists(PATH.'public_html/tmp/')) {
+            mkdir(PATH.'public_html/tmp/', 0777, true);
+        }
         try {
             if (is_dir($p['path'])){
                   if ($dh = opendir($p['path'])){
+                    /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                        mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
+                    }*/
+                    while (false !== ($file = readdir($dh))) {
+                        if(trim($file)!=".." ){
+                            if(trim($file)!="." ){
+                                try {
+                                    if (file_exists($p['path'].$file)) {
+                                        rename($p['path'].$file, PATH.'public_html/tmp/'.$file);
+                                    }
+
+                                } catch (Exception $e) {
+                                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                }
+                            }
+                        }
+                    }
+                    closedir($dh);
+                }
+            }
+        } catch (Exception $e) {
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+
+        try {
+            if (is_dir(PATH.'public_html/tmp/')){
+                  if ($dh = opendir(PATH.'public_html/tmp/')){
                     /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
                     }*/
@@ -137,7 +202,7 @@ class scanningController extends AppController {
                                     $value_['id_pag'] = 0;
                                     $value_['id_det'] = 0;
                                     $value_['id_lote'] = 0;
-                                    $value_['path'] = $p['path'];
+                                    $value_['path'] = '/tmp/';
                                     $value_['file'] = utf8_encode(trim($file));
                                     $value_['imgorigen'] = utf8_encode(trim($file));
                                     $value_['lado'] = 'A';
@@ -146,7 +211,7 @@ class scanningController extends AppController {
                                     $array[]=$value_;
 
                                 } catch (Exception $e) {
-                                    echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
                                 }
                             }
                         }
@@ -155,7 +220,7 @@ class scanningController extends AppController {
                 }
             }
         } catch (Exception $e) {
-            echo 'Caught exception: ',  $e->getMessage(), "\n";
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
 
         $data = array(
@@ -170,10 +235,13 @@ class scanningController extends AppController {
     public function set_scanner_file_one_to_one($p){
         $records = json_decode(stripslashes($p['vp_recordsToSend'])); //parse the string to PHP objects
         if(isset($records)){
+            if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
+            }
             foreach($records as $record){
                 $file=$record->file;
-                if (file_exists($p['path'].$file)){
-                    $path_parts = pathinfo($p['path'].$file);
+                if (file_exists(PATH.'public_html/tmp/'.$file)){
+                    $path_parts = pathinfo(PATH.'public_html/tmp/'.$file);
                     $ext=$path_parts['extension'];
                     $p['vp_img']='-page.'.$ext;
                     $p['vp_imgorigen']=$file;
@@ -185,10 +253,7 @@ class scanningController extends AppController {
                     $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
 
                     if($rs['status']=='OK'){
-                        if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
-                            mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
-                        }
-                        rename($p['path'].$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                        rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
                     }
                 }else{
                     $data = array('success' => true,'error' => 'ER','msn' => 'No existen archivos a procesar');
@@ -204,19 +269,18 @@ class scanningController extends AppController {
     }
     public function get_scanner_file($p){
         try {
-            if (is_dir($p['path'])){
-                  if ($dh = opendir($p['path'])){
+            if (is_dir(PATH.'public_html/tmp/')){
+                  if ($dh = opendir(PATH.'public_html/tmp/')){
                     if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
                     }
                     while (false !== ($file = readdir($dh))) {
-                        echo $file.'xx';
+                        //echo $file.'xx';
                     #while (($file = readdir($dh)) !== false){ 
                       if($file!='.' or $file!='..'){
                         //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
                         try {
-                            
-                            $path_parts = pathinfo($p['path'].$file);
+                            $path_parts = pathinfo(PATH.'public_html/tmp/'.$file);
                             $ext=$path_parts['extension'];
                             $p['vp_img']='-page.'.$ext;
                             $p['vp_imgorigen']=$file;
@@ -227,11 +291,11 @@ class scanningController extends AppController {
                             $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
 
                             if($rs['status']=='OK'){
-                                rename($p['path'].$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                                rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
                             }
 
                         } catch (Exception $e) {
-                            echo 'Caught exception: ',  $e->getMessage(), "\n";
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";k
                         }
                       }
                     }
@@ -239,8 +303,11 @@ class scanningController extends AppController {
                 }
             }
         } catch (Exception $e) {
-            echo 'Caught exception: ',  $e->getMessage(), "\n";
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            $data = array('success' => true,'error' => 'ER','msn' => $e->getMessage());
         }
+        header('Content-Type: application/json');
+        return $this->response($data);
     }
     public function get_list_shipper($p){
         $rs = $this->objDatos->get_list_shipper($p);

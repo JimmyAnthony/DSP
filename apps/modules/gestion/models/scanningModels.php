@@ -26,6 +26,7 @@ class scanningModels extends Adodb {
     public function get_load_page($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_list_page');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_id_det'], 'int');
         parent::SetParameterSP($p['vp_id_lote'], 'int');
@@ -47,6 +48,26 @@ class scanningModels extends Adodb {
         parent::SetParameterSP($p['vp_estado'], 'varchar');
         parent::SetParameterSP(USR_ID, 'int');
         //echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function set_lotizer($p){
+        $p['vp_id_lote'] =(empty($p['vp_id_lote']))?0:$p['vp_id_lote'];
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_lotizer');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP(utf8_decode(trim($p['vp_nombre'])), 'varchar');
+        parent::SetParameterSP(utf8_decode(trim($p['vp_descripcion'])), 'varchar');
+        parent::SetParameterSP($p['vp_tipdoc'], 'varchar');
+        parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
+        parent::SetParameterSP($p['vp_ctdad'], 'int');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+
+         //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
     }
