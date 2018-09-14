@@ -53,6 +53,8 @@ class OCRModels extends Adodb {
         parent::ConnectionOpen($this->dsn, 'get_ocr_plantillas');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP($p['vp_name'], 'varchar');
+        parent::SetParameterSP($p['fecha'], 'varchar');
         /*parent::SetParameterSP($p['vp_lote'], 'int');
         parent::SetParameterSP($p['vp_lote_estado'], 'varchar');
         parent::SetParameterSP($p['vp_name'], 'varchar');

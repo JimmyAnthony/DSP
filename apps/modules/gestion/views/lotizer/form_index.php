@@ -63,6 +63,7 @@
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
 		                     });
+		                    Ext.getCmp(lotizer.id + '-grid').expandAll();
 	                    }
 	                }
 	            });

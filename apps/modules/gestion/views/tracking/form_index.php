@@ -487,7 +487,7 @@
 						                                    text: 'Nombre',
 						                                    dataIndex: 'lote_nombre',
 						                                    sortable: true,
-						                                    flex: 1
+						                                    width:250,
 						                                },
 						                                {
 						                                    text: 'Descripción',
@@ -613,7 +613,7 @@
 							                            },
 														beforeselect:function(obj, record, index, eOpts ){
 															tracking.getStatusPanel(record.get('lot_estado'));
-															
+
 															document.getElementById('imagen-tracking').innerHTML='<img src="'+record.get('path')+record.get('img')+'" width="100%" height="100%"/>'
 
 															//console.log(record);
