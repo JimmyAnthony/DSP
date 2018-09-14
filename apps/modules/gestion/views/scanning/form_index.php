@@ -6,14 +6,17 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/scanning/',
 			opcion:'I',
-			runner: new Ext.util.TaskRunner(),
+			//runner: new Ext.util.TaskRunner(),
 			work:false,
 			shi_codigo:0,
 			id_det:0,
 			id_lote:0,
+			group1:'',
+			group2:'',
+			trabajando:1,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
-
+				/*
 				scanning.task = scanning.runner.newTask({
                     run: function(){
                         scanning.getScanning();
@@ -21,7 +24,10 @@
                     interval: (1000 * 30)
                 });
 
-                scanning.task.start();
+                scanning.task.start();*/
+
+                scanning.group1 = scanning.id + 'group1';
+            	scanning.group2 = scanning.id + 'group2';
 
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
@@ -75,6 +81,7 @@
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
 		                     });
+		                    Ext.getCmp(scanning.id + '-grid').expandAll();
 	                    }
 	                }
 	            });
@@ -83,54 +90,104 @@
 		            'Ambient Sounds: <b>{ambient}%</b><br />',
 		            'Interface Sounds: <b>{iface}%</b>'
 		        );
-				var store = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'cod_lote', type: 'string'},
-                    {name: 'lote', type: 'string'},
-                    {name: 'file', type: 'string'},
-                    {name: 'usuario', type: 'string'},
-                    {name: 'cantidad', type: 'string'}
-                ],
-                autoLoad:false,
-                proxy:{
-                    type: 'ajax',
-                    url: scanning.url+'get_scanner/',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
-            });
-			var store_shipper = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'shi_codigo', type: 'string'},
-                    {name: 'shi_nombre', type: 'string'},
-                    {name: 'shi_logo', type: 'string'},
-                    {name: 'fec_ingreso', type: 'string'},                    
-                    {name: 'shi_estado', type: 'string'},
-                    {name: 'id_user', type: 'string'},
-                    {name: 'fecha_actual', type: 'string'}
-                ],
-                autoLoad:true,
-                proxy:{
-                    type: 'ajax',
-                    url: scanning.url+'get_list_shipper/',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
-            });
+
+		        var store = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'estado', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: scanning.url+'get_XX/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+
+				var store_paginas = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'id_pag', type: 'string'},
+	                    {name: 'id_det', type: 'string'},
+	                    {name: 'id_lote', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'file', type: 'string'},
+	                    {name: 'lado', type: 'string'},
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'include', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: scanning.url+'get_load_page/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+	            var store_tmp = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'id_pag', type: 'string'},
+	                    {name: 'id_det', type: 'string'},
+	                    {name: 'id_lote', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'file', type: 'string'},
+	                    {name: 'lado', type: 'string'},
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'include', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: scanning.url+'get_scanner/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+				var store_shipper = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'shi_codigo', type: 'string'},
+	                    {name: 'shi_nombre', type: 'string'},
+	                    {name: 'shi_logo', type: 'string'},
+	                    {name: 'fec_ingreso', type: 'string'},                    
+	                    {name: 'shi_estado', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'fecha_actual', type: 'string'}
+	                ],
+	                autoLoad:true,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: scanning.url+'get_list_shipper/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
             var store_contratos = Ext.create('Ext.data.Store',{
                 fields: [
                     {name: 'fac_cliente', type: 'string'},
@@ -188,6 +245,7 @@
 					items:[
 						{
 							region:'west',
+							id:scanning.id + '-panel-west-lote',
 							border:true,
 							width:350,
 							layout:'border',
@@ -344,7 +402,8 @@
 									                                    fn: ['panel_asignar_gestion.limpiar']
 									                                });*/
 									                            },
-									                            click: function(obj, e){	             	
+									                            click: function(obj, e){
+									                            	scanning.setLibera();
 									                            	var name = Ext.getCmp(scanning.id+'-txt-scanning').getValue();
 		                               					            scanning.getReloadGridscanning(name);
 									                            }
@@ -486,6 +545,7 @@
 															scanning.shi_codigo=record.get('shi_codigo');
 															scanning.id_det=record.get('id_det');
 															scanning.id_lote=record.get('id_lote');
+															scanning.getLiberaPanel();
 														}
 							                        }
 							                    }
@@ -667,6 +727,7 @@
 						},
 						{
 							region:'center',
+							id:scanning.id + '-panel-centrar-paginas',
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
@@ -688,84 +749,372 @@
 											items:[
 												{
 								                    xtype: 'button',
-								                    icon: '/images/icon/if_BT_file_text_plus_905568.png',
+								                    icon: '/images/icon/if_edit-delete_118920.png',
 								                    flex:1,
 								                    //glyph: 72,
 								                    scale: 'large',
 								                    margin:'5px 5px 5px 5px',
 								                    //height:50
-								                    text: 'Pág.(0)',
+								                    text: 'Eliminar Escaneado',
+								                    style : {'font-weight' : 'bold'},
+								                    listeners:{
+								                    	afterrender:function(obj){
+								                    		obj.setStyle({'font-weight' : 'bold'});
+								                    	},
+								                    	click: function(obj, e){
+							                            	scanning.setRemoveEscaner(true,'');
+							                            }
+								                    }
 								                    //iconAlign: 'top'
 								                },
 								                {
 								                    xtype: 'button',
-								                    icon: '/images/icon/if_BT_file_text_minus_905569.png',
+								                    id:scanning.id + '-btn-total',
+								                    icon: '/images/icon/if_update_678134.png',
 								                    flex:1,
 								                    //glyph: 72,
 								                    scale: 'large',
 								                    margin:'5px 5px 5px 5px',
 								                    //height:50
-								                    text: 'Error.(0)',
+								                    text: 'Total(0)',
+								                    style : {'font-weight' : 'bold'},
+								                    listeners:{
+								                    	afterrender:function(obj){
+								                    		obj.setStyle({'font-weight' : 'bold'});
+								                    	},
+								                    	click: function(obj, e){
+							                            	scanning.getScanningFile();
+							                            }
+								                    }
 								                    //iconAlign: 'top'
-								                },
-								                {
-								                    xtype: 'button',
-								                    icon: '/images/icon/if_BT_binder_905575.png',
-								                    flex:1,
-								                    //glyph: 72,
-								                    scale: 'large',
-								                    margin:'5px 5px 5px 5px',
-								                    //height:50
-								                    text: 'Total.(0)',
-								                    //iconAlign: 'top'
-								                },
+								                }
 											]
 										},
 										{
 											region:'center',
-											layout:'fit',
+											layout:'border',
 											border:true,
-											padding:'5px 5px 5px 5px',
+											//padding:'5px 5px 5px 5px',
+											tbar:[
+												{
+									                 xtype : 'progressbar',
+									                 id:scanning.id + '-progressbar',
+									                 itemId : 'progressbar_searchresults',
+									                 width : '99%',
+									                 /*style: {
+									                     color: 'green'
+									                 },*/
+									                 hidden : true,
+									                 //textEl : 'progressbar_textElement',
+									                 listeners:{
+									                 	update:function(obj){
+													        //You can handle this event at each progress interval if
+													        //needed to perform some other action
+													       	//Ext.fly('p3text').dom.innerHTML += '.';
+													       	var punto='.';
+													       	if(scanning.trabajando==2){
+													       		punto='..';
+													       	}else if(scanning.trabajando==3){
+													       		punto='...';
+													       		scanning.trabajando=0;
+													       	}
+													       	scanning.trabajando+=1;
+													       	obj.setTextTpl('Trabajando '+punto); 
+													    }
+									                 }
+									             }
+											],
 											items:[
 												{
-							                        xtype: 'grid',
-							                        id: scanning.id + '-grid-paginas',
-							                        store: store,
-							                        columnLines: true,
-							                        columns:{
-							                            items:[
-							                                {
-							                                    text: 'Páginas',
-							                                    dataIndex: 'lote',
-							                                    width: 50
-							                                },
-							                                {
-							                                    text: 'Descripción',
-							                                    dataIndex: 'file',
-							                                    flex: 1
-							                                },
-							                                {
-							                                    text: 'Flag',
-							                                    dataIndex: 'flag',
-							                                    width: 50
-							                                }
-							                            ],
-							                            defaults:{
-							                                menuDisabled: true
-							                            }
-							                        },
-							                        viewConfig: {
-							                            stripeRows: true,
-							                            enableTextSelection: false,
-							                            markDirty: false
-							                        },
-							                        trackMouseOver: false,
-							                        listeners:{
-							                            afterrender: function(obj){
-							                                
-							                            }
-							                        }
-							                    }
+													region:'center',
+													border:false,
+													layout:'fit',
+													items:[
+														{
+									                        xtype: 'grid',
+									                        itemId: 'grid1',
+									                        id: scanning.id + '-grid-paginas-tmp',
+									                        store: store_tmp,
+									                        columnLines: true,
+									                        columns:{
+									                            items:[
+									                            	{
+									                            		text: 'N°',
+																	    xtype: 'rownumberer',
+																	    width: 40,
+																	    sortable: false,
+																	    locked: true
+																	},
+									                                {
+									                                    text: 'Descripción',
+									                                    dataIndex: 'file',
+									                                    flex: 1
+									                                },
+									                                {
+									                                    text: 'Lado',
+									                                    dataIndex: 'flag',
+									                                    width: 50
+									                                },
+									                                {
+									                                    text: 'DLT',
+									                                    dataIndex: 'estado',
+									                                    //loocked : true,
+									                                    width: 40,
+									                                    align: 'center',
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: scanning.id_menu,
+									                                            icons:[
+									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveEscaner(false,'"+record.get('file')+"')"}
+
+									                                            ]
+									                                        });
+									                                    }
+									                                }
+									                            ],
+									                            defaults:{
+									                                menuDisabled: true
+									                            }
+									                        },
+									                        multiSelect: true,
+									                        viewConfig: {
+									                            stripeRows: true,
+									                            enableTextSelection: false,
+									                            markDirty: false,
+									                            plugins: {
+				                                                    ptype: 'gridviewdragdrop',
+				                                                    containerScroll: true,
+				                                                    dragGroup: scanning.group1,
+                    												dropGroup: scanning.group2
+				                                                },
+				                                                listeners: {
+				                                                    drop: function(node, data, dropRec, dropPosition) {
+				                                                        var dropOn = dropRec ? ' ' + dropPosition + ' ' + dropRec.get('name') : ' on empty view';
+				                                                        //Ext.msg('Drag from right to left', 'Dropped ' + data.records[0].get('name') + dropOn);
+				                                                    },
+				                                                    beforedrop: function(node, data, dropRec, dropPosition) {
+				                                                          /*Ext.Array.each(data.records, function(rec) {
+				                                                                rec.setDirty();
+				                                                          });*/
+				                                                    }
+				                                                }
+                                            
+									                        },
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                
+									                            },
+									                            beforeselect:function(obj, record, index, eOpts ){
+									                            	scanning.setImageFile(record.get('path'),record.get('file'));
+									                            }
+									                        }
+									                    }
+													]
+												},
+												{
+													region:'south',
+													id:scanning.id+'-panel-paginas',
+													//disabled:true,
+													split:true,
+													layout:'fit',
+													height:'50%',
+													tbar:[
+														{
+									                        xtype:'button',
+									                        id:scanning.id+'-btn-asignar',
+									                        disabled:true,
+									                        scale: 'large',
+									                        //iconAlign: 'top',
+									                        //disabled:true,
+									                        width:'99%',
+		                                                    anchor:'99%',
+									                        text: 'Asignar todas las Páginas',
+									                        icon: '/images/icon/if_icon-92-inbox-download_314776.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){
+									                            	scanning.work=!scanning.work;
+									                            }
+									                        }
+									                    }
+													],
+													bbar:[
+														{
+									                        xtype:'button',
+									                        id:scanning.id+'-btn-reordenar',
+									                        disabled:true,
+									                        scale: 'large',
+									                        //iconAlign: 'top',
+									                        //disabled:true,
+									                        width:'99%',
+		                                                    anchor:'99%',
+									                        text: 'Reordenar',
+									                        icon: '/images/icon/if_stock_reverse-order_94695.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                                /*global.permisos({
+									                                    id: 15,
+									                                    id_btn: obj.getId(), 
+									                                    id_menu: gestion_devolucion.id_menu,
+									                                    fn: ['panel_asignar_gestion.limpiar']
+									                                });*/
+									                            },
+									                            click: function(obj, e){
+									                            	//scanning.work=!scanning.work;
+									                            }
+									                        }
+									                    }
+													],
+													items:[
+														{
+									                        xtype: 'grid',
+									                        id: scanning.id + '-grid-paginas',
+									                        disabled:true,
+									                        store: store_paginas,
+									                        columnLines: true,
+									                        columns:{
+									                            items:[
+									                            	{
+									                            		text: 'N°',
+																	    xtype: 'rownumberer',
+																	    width: 40,
+																	    sortable: false,
+																	    locked: true
+																	},
+									                                {
+									                                    text: 'Descripción',
+									                                    dataIndex: 'file',
+									                                    flex: 1
+									                                },
+									                                {
+									                                    text: 'Lado',
+									                                    dataIndex: 'flag',
+									                                    width: 50
+									                                },
+									                                {
+									                                    text: 'DLT',
+									                                    dataIndex: 'estado',
+									                                    //loocked : true,
+									                                    width: 40,
+									                                    align: 'center',
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: scanning.id_menu,
+									                                            icons:[
+									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setEditLote("+rowIndex+",'D')"}
+
+									                                            ]
+									                                        });
+									                                    }
+									                                }
+									                            ],
+									                            defaults:{
+									                                menuDisabled: true
+									                            }
+									                        },
+									                        multiSelect: true,
+									                        viewConfig: {
+									                            stripeRows: true,
+									                            enableTextSelection: false,
+									                            markDirty: false,
+									                            plugins: {
+				                                                    ptype: 'gridviewdragdrop',
+				                                                    containerScroll: true,
+				                                                    dragGroup: scanning.group1,
+                    												dropGroup: scanning.group1,
+				                                                },
+				                                                listeners: {
+				                                                    drop: function(node, data, dropRec, dropPosition) {
+				                                                        var dropOn = dropRec ? ' ' + dropPosition + ' ' + dropRec.get('name') : ' on empty view';
+				                                                        //Ext.msg('Drag from left to right', 'Dropped ' + data.records[0].get('name') + dropOn);
+				                                                    },
+				                                                    beforedrop: function ( node, data, overModel, dropPosition, dropHandlers ) {
+				                                                    	console.log(node);
+				                                                    	console.log(data);
+				                                                    	console.log(data.records);
+				                                                    	console.log(overModel);
+				                                                    	console.log(dropPosition);
+				                                                    	console.log(dropHandlers);
+				                                                    	//return true;
+				                                                    	scanning.getLoader(true);
+				                                                    	var recordsToSend = [];
+				                                                    	Ext.each(data.records, function (record,i) {
+				                                                    		console.log(record.data.file);
+				                                                    		recordsToSend.push(Ext.apply({file:record.data.file},record.data));
+				                                                    	});
+				                                                    	recordsToSend = Ext.encode(recordsToSend);
+
+				                                                    	Ext.getCmp(scanning.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
+											                            Ext.Ajax.request({
+											                                url:scanning.url+'set_scanner_file_one_to_one/',
+											                                params:{
+											                                	vp_op:'I',
+														                    	vp_shi_codigo:scanning.shi_codigo,
+														                    	vp_id_pag:0,
+														                    	vp_id_det:scanning.id_det,
+														                    	vp_id_lote:scanning.id_lote,
+														                    	path:'C:/twain/',
+														                    	vp_estado:'A',
+											                                    vp_recordsToSend:recordsToSend
+											                                },
+											                                success: function(response, options){
+											                                    Ext.getCmp(scanning.id+'-form').el.unmask();
+											                                    var res = Ext.JSON.decode(response.responseText);
+											                                    scanning.getLoader(false);
+											                                    if (res.error == 'OK'){
+														                            global.Msg({
+														                                msg: res.msn,
+														                                icon: 1,
+														                                buttons: 1,
+														                                fn: function(btn){
+														                                	scanning.getReloadPage();
+														                                	scanning.getScanningFile();
+														                                }
+														                            });
+														                        } else{
+														                            global.Msg({
+														                                msg: res.msn,
+														                                icon: 0,
+														                                buttons: 1,
+														                                fn: function(btn){
+														                                	scanning.getReloadPage();
+														                                    scanning.getScanningFile();
+														                                }
+														                            });
+														                        }
+											                                }
+											                            });
+				                                                        
+				                                                    }
+				                                                }
+                                            
+									                        },
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                
+									                            },
+									                            beforeselect:function(obj, record, index, eOpts ){
+									                            	scanning.setImageFile(record.get('path'),record.get('file'));
+									                            }
+									                        }
+									                    }
+													]
+												}
 											]
 										}
 									]
@@ -906,7 +1255,15 @@
 	                    afterrender: function(obj, e){
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,scanning.id_menu);
-	                        scanning.getImg_tiff('escaneado');
+	                        scanning.setImageFile('/scanning/','escaneado');
+
+	                        
+	                        //TMP
+							/*scanning.shi_codigo=1;
+							scanning.id_det=1;
+							scanning.id_lote=1;
+							scanning.getLiberaPanel();*/
+						
 	                    },
 	                    beforeclose:function(obj,opts){
 	                    	global.state_item_menu(scanning.id_menu, false);
@@ -915,15 +1272,112 @@
 
 				}).show();
 			},
-			getScanning:function(){
-				
+			getReloadPage:function(){
 				Ext.getCmp(scanning.id + '-grid-paginas').getStore().removeAll();
-				Ext.getCmp(scanning.id + '-grid-paginas').getStore().load(
-	                {params: {path:'C:/twain/'},
+				Ext.getCmp(scanning.id + '-grid-paginas').getStore().load({
+                	params:{
+                		vp_shi_codigo:scanning.shi_codigo,
+                    	vp_id_det:scanning.id_det,
+                    	vp_id_lote:scanning.id_lote
+	                },
 	                callback:function(){
 	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
 	                }
 	            });
+			},
+			setRemoveEscaner:function(bool,file){
+				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
+				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
+				global.Msg({
+                    msg: msn,
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+	                        scanning.getLoader(true);
+
+	                        Ext.Ajax.request({
+			                    url: scanning.url+url,
+			                    params:{
+			                    	path:'C:/twain/',
+			                    	file:file
+			                    },
+			                    success: function(response, options){
+			                    	scanning.getScanningFile();
+
+			                        //var res = Ext.JSON.decode(response.responseText);
+			                        //scanning.work=!scanning.work;
+			                        console.log(response);
+			                        /*if (parseInt(res.time) == 0 ){
+			                            scanning.task.stop();
+			                            global.Msg({
+			                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    window.location = '/inicio/index/'
+			                                }
+			                            });
+			                        }*/
+			                    }
+			                });
+						}
+		            }
+                });
+			},
+			getLoader:function(bool){
+				if(bool){
+					Ext.getCmp(scanning.id + '-progressbar').show();
+					Ext.getCmp(scanning.id + '-progressbar').wait({
+			            interval: 200,
+			            //duration: 5000,
+			            increment: 15,
+			            fn:function() {
+			                //btn3.dom.disabled = false;
+			                //Ext.fly('p3text').update('Done');
+
+			            }
+			        });
+				}else{
+					Ext.getCmp(scanning.id + '-progressbar').setTextTpl('Finalizado'); 
+					Ext.getCmp(scanning.id + '-progressbar').hide();
+				}
+			},
+
+			getScanningFile:function(){
+				scanning.getLoader(true);
+				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
+				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
+	                {params: {path:'C:/twain/'},
+	                callback:function(){
+	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+	                	scanning.getLoader(false);
+	                	var count = Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().getCount();
+	                	Ext.getCmp(scanning.id + '-btn-total').setText('Total('+count+')');
+	                }
+		        });
+			},
+			getScanning:function(){
+				if(scanning.work){
+					Ext.getCmp(scanning.id + '-progressbar').wait({
+			            interval: 200,
+			            //duration: 5000,
+			            increment: 15,
+			            fn:function() {
+			                //btn3.dom.disabled = false;
+			                //Ext.fly('p3text').update('Done');
+			            }
+			        });
+
+					Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
+					Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
+		                {params: {path:'C:/twain/'},
+		                callback:function(){
+		                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+		                	Ext.getCmp(scanning.id + '-progressbar').hide();
+		                }
+		            });
+				}
 				return false;
 				if(!scanning.work){
 					if(parseInt(scanning.shi_codigo)==0){ 
@@ -950,6 +1404,7 @@
 	                    	vp_estado:'A'
 	                    },
 	                    success: function(response, options){
+
 	                        //var res = Ext.JSON.decode(response.responseText);
 	                        scanning.work=!scanning.work;
 	                        console.log(response);
@@ -967,6 +1422,35 @@
 	                    }
 	                });
                 }
+			},
+			setLibera:function(){
+				scanning.shi_codigo=0;
+				scanning.id_det=0;
+				scanning.id_lote=0;
+				scanning.getLiberaPanel();
+			},
+			getLiberaPanel:function(){
+				var bool=false;
+				if(parseInt(scanning.shi_codigo)==0){ 
+					bool= true;
+				}
+				if(parseInt(scanning.id_det)==0){
+					bool= true;
+				}
+				if(parseInt(scanning.id_lote)==0){
+					bool= true;
+				}
+
+				//Ext.getCmp(scanning.id+'-panel-paginas').setDisabled(bool);
+				Ext.getCmp(scanning.id + '-grid-paginas').setDisabled(bool);
+				Ext.getCmp(scanning.id+'-btn-reordenar').setDisabled(bool);
+				Ext.getCmp(scanning.id+'-btn-asignar').setDisabled(bool);
+
+				if(!bool){
+					scanning.getReloadPage();
+				}else{
+					Ext.getCmp(scanning.id + '-grid-paginas').getStore().removeAll();
+				}
 			},
 			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
 			    // meta.tdCls = 'cell-icon'; // icon
@@ -1096,23 +1580,26 @@
 				Ext.getCmp(scanning.id+'-cmb-estado').setValue('');
 				Ext.getCmp(scanning.id+'-txt-nombre').focus();
 			},
-			getImg_tiff: function(file){//(rec,recA){
+			setImageFile: function(path,file){//(rec,recA){
 				
 				var panel = Ext.getCmp(scanning.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img id="imagen-scaneo" src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
+                    html: '<img id="imagen-scaneo" src="'+path+file+'" style="width:100%;" >'
                 });
 
                 var image = document.getElementById('imagen-scaneo');
-				var downloadingImage = new Image();
-				downloadingImage.onload = function(){
-				    image.src = this.src;
-				    //scanning.getDropImg();
-	                //scanning.load_file('-panel_texto','imagen-scaneo'); 
-	                panel.doLayout();
-				};
-				downloadingImage.src = '/scanning/'+file+'.jpg';
+                if(image!=null){
+					var downloadingImage = new Image();
+					downloadingImage.onload = function(){
+					    image.src = this.src;
+					    //scanning.getDropImg();
+		                //scanning.load_file('-panel_texto','imagen-scaneo'); 
+		                panel.doLayout();
+					};
+					downloadingImage.src = path+file;
+					panel.doLayout();
+				}
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({
 		            url: gestor_errores.url+'dig_qry_gestor_errores_detalle/',
@@ -1143,7 +1630,7 @@
 		    get_error_sel: function(rec_01){
 		        /*var grid = Ext.getCmp(gestor_err.id+'-grid');
 		        var rec = grid.getSelectionModel().getSelected();
-		        gestor_errores.getImg_tiff(rec_01,rec);*/
+		        gestor_errores.setImageFile(rec_01,rec);*/
 		    },
 		    setLimpiar:function(){
 		        /*var panel = Ext.getCmp(gestor_errores.id+'-panel_img');

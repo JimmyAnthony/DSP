@@ -46,20 +46,103 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function get_load_page($p){
+        $rs = $this->objDatos->get_load_page($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+                $value_['id_pag'] = intval($value['id_pag']);
+                $value_['id_det'] = intval($value['id_det']);
+                $value_['id_lote'] = intval($value['id_lote']);
+                $value_['path'] = utf8_encode(trim($value['path']));
+                $value_['file'] = utf8_encode(trim($value['img']));
+                $value_['imgorigen'] = utf8_encode(trim($value['imgorigen']));
+                $value_['lado'] = utf8_encode(trim($value['lado']));
+                $value_['orden'] = intval($value['orden']);
+                $value_['estado'] = utf8_encode(trim($value['estado']));
+                $value_['include'] ='Y';
+                $array[]=$value_;
+        }
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array), 
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function set_remove_scanner_file_one($p){
+        $array = array();
+        if (file_exists($p['path'].$p['file'])){
+            unlink($p['path'].$p['file']);
+        }
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function set_remove_scanner_file($p){
+        $array = array();
+        try {
+            if (is_dir($p['path'])){
+                  if ($dh = opendir($p['path'])){
+                    
+                    while (false !== ($file = readdir($dh))) {
+                        if(trim($file)!=".." ){
+                            if(trim($file)!="." ){
+                                try {
+                                    if (file_exists($p['path'].$file)) {
+                                        unlink($p['path'].$file);
+                                    }
+                                } catch (Exception $e) {
+                                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                }
+                            }
+                        }
+                    }
+                    closedir($dh);
+                }
+            }
+        } catch (Exception $e) {
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
+
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
     public function get_scanner($p){
         $array = array();
         try {
             if (is_dir($p['path'])){
                   if ($dh = opendir($p['path'])){
-                    if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                    /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
-                    }
+                    }*/
 
                     while (false !== ($file = readdir($dh))) {
                         if(trim($file)!=".." ){
                             if(trim($file)!="." ){
                                 try {
+                                    $value_['id_pag'] = 0;
+                                    $value_['id_det'] = 0;
+                                    $value_['id_lote'] = 0;
+                                    $value_['path'] = $p['path'];
                                     $value_['file'] = utf8_encode(trim($file));
+                                    $value_['imgorigen'] = utf8_encode(trim($file));
+                                    $value_['lado'] = 'A';
+                                    $value_['estado'] = 'A';
+                                    $value_['include'] ='N';
                                     $array[]=$value_;
 
                                 } catch (Exception $e) {
@@ -84,6 +167,41 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function set_scanner_file_one_to_one($p){
+        $records = json_decode(stripslashes($p['vp_recordsToSend'])); //parse the string to PHP objects
+        if(isset($records)){
+            foreach($records as $record){
+                $file=$record->file;
+                if (file_exists($p['path'].$file)){
+                    $path_parts = pathinfo($p['path'].$file);
+                    $ext=$path_parts['extension'];
+                    $p['vp_img']='-page.'.$ext;
+                    $p['vp_imgorigen']=$file;
+                    $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
+
+                    $p['vp_lado']='A';
+                    $rs = $this->objDatos->set_page($p);
+                    $rs = $rs[0];
+                    $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+
+                    if($rs['status']=='OK'){
+                        if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                            mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
+                        }
+                        rename($p['path'].$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                    }
+                }else{
+                    $data = array('success' => true,'error' => 'ER','msn' => 'No existen archivos a procesar');
+                }
+
+            }
+        }else{
+            $data = array('success' => true,'error' => 'ER','msn' => 'No existen archivos a procesar');
+        }
+
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
     public function get_scanner_file($p){
         try {
             if (is_dir($p['path'])){
@@ -101,6 +219,7 @@ class scanningController extends AppController {
                             $path_parts = pathinfo($p['path'].$file);
                             $ext=$path_parts['extension'];
                             $p['vp_img']='-page.'.$ext;
+                            $p['vp_imgorigen']=$file;
                             $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
                             $p['vp_lado']='A';
                             $rs = $this->objDatos->set_page($p);
