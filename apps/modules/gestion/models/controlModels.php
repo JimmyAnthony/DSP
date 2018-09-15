@@ -37,7 +37,43 @@ class controlModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
-
+    public function get_load_page($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function get_list_page_trazos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page_trazos');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_ocr'], 'varchar');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function set_ocr_pages($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_ocr_page');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_cod_trazo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_text'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+         //echo '=>' . parent::getSql().'<br>'; //exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
    public function get_lotizer_detalle($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_lotizer_detalle');
@@ -60,6 +96,26 @@ class controlModels extends Adodb {
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP(USR_ID, 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function set_lotizer($p){
+        $p['vp_id_lote'] =(empty($p['vp_id_lote']))?0:$p['vp_id_lote'];
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_lotizer');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP(utf8_decode(trim($p['vp_nombre'])), 'varchar');
+        parent::SetParameterSP(utf8_decode(trim($p['vp_descripcion'])), 'varchar');
+        parent::SetParameterSP($p['vp_tipdoc'], 'varchar');
+        parent::SetParameterSP($p['vp_lote_fecha'], 'varchar');
+        parent::SetParameterSP($p['vp_ctdad'], 'int');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+
+         //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
     }

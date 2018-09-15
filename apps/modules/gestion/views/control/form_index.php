@@ -6,6 +6,12 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/control/',
 			opcion:'I',
+			id_pag:0,
+			shi_codigo:0,
+			id_det:0,
+			id_lote:0,
+			trabajando:1,
+			recordsToSend:[],
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -60,6 +66,7 @@
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
 		                     });
+		                    Ext.getCmp(control.id + '-grid').expandAll();
 	                    }
 	                }
 	            });
@@ -91,6 +98,35 @@
                     }
                 }
             });
+
+			var store_paginas = Ext.create('Ext.data.Store',{
+                fields: [
+                    {name: 'id_pag', type: 'string'},
+                    {name: 'id_det', type: 'string'},
+                    {name: 'id_lote', type: 'string'},
+                    {name: 'path', type: 'string'},
+                    {name: 'file', type: 'string'},
+                    {name: 'lado', type: 'string'},
+                    {name: 'ocr', type: 'string'},
+                    {name: 'estado', type: 'string'},
+                    {name: 'include', type: 'string'}
+                ],
+                autoLoad:false,
+                proxy:{
+                    type: 'ajax',
+                    url: control.url+'get_load_page/',
+                    reader:{
+                        type: 'json',
+                        rootProperty: 'data'
+                    }
+                },
+                listeners:{
+                    load: function(obj, records, successful, opts){
+                        
+                    }
+                }
+            });
+
 			var store_shipper = Ext.create('Ext.data.Store',{
                 fields: [
                     {name: 'shi_codigo', type: 'string'},
@@ -173,6 +209,7 @@
 					items:[
 						{
 							region:'west',
+							id:control.id+'-panel-west',
 							border:true,
 							width:350,
 							layout:'border',
@@ -184,7 +221,7 @@
 		                            border:false,
 		                            xtype: 'uePanelS',
 		                            logo: 'BE',
-		                            title: 'Busqueda de Lotes a Escanear',
+		                            title: 'Control de Lotes',
 		                            legend: 'Seleccione el Lote Registrado',
 		                            width:350,
 		                            height:210,
@@ -330,8 +367,7 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){	             	
-									                            	var name = Ext.getCmp(control.id+'-txt-control').getValue();
-		                               					            control.getReloadGridcontrol(name);
+		                               					            control.getReloadGridcontrol();
 									                            }
 									                        }
 									                    }
@@ -409,15 +445,9 @@
 				                                    dataIndex: 'tot_pag',
 				                                    width: 50,
 				                                    align: 'center'
-				                                }/*,
-				                                {
-				                                    text: 'Total Pag. Errores',
-				                                    dataIndex: 'tot_errpag',
-				                                    width: 100,
-				                                    align: 'center'
 				                                },
 				                                {
-				                                    text: 'Editar',
+				                                    text: 'Cerrar',
 				                                    dataIndex: 'estado',
 				                                    //loocked : true,
 				                                    width: 50,
@@ -426,19 +456,21 @@
 				                                        //console.log(record);
 				                                        if(parseInt(record.get('nivel')) == 1){
 					                                        metaData.style = "padding: 0px; margin: 0px";
+					                                        var shi_codigo=record.get('shi_codigo');
+					                                        var id_lote=record.get('id_lote');
 					                                        return global.permisos({
 					                                            type: 'link',
 					                                            id_menu: control.id_menu,
 					                                            icons:[
-					                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "control.setEditLote("+rowIndex+",'U')"},
-					                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setEditLote("+rowIndex+",'D')"}
+					                                                {id_serv: 2, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Control.', js: "control.setCerrarEscaneado('X',"+shi_codigo+","+id_lote+")"},
+					                                                {id_serv: 2, img: 'menu-16.png', qtip: 'Reprocesar.', js: "control.setCerrarEscaneado('R',"+shi_codigo+","+id_lote+")"}
 					                                            ]
 					                                        });
 					                                    }else{
 				                                        	return '';
 				                                        }
 				                                    }
-				                                }*/
+				                                }
 									        ],
 					                        /*viewConfig: {
 					                            stripeRows: true,
@@ -463,7 +495,10 @@
 					                                
 					                            },
 												beforeselect:function(obj, record, index, eOpts ){
-													
+													control.shi_codigo=record.get('shi_codigo');
+													control.id_det=record.get('id_det');
+													control.id_lote=record.get('id_lote');
+													control.getReloadPage();
 												}
 					                        }
 					                    }
@@ -580,20 +615,42 @@
 									id: control.id+'-panel_img',
 									border:true,
 									autoScroll:true,
-									padding:'5px 5px 5px 5px'
+									padding:'5px 5px 5px 5px',
+									html: '<div id="imagen-control" style="width:100%; height:"100%;overflow: none;" ><img id="imagen-control-xim" src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
+								},
+								{
+									region:'south',
+									title:'Texto Página - OCR',
+									height:100,
+									border:false,
+									layout:'fit',
+									items:[
+										{
+	                                        xtype: 'textarea',	
+	                                        //fieldLabel: 'Texto',
+	                                        id:control.id+'-txt-texto-pagina',
+	                                        labelWidth:0,
+	                                        //maskRe: /[0-9]/,
+	                                        readOnly:true,
+	                                        labelAlign:'right',
+	                                        width:'100%',
+	                                        anchor:'100%'
+	                                    }
+									]
 								}
 							]
 						},
 						{
-							region:'east',
+							region:'west',
 							border:true,
-							width:'20%',
+							width:300,
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
 							items:[
 								{
 									region:'north',
+									hidden:true,
 									border:true,
 									height:60,
 									padding:'5px 5px 5px 5px',
@@ -637,49 +694,173 @@
 								},
 								{
 									region:'center',
-									layout:'fit',
+									layout:'border',
 									border:true,
 									padding:'5px 5px 5px 5px',
 									items:[
 										{
-					                        xtype: 'grid',
-					                        id: control.id + '-grid-paginas',
-					                        store: store,
-					                        columnLines: true,
-					                        columns:{
-					                            items:[
-					                                {
-					                                    text: 'Páginas',
-					                                    dataIndex: 'lote',
-					                                    width: 50
-					                                },
-					                                {
-					                                    text: 'Descripción',
-					                                    dataIndex: 'descripcion',
-					                                    flex: 1
-					                                },
-					                                {
-					                                    text: 'Flag',
-					                                    dataIndex: 'flag',
-					                                    width: 50
-					                                }
-					                            ],
-					                            defaults:{
-					                                menuDisabled: true
-					                            }
-					                        },
-					                        viewConfig: {
-					                            stripeRows: true,
-					                            enableTextSelection: false,
-					                            markDirty: false
-					                        },
-					                        trackMouseOver: false,
-					                        listeners:{
-					                            afterrender: function(obj){
-					                                
-					                            }
-					                        }
-					                    }
+											region:'center',
+											border:false,
+											layout:'fit',
+											tbar:[
+												{
+									                 xtype : 'progressbar',
+									                 id:control.id + '-progressbar',
+									                 itemId : 'progressbar_searchresults',
+									                 width : '99%',
+									                 /*style: {
+									                     color: 'green'
+									                 },*/
+									                 hidden : true,
+									                 //textEl : 'progressbar_textElement',
+									                 listeners:{
+									                 	update:function(obj){
+													        //You can handle this event at each progress interval if
+													        //needed to perform some other action
+													       	//Ext.fly('p3text').dom.innerHTML += '.';
+													       	var punto='.';
+													       	if(control.trabajando==2){
+													       		punto='..';
+													       	}else if(control.trabajando==3){
+													       		punto='...';
+													       		control.trabajando=0;
+													       	}
+													       	control.trabajando+=1;
+													       	obj.setTextTpl('Trabajando '+punto); 
+													    }
+									                 }
+									             }
+											],
+											items:[
+												{
+							                        xtype: 'grid',
+							                        id: control.id + '-grid-paginas',
+							                        store: store_paginas,
+							                        columnLines: true,
+							                        columns:{
+							                            items:[
+							                                {
+							                            		text: 'N°',
+															    xtype: 'rownumberer',
+															    width: 40,
+															    sortable: false,
+															    locked: true
+															},
+							                                {
+							                                    text: 'Descripción',
+							                                    dataIndex: 'file',
+							                                    flex: 1
+							                                },
+							                                {
+							                                    text: 'OCR',
+							                                    dataIndex: 'ocr',
+							                                    width: 50,
+							                                    align: 'center',
+							                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+							                                        //console.log(record);
+							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        var estado = (record.get('ocr')=='N')?'check-circle-black-16.png':'check-circle-green-16.png';
+							                                        var qtip = (record.get('ocr')=='Y')?'Con OCR':'Sin OCR';
+							                                        return global.permisos({
+							                                            type: 'link',
+							                                            id_menu: control.id_menu,
+							                                            icons:[
+							                                                {id_serv: 2, img: estado, qtip: qtip, js: ""}
+							                                            ]
+							                                        });
+							                                    }
+							                                },
+							                                {
+							                                    text: 'DLT',
+							                                    dataIndex: 'estado',
+							                                    //loocked : true,
+							                                    width: 50,
+							                                    align: 'center',
+							                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+							                                        //console.log(record);
+							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        return global.permisos({
+							                                            type: 'link',
+							                                            id_menu: control.id_menu,
+							                                            icons:[
+							                                                {id_serv: 2, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setRemoveFile(false)"},
+							                                                {id_serv: 2, img: 'if_SVG_LINE.png', qtip: 'Pasar OCR.', js: "control.setRemoveFile(false)"}
+							                                            ]
+							                                        });
+							                                    }
+							                                }
+							                            ],
+							                            defaults:{
+							                                menuDisabled: true
+							                            }
+							                        },
+							                        viewConfig: {
+							                            stripeRows: true,
+							                            enableTextSelection: false,
+							                            markDirty: false
+							                        },
+							                        trackMouseOver: false,
+							                        listeners:{
+							                            afterrender: function(obj){
+							                                
+							                            },
+							                            beforeselect:function(obj, record, index, eOpts ){
+							                            	console.log(record);
+							                            	document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+record.get('path')+record.get('file')+'" width="100%" height="100%"/>'
+							                            }
+							                        }
+							                    }
+											]
+										},
+										{
+											region:'south',
+											id:control.id+'-panel-imagen-trazo',
+											border:false,
+											height:300,
+											bbar:[
+												{
+			                                        xtype: 'textarea',	
+			                                        //fieldLabel: 'Texto',
+			                                        id:control.id+'-txt-texto-trazo',
+			                                        labelWidth:0,
+			                                        //maskRe: /[0-9]/,
+			                                        readOnly:true,
+			                                        labelAlign:'right',
+			                                        width:'100%',
+			                                        anchor:'100%',
+			                                        height:60
+			                                    }
+											],
+											tbar:[
+												{
+							                        xtype:'button',
+							                        id:control.id+'-btn-ocr',
+							                        //disabled:true,
+							                        scale: 'large',
+							                        //iconAlign: 'top',
+							                        //disabled:true,
+							                        width:'99%',
+                                                    anchor:'99%',
+							                        text: 'Procesar todo con OCR',
+							                        icon: '/images/icon/if_SVG_LINE_TECHNOLOGY-01_2897334.png',
+							                        listeners:{
+							                            beforerender: function(obj, opts){
+							                                /*global.permisos({
+							                                    id: 15,
+							                                    id_btn: obj.getId(), 
+							                                    id_menu: gestion_devolucion.id_menu,
+							                                    fn: ['panel_asignar_gestion.limpiar']
+							                                });*/
+							                            },
+							                            click: function(obj, e){
+							                            	//scanning.work=!scanning.work;
+							                            	control.setProcessingOCR();
+							                            }
+							                        }
+							                    }
+											],
+											html: '<img id="imagen-trazo-control" src="" style="width:100%;overflow: scroll;" />'
+										}
 									]
 								}
 							]
@@ -704,7 +885,7 @@
 	                    afterrender: function(obj, e){
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,control.id_menu);
-	                        control.getImg_tiff('escaneado');
+	                        //control.getImg_tiff('escaneado');
 	                    },
 	                    beforeclose:function(obj,opts){
 	                    	global.state_item_menu(control.id_menu, false);
@@ -712,6 +893,279 @@
 					}
 
 				}).show();
+			},
+			getLoader:function(bool){
+				if(bool){
+					Ext.getCmp(control.id + '-progressbar').show();
+					Ext.getCmp(control.id + '-progressbar').wait({
+			            interval: 200,
+			            //duration: 5000,
+			            increment: 15,
+			            fn:function() {
+			                //btn3.dom.disabled = false;
+			                //Ext.fly('p3text').update('Done');
+
+			            }
+			        });
+				}else{
+					Ext.getCmp(control.id + '-progressbar').setTextTpl('Finalizado'); 
+					Ext.getCmp(control.id + '-progressbar').hide();
+				}
+			},
+			setProcessingOCR:function(){
+				global.Msg({
+                    msg: '¿Está seguro de procesar todas las Páginas con OCR?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(control.id+'-panel-west').el.mask('Guardando Formato Plantilla', 'x-mask-loading');
+							control.getLoader(true);
+							try{
+						    	//Procesar OCR
+						    	Ext.Ajax.request({
+				                    url: control.url + 'set_list_page_trazos/',
+				                    params:{
+				                    	vp_id_pag:0,
+				                		vp_shi_codigo:control.shi_codigo,
+				                    	vp_id_det:control.id_det,
+				                    	vp_id_lote:control.id_lote,
+				                    	vp_ocr:'N'
+				                    },
+				                    success: function(response, options){
+				                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+				                        var res = Ext.JSON.decode(response.responseText);
+				                        if (res.error == 'OK'){
+				                        	//console.log(res.data);
+				                        	control.recordsToSend = [];
+				                        	var countPage=Ext.getCmp(control.id + '-grid-paginas').getStore().getCount();
+				                        	var countGlobal =0;
+
+				                        	Ext.getCmp(control.id + '-grid-paginas').getStore().each(function(record, idx) {
+											    if(record.get('ocr')=='N'){
+											    	//console.log(record.get('path')+record.get('file'));
+											    	//Ext.getCmp(control.id+'-panel-west').el.unmask();
+											    	var image = document.getElementById('imagen-control-xim'); 
+													var downloadingImage = new Image();
+													var data=res.data;
+													var id_pag= record.get('id_pag');
+													//var cod_trazo= record.get('cod_trazo');
+													//var id_det =record.get('id_det');
+													//var id_lote =record.get('id_lote');
+
+													downloadingImage.onload = function(){
+														image.src = this.src;
+														try{
+															OCRAD(image,{
+																numeric: false
+															},
+															function(text){
+																text = text.replace(/(\r\n\t|\n|\r\t)/gm,"");
+																text = text.replace('"',"");
+																text = text.replace("'","");
+																control.recordsToSend.push(Ext.apply({id_pag:id_pag,cod_trazo:0,id_det:control.id_det,id_lote:control.id_lote,text:text},id_pag));
+
+																Ext.getCmp(control.id + '-grid-paginas').getSelectionModel().select(idx, true);
+																//console.log(text);
+																Ext.getCmp(control.id+'-txt-texto-pagina').setValue(text);
+																var countPage=0;
+																var countPageCurrent=0;
+																for(var x=0;x<data.length;x++){
+																	if(parseInt(id_pag) == parseInt(data[x].id_pag)){
+																		countPage+=1;
+																	}
+																}
+									                        	for(var i=0;i<data.length;i++){
+									                        		if(parseInt(id_pag) == parseInt(data[i].id_pag)){
+									                        			countPageCurrent+=1;
+										                        		//console.log(data[i]);
+										                        		//OCR.cod_trazo = parseInt(res.cod_trazo);
+														                var image2 = document.getElementById('imagen-trazo-control');
+																		var downloadingImage2 = new Image();
+																		var n= (data[i].tipo=='S')?false:true;
+																		var cod_trazo = data[i].cod_trazo;
+																		var id_det = data[i].id_det;
+																		var id_lote = data[i].id_lote;
+																		downloadingImage2.onload = function(){
+																		    image2.src = this.src;
+																		    Ext.getCmp(control.id+'-panel-imagen-trazo').doLayout();
+																		    //OCR.getSizeImg('/scanning/escaneado.jpg','S',{left:record.data.x,top:record.data.y,width:record.data.w,height:record.data.h},OCR.getResizeOrigin);
+																		    //OCR.getTextoImage();
+																		    try{
+																				OCRAD(image2,{
+																					numeric: n
+																				},
+																				function(text2){
+																					text2 = text2.replace(/(\r\n\t|\n|\r\t)/gm,"");
+																					text2 = text2.replace('"',"");
+																					text2 = text2.replace("'","");
+																					//console.log(text2);
+																					control.recordsToSend.push(Ext.apply({id_pag:id_pag,cod_trazo:cod_trazo,id_det:id_det,id_lote:id_lote,text:text2},id_pag));
+																					Ext.getCmp(control.id+'-txt-texto-trazo').setValue(text2);
+																					if(countPage==countPageCurrent){
+																						//record.set('ocr', 'Y');
+																					    //page = record.get('id_pag');
+																					    //record.commit();
+																					    countGlobal+=1;
+																					    if(countPage==countGlobal){
+																					    	console.log(control.recordsToSend);
+																					    	var recordsToSend = Ext.encode(control.recordsToSend);
+																					    	Ext.Ajax.request({
+																			                    url: control.url + 'set_ocr_pages/',
+																			                    params:{
+																			                    	vp_recordsToSend:recordsToSend
+																			                    },
+																			                    success: function(response, options){
+																			                    	Ext.getCmp(control.id+'-panel-west').el.unmask();
+																			                    	control.getLoader(false);
+																			                        var res = Ext.JSON.decode(response.responseText);
+																			                        if (res.error == 'OK'){
+																			                            global.Msg({
+																			                                msg: res.msn,
+																			                                icon: 1,
+																			                                buttons: 1,
+																			                                fn: function(btn){
+																			                                	record.set('ocr', 'Y');
+																											    //page = record.get('id_pag');
+																											    record.commit();
+																			                                	control.getReloadPage();
+																			                                }
+																			                            });
+																			                        } else{
+																			                            global.Msg({
+																			                                msg: res.msn,
+																			                                icon: 0,
+																			                                buttons: 1,
+																			                                fn: function(btn){
+																			                                	record.set('ocr', 'N');
+																											    //page = record.get('id_pag');
+																											    record.commit();
+																			                                    control.getReloadPage();
+																			                                }
+																			                            });
+																			                        }
+																			                    }
+																			                });
+																					    }
+																				    }
+																				});
+																			}catch(err) {
+																			    console.log(err.message);
+																			}
+																		};
+																		downloadingImage2.src = /tmp_trazos/ + data[i].id_pag+'-'+data[i].cod_trazo+'-trazo.'+data[i].extension;
+																	}
+									                        	};
+															});
+														}catch(err) {
+														    console.log(err.message);
+														}
+							                        };
+							                        downloadingImage.src = record.get('path')+record.get('file');
+											    }
+											});
+				                        }else{
+				                            global.Msg({
+				                                msg: res.msn,
+				                                icon: 0,
+				                                buttons: 1,
+				                                fn: function(btn){
+				                                    //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+				                                    Ext.getCmp(control.id+'-panel-west').el.unmask();
+													control.getLoader(false);
+				                                }
+				                            });
+				                        }
+				                    }
+				                });
+							}catch(err){
+								global.Msg({
+	                                msg: err.message,
+	                                icon: 0,
+	                                buttons: 1,
+	                                fn: function(btn){
+	                                    Ext.getCmp(control.id+'-panel-west').el.unmask();
+										control.getLoader(false);
+	                                }
+	                            });
+							}
+						}
+					}
+				});
+			},
+			setCerrarEscaneado:function(vp_op,shi_codigo,id_lote){
+				if(parseInt(shi_codigo)==0){ 
+					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(id_lote)==0){
+					global.Msg({msg:"Seleccione un Lote.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				global.Msg({
+                    msg: (vp_op=='X')?'¿Seguro de cerrar Lote?':'Seguro de Enviar a Reproceso?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(control.id+'-form').el.mask('Cerrando Lote…', 'x-mask-loading');
+	                        control.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:control.url+'set_lotizer/',
+			                    params:{
+			                    	vp_op:vp_op,
+			                    	vp_shi_codigo:shi_codigo,
+			                    	vp_id_lote:id_lote
+			                    },
+			                    success: function(response, options){
+			                        Ext.getCmp(control.id+'-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        control.getLoader(false);
+			                        //scanning.setLibera();
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	control.getReloadGridcontrol();
+			                                	control.getReloadPage();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	control.getReloadGridcontrol();
+			                                	control.getReloadPage();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+
+			},
+			getReloadPage:function(){
+				control.id_pag=0;
+				Ext.getCmp(control.id + '-grid-paginas').getStore().removeAll();
+				Ext.getCmp(control.id + '-grid-paginas').getStore().load({
+                	params:{
+                		vp_id_pag:0,
+                		vp_shi_codigo:control.shi_codigo,
+                    	vp_id_det:control.id_det,
+                    	vp_id_lote:control.id_lote
+	                },
+	                callback:function(){
+	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+	                	//control.setChangeRow();
+	                }
+	            });
 			},
 			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
 			    // meta.tdCls = 'cell-icon'; // icon
@@ -771,7 +1225,7 @@
 		                                icon: 1,
 		                                buttons: 1,
 		                                fn: function(btn){
-		                                    control.getReloadGridcontrol('');
+		                                    control.getReloadGridcontrol();
 		                                    control.setNuevo();
 		                                }
 		                            });
@@ -781,7 +1235,7 @@
 		                                icon: 0,
 		                                buttons: 1,
 		                                fn: function(btn){
-		                                    control.getReloadGridcontrol('');
+		                                    control.getReloadGridcontrol();
 		                                    control.setNuevo();
 		                                }
 		                            });
@@ -800,7 +1254,7 @@
 	                }
 	            });
 			},
-			getReloadGridcontrol:function(name){
+			getReloadGridcontrol:function(){
 				//control.set_control_clear();
 				//Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
@@ -826,7 +1280,7 @@
 		            return false;
 		        }
 				Ext.getCmp(control.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'CO',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(control.id+'-form').el.unmask();
 	                }
@@ -846,7 +1300,7 @@
 				var panel = Ext.getCmp(control.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
+                    html: '<img id="imagen-control-xim" src="/scanning/'+file+'.jpg" style="width:100%; height:"100%;" >'
                 });
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
 		        Ext.Ajax.request({

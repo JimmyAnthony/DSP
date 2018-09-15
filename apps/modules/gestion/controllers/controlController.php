@@ -128,6 +128,7 @@ class controlController extends AppController {
             if ($value['nivel'] == $_nivel){
                 $json.=$coma."{";
                 $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.=',"id_det":"'.$value['id_det'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 //$json.=',"read":true';
@@ -164,6 +165,7 @@ class controlController extends AppController {
             if ($value['nivel'] != $_nivel && $value['id_lote'] == $_hijo){
                 $json.=$coma."{";
                 $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.=',"id_det":"'.$value['id_det'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 $json.=',"iconCls":"task"';
@@ -192,6 +194,177 @@ class controlController extends AppController {
             }
         }
         return $json;
+    }
+    public function get_load_page($p){
+        $rs = $this->objDatos->get_load_page($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+                $value_['id_pag'] = intval($value['id_pag']);
+                $value_['id_det'] = intval($value['id_det']);
+                $value_['id_lote'] = intval($value['id_lote']);
+                $value_['path'] = utf8_encode(trim($value['path']));
+                $value_['file'] = utf8_encode(trim($value['img']));
+                $value_['imgorigen'] = utf8_encode(trim($value['imgorigen']));
+                $value_['lado'] = utf8_encode(trim($value['lado']));
+                $value_['ocr'] = utf8_encode(trim($value['ocr']));
+                $value_['orden'] = intval($value['orden']);
+                $value_['estado'] = utf8_encode(trim($value['estado']));
+                $value_['include'] ='Y';
+                $array[]=$value_;
+        }
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array), 
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function set_list_page_trazos($p){
+        $rs = $this->objDatos->get_list_page_trazos($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+                $p['vp_id_pag'] = intval($value['id_pag']);
+                $p['vp_path'] = utf8_encode(trim($value['path']));
+                $p['vp_img'] = utf8_encode(trim($value['img']));
+                $p['vp_cod_trazo'] = intval($value['cod_trazo']);
+                $p['vp_x'] = floatval(trim($value['x']));
+                $p['vp_y'] = floatval(trim($value['y']));
+                $p['vp_w'] = floatval(trim($value['w']));
+                $p['vp_h'] = floatval(trim($value['h']));
+
+                $p['vp_wo'] = floatval(trim($value['wo']));
+                $p['vp_ho'] = floatval(trim($value['wo']));
+
+                $path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
+                $p['extension']=$path_parts['extension'];
+                $status=$this->setDropImg($p);
+
+                $value_['id_det'] =intval($value['id_det']);
+                $value_['id_lote'] =intval($value['id_lote']);
+                $value_['id_pag'] =intval($value['id_pag']);
+                $value_['cod_trazo'] =intval($value['cod_trazo']);
+                $value_['extension'] =$p['extension'];
+                $value_['tipo'] =utf8_encode(trim($value['tipo']));
+                if($status){
+                    $array[]=$value_;
+                }
+                $data = array('success' => true,'error' => $status?'OK':'ER','msn' => $status=='OK'?'Procesado correctamente':'Ocurrio un error al generar el trazo','data'=>$array);
+        }
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function setDropImg($p){
+        $bool=true;
+        //$path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
+        $ext=$p['extension'];
+        $src_original = PATH.'public_html'.$p['vp_path'].$p['vp_img'];
+        $src_guardar  = PATH.'public_html/tmp_trazos/'.$p['vp_id_pag'].'-'.$p['vp_cod_trazo'].'-trazo.'.$ext;
+        try {
+            $destImage = imagecreatetruecolor($p['vp_w'], $p['vp_h']);
+            #$sourceImage = imagecreatefromjpeg($src_original);
+
+            switch($ext){
+                case 'bmp': $sourceImage = imagecreatefromwbmp($src_original); break;
+                case 'gif': $sourceImage = imagecreatefromgif($src_original); break;
+                case 'jpg': $sourceImage = imagecreatefromjpeg($src_original); break;
+                case 'png': $sourceImage = imagecreatefrompng($src_original); break;
+                default : return "Unsupported picture type!";
+            }
+            if($ext == "gif" or $ext == "png"){
+                imagecolortransparent($destImage, imagecolorallocatealpha($destImage, 0, 0, 0, 127));
+                imagealphablending($destImage, false);
+                imagesavealpha($destImage, true);
+            }
+
+            imagecopyresampled($destImage, $sourceImage, 0, 0, number_format($p['vp_x'], 4, '.', ''), number_format($p['vp_y'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', '')); 
+
+            switch($ext){
+                case 'bmp': imagewbmp($destImage, $src_guardar); break;
+                case 'gif': imagegif($destImage, $src_guardar); break;
+                case 'jpg': imagejpeg($destImage, $src_guardar); break;
+                case 'png': imagepng($destImage, $src_guardar); break;
+            }
+        } catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            $bool=false;
+        }
+        return $bool;
+    }
+    public function strip_carriage_returns($string){
+        $badchar=array(
+            // control characters
+            chr(0), chr(1), chr(2), chr(3), chr(4), chr(5), chr(6), chr(7), chr(8), chr(9), chr(10),
+            chr(11), chr(12), chr(13), chr(14), chr(15), chr(16), chr(17), chr(18), chr(19), chr(20),
+            chr(21), chr(22), chr(23), chr(24), chr(25), chr(26), chr(27), chr(28), chr(29), chr(30),
+            chr(31),
+            // non-printing characters
+            chr(127)
+        );
+        $string = str_replace($badchar, '', $string);
+        $string = str_replace(array("\\"), 't', $string);
+        return str_replace(array("\n\r", "\n", "\r","'","\\"), '', $string);
+    }
+    public function set_ocr_pages($p){
+        //header("Content-Type: text/html; charset=UTF-8");
+        $p['vp_recordsToSend']=$this->strip_carriage_returns(utf8_decode($p['vp_recordsToSend']));
+        $records = json_decode(stripslashes($p['vp_recordsToSend'])); //parse the string to PHP objects
+        //var_export($p['vp_recordsToSend']);
+        if(isset($records)){
+            $records1=$records;
+            foreach($records1 as $record1){
+                if((int)$record1->cod_trazo==0){
+                    
+                    $pp['vp_text']=$this->strip_carriage_returns(utf8_decode($record->text));
+                    $pp['vp_op']='X';
+                    $pp['vp_id_pag']=$record1->id_pag;
+                    $pp['vp_cod_trazo']='0';
+                    $pp['vp_id_det']=$record1->id_det;
+                    $pp['vp_id_lote']=$record1->id_lote;
+
+                    $rs = $this->objDatos->set_ocr_pages($pp);
+                    $rs = $rs[0];
+                    $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+                }
+            }
+
+            foreach($records as $record){
+                if((int)$record->cod_trazo!=0){
+                    $px['vp_op']='I';
+                    $px['vp_id_pag']=$record->id_pag;
+                    $px['vp_cod_trazo']=$record->cod_trazo;
+                    $px['vp_id_det']=$record->id_det;
+                    $px['vp_id_lote']=$record->id_lote;
+                    $px['vp_text']=$this->strip_carriage_returns(utf8_decode($record->text));
+
+                    $rs = $this->objDatos->set_ocr_pages($px);
+                    $rs = $rs[0];
+                    $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+                }
+            }
+
+        }else{
+            $data = array('success' => true,'error' => 'ER','msn' => 'No existen textos a procesar');
+        }
+
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function set_lotizer($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->set_lotizer($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
     }
     public function getImg_tiff($img){
         /*$output = array();$file2 = '0001_'.rand(0,9999999);

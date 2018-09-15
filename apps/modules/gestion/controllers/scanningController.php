@@ -246,7 +246,9 @@ class scanningController extends AppController {
                     $p['vp_img']='-page.'.$ext;
                     $p['vp_imgorigen']=$file;
                     $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
-
+                    list($width, $height) = getimagesize(PATH.'public_html/tmp/'.$file);
+                    $p['vp_w']=$width;
+                    $p['vp_h']=$height;
                     $p['vp_lado']='A';
                     $rs = $this->objDatos->set_page($p);
                     $rs = $rs[0];
@@ -286,6 +288,9 @@ class scanningController extends AppController {
                             $p['vp_imgorigen']=$file;
                             $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
                             $p['vp_lado']='A';
+                            list($width, $height) = getimagesize(PATH.'public_html/tmp/'.$file);
+                            $p['vp_w']=$width;
+                            $p['vp_h']=$height;
                             $rs = $this->objDatos->set_page($p);
                             $rs = $rs[0];
                             $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));

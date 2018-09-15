@@ -10,6 +10,7 @@
 			cod_plantilla:0,
 			cropper:'',
 			imagen_trazo:'',
+			cropperData:{},
 			parametros:{
 				vp_op:'I',
 		        vp_cod_plantilla:0,
@@ -1040,7 +1041,7 @@
 		                                                    anchor:'100%'
 		                                                }
 		                                            ]
-		                                        },
+		                                        }
 											]
 										},
 										{
@@ -1466,8 +1467,13 @@
 			    newImg.onload = function () {
 			    	var imgWidth = newImg.width || newImg.naturalWidth;
 					var imgHeight = newImg.height || newImg.naturalHeight;
+					console.log(imgWidth)
+					console.log(imgHeight)
 			        if (callback != undefined)callback(op,{width: imgWidth, height: imgHeight},json)
 			    }
+				console.log('xim');
+				console.log(imgSrc);
+				console.log('end');
 			    newImg.src = imgSrc;
 			},
 			getReloadGridOCR:function(){
@@ -1573,6 +1579,8 @@
 			        },
 
 			        crop: function (event) {
+			          console.log(OCR.cropper.getCropBoxData());
+			          OCR.cropperData=OCR.cropper.getCropBoxData()
 			          //data.textContent = JSON.stringify(cropper.getData());
 			          //cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
 			          //Ext.getCmp(OCR.id+'-txt-texto-trazo').setValue(JSON.stringify(OCR.cropper.getCropBoxData()));
@@ -1630,7 +1638,7 @@
 						//document.getElementById('transcription').innerText = text;
 						Ext.getCmp(OCR.id+panel).el.unmask();
 						Ext.getCmp(OCR.id+'-txt-texto-plantilla').setValue(text);
-						OCR.getDropImg();
+						//OCR.getDropImg();
 					});
 				}else{
 					setTimeout(function() { OCR.load_file(panel,id); }, 1000);

@@ -189,7 +189,7 @@ class OCRController extends AppController {
         $src_original = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext;
         $src_guardar  = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_trazo'].'-trazo.'.$ext;
         try {
-            $destImage = imagecreatetruecolor($p['vp_w'], $p['vp_h']);
+            $destImage = imagecreatetruecolor(number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''));
             #$sourceImage = imagecreatefromjpeg($src_original);
 
             switch($ext){

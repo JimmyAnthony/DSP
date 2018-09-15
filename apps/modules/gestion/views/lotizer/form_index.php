@@ -387,8 +387,7 @@
 									                                });*/
 									                            },
 									                            click: function(obj, e){	             	
-									                            	var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue();
-		                               					            lotizer.getReloadGridlotizer(name);
+		                               					            lotizer.getReloadGridlotizer();
 									                            }
 									                        }
 									                    }
@@ -715,11 +714,14 @@
 						                                        if(parseInt(record.get('nivel')) == 1){
 							                                        metaData.style = "padding: 0px; margin: 0px";
 							                                        var nombrePdf = (record.get('nombre'));
+							                                        var shi_codigo=record.get('shi_codigo');
+				                                        			var id_lote=record.get('id_lote');
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: lotizer.id_menu,
 							                                            icons:[
 							                                                {id_serv: 1, img: 'ico_editar.gif', qtip: 'Click para Editar Lote.', js: "lotizer.setEditLote("+rowIndex+",'U')"},
+							                                                {id_serv: 1, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Lote.', js: "lotizer.setCerrarEscaneado('L',"+shi_codigo+","+id_lote+")"},
 							                                                {id_serv: 1, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "lotizer.setEditLote("+rowIndex+",'D')"},
 							                                                {id_serv: 1, img: 'barras.png', qtip: 'Click Código de Barras.', js: "lotizer.getFormMant('"+nombrePdf+"')"}
 
@@ -805,6 +807,62 @@
 					}
 
 				}).show();
+			},
+			setCerrarEscaneado:function(vp_op,shi_codigo,id_lote){
+				if(parseInt(shi_codigo)==0){ 
+					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(id_lote)==0){
+					global.Msg({msg:"Seleccione un Lote.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				global.Msg({
+                    msg: '¿Seguro de cerrar Lote?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(lotizer.id+'-tab').el.mask('Cerrando Lote…', 'x-mask-loading');
+	                        //lotizer.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:lotizer.url+'set_lotizer/',
+			                    params:{
+			                    	vp_op:vp_op,
+			                    	vp_shi_codigo:shi_codigo, 
+			                    	vp_id_lote:id_lote
+			                    },
+			                    success: function(response, options){
+			                        Ext.getCmp(lotizer.id+'-tab').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        //control.getLoader(false);
+			                        //scanning.setLibera();
+			                        if (parseInt(res.error) == 1){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	lotizer.getReloadGridlotizer();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	lotizer.getReloadGridlotizer();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+
 			},
 			getImagen:function(param){
 				/*win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/lotizer/'+param}});*/
@@ -912,7 +970,7 @@
 		                                buttons: 1,
 		                                fn: function(btn){
 		                                    if(parseInt(res.error)==1){
-		                                    	lotizer.getReloadGridlotizer('');
+		                                    	lotizer.getReloadGridlotizer();
 		                                    	lotizer.set_lotizer_clear();
 		                                    }
 		                                }
@@ -932,7 +990,7 @@
 	                }
 	            });
 			},
-			getReloadGridlotizer:function(name){
+			getReloadGridlotizer:function(){
 				lotizer.set_lotizer_clear();
 				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(lotizer.id+'-cbx-cliente').getValue();
@@ -965,12 +1023,12 @@
 	            });
 			},
 			getReloadGridlotizer2:function(id_lote){
-				Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				Ext.getCmp(lotizer.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 				//id:lotizer.id+'-form'
 				Ext.getCmp(lotizer.id + '-grid-lotizer').getStore().load(
 	                {params: {vp_id_lote:id_lote},
 	                callback:function(){
-	                	Ext.getCmp(lotizer.id+'-form').el.unmask();
+	                	Ext.getCmp(lotizer.id+'-tab').el.unmask();
 	                }
 	            });
 			},

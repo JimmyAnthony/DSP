@@ -731,7 +731,7 @@
 		        	case 'RE':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color_red','databox_interno_color','databox_interno_color']]);
 		        	break;
-		        	case 'FI':
+		        	case 'DI':
 		        		Ext.getCmp(tracking.id+'-check-status').getStore().loadData([['databox_interno_color_green','databox_interno_color_green','databox_interno_color_green','databox_interno_color','databox_interno_color_green','databox_interno_color']]);
 		        	break;
 		        	case 'DE':
