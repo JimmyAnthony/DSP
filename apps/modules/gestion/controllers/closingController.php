@@ -77,7 +77,7 @@ class closingController extends AppController {
         header('Content-type: application/json');
         $this->rs_ = $this->objDatos->get_list_lotizer($p);
         if(!empty($this->rs_)){
-            return '{"text": ".","children":['.$this->get_recursivo(0,'',true).']}';
+            return '{"text": ".","children":['.$this->get_recursivo(1,'',true).']}';
             
         }else{
             return json_encode(
@@ -105,9 +105,55 @@ class closingController extends AppController {
         $coma = '';
         //var_export($this->rs_);
         foreach ($this->rs_ as $key => $value){
-            if($bool)$_hijo=$value['hijo'];
+            //if($bool)$_hijo=$value['hijo'];
+            //echo $key.'-';
+            
+            if($value['nivel'] == $_nivel && (int)$value['padre'] == (int)$value['hijo']){
+                $json.=$coma."{";
+                $json.='"hijo":"'.$value['hijo'].'"';
+                $json.=',"padre":"'.$value['padre'].'"';
+                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
+                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                //$json.=',"read":true';
+                //$json.=',"expanded":true';
+                $json.=',"iconCls":"task"';
+                $json.=',"lot_estado":"'.$value['lot_estado'].'"';
+                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
+                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
+                $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
+                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
+                $json.=',"path":"'.utf8_encode(trim($value['path'])).'"';
+                $json.=',"img":"'.utf8_encode(trim($value['img'])).'"';
+                $json.=',"fecha":"'.$value['fecha'].'"';
+                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
+                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
+                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
+                $json.=',"usr_update":"'.$value['usr_update'].'"';
+                $json.=',"id_user":"'.$value['id_user'].'"';
+                $json.=',"estado":"'.$value['estado'].'"';
+                $json.=',"nivel":"'.$value['nivel'].'"';
+                //unset($this->rs_[$key]);
+                $js = $this->get_recursivo_hijos($value['nivel'],$value['hijo'],false);
+                if(!empty($js)){
+                    $json.=',"children":['.trim($js).']';
+                }else{
+                    $json.=',"leaf":"true"';
+                }
+                $json.="}";
+                $coma = ",";
+            }
+        }
+        return $json;
+    }
 
-            if($value['nivel'] > $_nivel && (int)$value['padre'] == (int)$_hijo){
+    public function get_recursivo_hijos($_nivel,$_hijo,$bool){
+        $coma = '';
+        //var_export($this->rs_);
+        foreach ($this->rs_ as $key => $value){
+            //if($bool)$_hijo=$value['hijo'];
+            //echo $key.'-';
+            
+            if($value['nivel'] != $_nivel && (int)$value['padre'] == (int)$_hijo){
                 $json.=$coma."{";
                 $json.='"hijo":"'.$value['hijo'].'"';
                 $json.=',"padre":"'.$value['padre'].'"';
@@ -132,7 +178,7 @@ class closingController extends AppController {
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
                 unset($this->rs_[$key]);
-                $js = $this->get_recursivo($value['nivel'],$value['hijo'],false);
+                $js = $this->get_recursivo_hijos($value['nivel'],$value['hijo'],false);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{

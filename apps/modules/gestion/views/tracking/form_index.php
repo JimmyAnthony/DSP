@@ -9,6 +9,7 @@
 			id_lote:0,
 			shi_codigo:0,
 			fac_cliente:0,
+			lote:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -17,6 +18,7 @@
 				    fields: [
 				        {name: 'hijo', type: 'string'},
 				        {name: 'padre', type: 'string'},
+				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
@@ -70,6 +72,31 @@
 	                    }
 	                }
 	            });
+
+				var store_history = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'id_estado', type: 'string'},
+	                    {name: 'id_lote', type: 'string'},
+	                    {name: 'shi_codigo', type: 'string'},
+	                    {name: 'lot_estado', type: 'string'},                    
+	                    {name: 'usr_nombre', type: 'string'},
+	                    {name: 'fecact', type: 'string'}
+	                ],
+	                autoLoad:true,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: tracking.url+'get_list_history/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
 				
 				var store_shipper = Ext.create('Ext.data.Store',{
 	                fields: [
@@ -117,6 +144,78 @@
 	                    }
 	                }
 	            });
+
+	            var store_plantillas = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'cod_plantilla', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'nombre', type: 'string'},
+	                    {name: 'cod_formato', type: 'string'},
+	                    {name: 'tot_trazos', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
+	                    {name: 'pathorigen', type: 'string'},
+	                    {name: 'imgorigen', type: 'string'},
+	                    {name: 'texto', type: 'string'},
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'usuario', type: 'string'},
+	                    {name: 'width', type: 'string'},
+	                    {name: 'height', type: 'string'},
+	                    {name: 'width_formato', type: 'string'},
+	                    {name: 'height_formato', type: 'string'},
+	                    {name: 'formato', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: tracking.url+'get_ocr_plantillas/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+
+				var store_trazos = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'cod_trazo', type: 'string'},
+				        {name: 'cod_plantilla', type: 'string'},
+				        {name: 'nombre', type: 'string'},
+				        {name: 'tipo', type: 'string'},
+	                    {name: 'x', type: 'string'},
+	                    {name: 'y', type: 'string'},
+	                    {name: 'w', type: 'string'},
+	                    {name: 'h', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
+	                    {name: 'texto', type: 'string'},
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'usuario', type: 'string'},
+	                    {name: 'fecha', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: tracking.url+'get_ocr_trazos/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
+
 				var myData = [
 				    ['databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']
 				];
@@ -161,7 +260,20 @@
 			        data: myDataLote,
 			        fields: ['code', 'name']
 			    });
-
+				var myDataSearch = [
+					['L','N° Lote'],
+					['N','Nombre Lote'],
+				    ['A','Nombre Archivo'],
+				    ['G','Nombre Archivo Generado'],
+				    ['O','Full Text OCR'],
+				    ['T','Texto en Trazo OCR']
+				];
+				var store_search = Ext.create('Ext.data.ArrayStore', {
+			        storeId: 'search',
+			        autoLoad: true,
+			        data: myDataSearch,
+			        fields: ['code', 'name']
+			    });
 				var panel = Ext.create('Ext.form.Panel',{
 					id:tracking.id+'-form',
 					bodyStyle: 'background: transparent',
@@ -230,7 +342,7 @@
 		                            logo: 'CL',
 		                            title: 'Clientes y Contratos',
 		                            legend: 'Seleccione Clientes Registrados',
-		                            width:600,
+		                            width:550,
 		                            //height:90,
 		                            items:[
 		                                {
@@ -316,7 +428,7 @@
 		                            logo: 'DC',
 		                            title: 'Busqueda de Documentos',
 		                            legend: 'Búsqueda de Lotes registrados',
-		                            width:1000,
+		                            width:1100,
 		                            height:90,
 		                            items:[
 		                                {
@@ -327,34 +439,125 @@
 		                                    layout:'column',
 
 		                                    items: [
-		                                    	{
-		                                            width:100,border:false,
+		                                        {
+		                                            width:180,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
 		                                                {
-		                                                    xtype: 'textfield',	
-		                                                    fieldLabel: 'N° Lote',
-		                                                    id:tracking.id+'-txt-lote',
-		                                                    labelWidth:50,
-		                                                    maskRe: /[0-9]/,
-		                                                    //readOnly:true,
+		                                                    xtype:'combo',
+		                                                    fieldLabel: 'Por',
+		                                                    id:tracking.id+'-filter-por',
+		                                                    store: store_search,
+		                                                    queryMode: 'local',
+		                                                    triggerAction: 'all',
+		                                                    valueField: 'code',
+		                                                    displayField: 'name',
+		                                                    emptyText: '[Seleccione]',
 		                                                    labelAlign:'right',
+		                                                    //allowBlank: false,
+		                                                    labelWidth: 40,
 		                                                    width:'100%',
-		                                                    anchor:'100%'
+		                                                    anchor:'100%',
+		                                                    //readOnly: true,
+		                                                    listeners:{
+		                                                        afterrender:function(obj, e){
+		                                                            Ext.getCmp(tracking.id+'-filter-por').setValue('L');
+		                                                        },
+		                                                        select:function(obj, records, eOpts){
+		                                                			switch(obj.getValue()){
+		                                                				case 'T': 
+		                                                					Ext.getCmp(tracking.id+'-panel-plantillas').setVisible(true);
+		                                                					Ext.getCmp(tracking.id+'-panel-trazos').setVisible(true);
+		                                                				break;
+		                                                				default: 
+		                                                					Ext.getCmp(tracking.id+'-panel-plantillas').setVisible(false);
+		                                                					Ext.getCmp(tracking.id+'-panel-trazos').setVisible(false);
+		                                                				break;
+		                                                			}
+		                                                        }
+		                                                    }
 		                                                }
 		                                            ]
 		                                        },
 		                                        {
-		                                            width:300,border:false,
+		                                            width:150,border:false,
+		                                            id:tracking.id+'-panel-plantillas',
+		                                            hidden:true,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype:'combo',
+		                                                    fieldLabel: 'Plantillas',
+		                                                    id:tracking.id+'-filter-plantillas',
+		                                                    store: store_plantillas,
+		                                                    queryMode: 'local',
+		                                                    triggerAction: 'all',
+		                                                    valueField: 'code',
+		                                                    displayField: 'name',
+		                                                    emptyText: '[Seleccione]',
+		                                                    labelAlign:'right',
+		                                                    //allowBlank: false,
+		                                                    labelWidth: 50,
+		                                                    width:'100%',
+		                                                    anchor:'100%',
+		                                                    //readOnly: true,
+		                                                    listeners:{
+		                                                        afterrender:function(obj, e){
+		                                                            //Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('N');
+		                                                        },
+		                                                        select:function(obj, records, eOpts){
+		                                                			
+		                                                        }
+		                                                    }
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                            width:150,border:false,
+		                                            id:tracking.id+'-panel-trazos',
+		                                            hidden:true,
+		                                            padding:'0px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+		                                            items:[
+		                                                {
+		                                                    xtype:'combo',
+		                                                    fieldLabel: 'Trazos',
+		                                                    id:tracking.id+'-filter-trazos',
+		                                                    store: store_trazos,
+		                                                    queryMode: 'local',
+		                                                    triggerAction: 'all',
+		                                                    valueField: 'code',
+		                                                    displayField: 'name',
+		                                                    emptyText: '[Seleccione]',
+		                                                    labelAlign:'right',
+		                                                    //allowBlank: false,
+		                                                    labelWidth: 40,
+		                                                    width:'100%',
+		                                                    anchor:'100%',
+		                                                    //readOnly: true,
+		                                                    listeners:{
+		                                                        afterrender:function(obj, e){
+		                                                            //Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('N');
+		                                                        },
+		                                                        select:function(obj, records, eOpts){
+		                                                
+		                                                        }
+		                                                    }
+		                                                }
+		                                            ]
+		                                        },
+		                                        {
+		                                            width:150,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
 		                                                {
 		                                                    xtype: 'textfield',	
-		                                                    fieldLabel: 'Nombre Lote',
+		                                                    fieldLabel: '',
 		                                                    id:tracking.id+'-txt-tracking',
-		                                                    labelWidth:80,
+		                                                    labelWidth:0,
 		                                                    //readOnly:true,
 		                                                    labelAlign:'right',
 		                                                    width:'100%',
@@ -363,7 +566,7 @@
 		                                            ]
 		                                        },
 		                                        {
-			                                        width: 160,border:false,
+			                                        width: 140,border:false,
 			                                        padding:'0px 2px 0px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                        items:[
@@ -371,7 +574,7 @@
 			                                                xtype:'datefield',
 			                                                id:tracking.id+'-txt-fecha-filtro',
 			                                                fieldLabel:'Fecha',
-			                                                labelWidth:60,
+			                                                labelWidth:50,
 			                                                labelAlign:'right',
 			                                                value:new Date(),
 			                                                format: 'Ymd',
@@ -382,7 +585,7 @@
 			                                        ]
 			                                    },
 		                                        {
-			                                   		width: 150,border:false,
+			                                   		width: 130,border:false,
 			                                    	padding:'0px 2px 0px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -456,194 +659,211 @@
 									items:[
 										{
 											region:'center',
-											layout:'fit',
+											layout:'border',
 											border:false,
 											items:[
 												{
-							                        xtype: 'treepanel',
-							                        //collapsible: true,
-											        useArrows: true,
-											        rootVisible: true,
-											        multiSelect: true,
-											        //root:'Task',
-							                        id: tracking.id + '-grid-tracking',
-							                        //height: 370,
-							                        //reserveScrollbar: true,
-							                        //rootVisible: false,
-							                        //store: store,
-							                        //layout:'fit',
-							                        columnLines: true,
-							                        store: storeTree,
-										            columns: [
-											            /*{
-											                xtype: 'treecolumn', //this is so we know which column will show the tree
-											                text: 'Task',
-											                flex: 2,
-											                sortable: true,
-											                dataIndex: 'task'
-											            },*/
-											            {
-											            	xtype: 'treecolumn',
-						                                    text: 'Nombre',
-						                                    dataIndex: 'lote_nombre',
-						                                    sortable: true,
-						                                    width:250,
-						                                },
-						                                {
-						                                    text: 'Descripción',
-						                                    dataIndex: 'descripcion',
-						                                    flex: 2
-						                                },
-						                                {
-						                                    text: 'Estado Lote',
-						                                    dataIndex: 'lot_estado',
-						                                    loocked : true,
-						                                    width: 100,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = 'basket_put.png';
-						                                        if(parseInt(record.get('nivel'))==1){
-							                                        switch(record.get('lot_estado')){
-															        	case 'N':
-															        		estado='';
-															        	break;
-															        	case 'LT':
-															        		estado='baggage_cart_box.png';
-															        	break;
-															        	case 'ES':
-															        		estado='print.png';
-															        	break;
-															        	case 'CO':
-															        		estado='console.png';
-															        	break;
-															        	case 'RE':
-															        		estado='1348695561_stock_mail-send-receive.png';
-															        	break;
-															        	case 'FI':
-															        		estado='approval.png';
-															        	break;
-															        	case 'DE':
-															        		estado='compartir.png';
-															        	break;
+													region:'center',
+													layout:'fit',
+													border:false,
+													items:[
+														{
+									                        xtype: 'treepanel',
+									                        //collapsible: true,
+													        useArrows: true,
+													        rootVisible: true,
+													        multiSelect: true,
+													        //root:'Task',
+									                        id: tracking.id + '-grid-tracking',
+									                        //height: 370,
+									                        //reserveScrollbar: true,
+									                        //rootVisible: false,
+									                        //store: store,
+									                        //layout:'fit',
+									                        columnLines: true,
+									                        store: storeTree,
+												            columns: [
+													            /*{
+													                xtype: 'treecolumn', //this is so we know which column will show the tree
+													                text: 'Task',
+													                flex: 2,
+													                sortable: true,
+													                dataIndex: 'task'
+													            },*/
+													            {
+													            	xtype: 'treecolumn',
+								                                    text: 'Nombre',
+								                                    dataIndex: 'lote_nombre',
+								                                    sortable: true,
+								                                    width:250,
+								                                },
+								                                {
+								                                    text: 'Descripción',
+								                                    dataIndex: 'descripcion',
+								                                    flex: 2
+								                                },
+								                                {
+								                                    text: 'Estado',
+								                                    dataIndex: 'lot_estado',
+								                                    loocked : true,
+								                                    width: 50,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var estado = 'basket_put.png';
+								                                        if(parseInt(record.get('nivel'))==1){
+									                                        switch(record.get('lot_estado')){
+																	        	case 'N':
+																	        		estado='';
+																	        	break;
+																	        	case 'LT':
+																	        		estado='baggage_cart_box.png';
+																	        	break;
+																	        	case 'ES':
+																	        		estado='print.png';
+																	        	break;
+																	        	case 'CO':
+																	        		estado='console.png';
+																	        	break;
+																	        	case 'RE':
+																	        		estado='1348695561_stock_mail-send-receive.png';
+																	        	break;
+																	        	case 'FI':
+																	        		estado='approval.png';
+																	        	break;
+																	        	case 'DE':
+																	        		estado='compartir.png';
+																	        	break;
+																	        }
+																        }
+								                                        var qtip = record.get('descripcion');
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: tracking.id_menu,
+								                                            icons:[
+								                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
+								                                            ]
+								                                        });
+								                                    }
+								                                },
+								                                {
+								                                    text: 'Fecha',
+								                                    dataIndex: 'fecha',
+								                                    width: 100,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Total Folder',
+								                                    dataIndex: 'tot_folder',
+								                                    width: 80,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Total Página',
+								                                    dataIndex: 'tot_pag',
+								                                    width: 80,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Total Pag. Errores',
+								                                    dataIndex: 'tot_errpag',
+								                                    width: 100,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'User',
+								                                    dataIndex: 'usr_update',
+								                                    width: 50,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Estado',
+								                                    dataIndex: 'estado',
+								                                    loocked : true,
+								                                    width: 50,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        //console.log(record);
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+								                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: tracking.id_menu,
+								                                            icons:[
+								                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
+								                                            ]
+								                                        });
+								                                    }
+								                                }
+													        ],
+									                        /*viewConfig: {
+									                            stripeRows: true,
+									                            enableTextSelection: false,
+									                            markDirty: false
+									                        },*/
+									                        hideItemsReadFalse: function () {
+															    var me = this,
+															        items = me.getReferences().treelistRef.itemMap;
+
+
+															    for(var i in items){
+															        if(items[i].config.node.data.read == false){
+															            items[i].destroy();
 															        }
-														        }
-						                                        var qtip = record.get('descripcion');
-						                                        return global.permisos({
-						                                            type: 'link',
-						                                            id_menu: tracking.id_menu,
-						                                            icons:[
-						                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
-						                                            ]
-						                                        });
-						                                    }
-						                                },
-						                                {
-						                                    text: 'Fecha y Hora',
-						                                    dataIndex: 'fecha',
-						                                    width: 180,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Total Folder',
-						                                    dataIndex: 'tot_folder',
-						                                    width: 80,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Total Página',
-						                                    dataIndex: 'tot_pag',
-						                                    width: 80,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Total Pag. Errores',
-						                                    dataIndex: 'tot_errpag',
-						                                    width: 100,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'User',
-						                                    dataIndex: 'usr_update',
-						                                    width: 100,
-						                                    align: 'center'
-						                                },
-						                                {
-						                                    text: 'Estado',
-						                                    dataIndex: 'estado',
-						                                    loocked : true,
-						                                    width: 50,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
-						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-						                                        return global.permisos({
-						                                            type: 'link',
-						                                            id_menu: tracking.id_menu,
-						                                            icons:[
-						                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
-						                                            ]
-						                                        });
-						                                    }
-						                                }
-											        ],
-							                        /*viewConfig: {
-							                            stripeRows: true,
-							                            enableTextSelection: false,
-							                            markDirty: false
-							                        },*/
-							                        hideItemsReadFalse: function () {
-													    var me = this,
-													        items = me.getReferences().treelistRef.itemMap;
+															    }
+															},
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                //tracking.getImagen('default.png');
+									                                
+									                            },
+																beforeselect:function(obj, record, index, eOpts ){
+																	tracking.getStatusPanel(record.get('lot_estado'));
+																	tracking.getHistory(record.get('id_lote'));
+
+																	//document.getElementById('imagen-tracking').innerHTML='<img src="'+record.get('path')+record.get('img')+'" width="100%" height="100%" />'
+																	
+																	
+
+																	var image = document.getElementById('imagen-tracking-img');
+																	var downloadingImage = new Image();
+																	downloadingImage.onload = function(){
+																	    image.src = this.src;   
+																	    Ext.getCmp(tracking.id + '-panel-imagen').doLayout();
+																	};
+																	downloadingImage.src = record.get('path')+record.get('img');
+																	//console.log(record);
+																	/*tracking.opcion='U';*/
+																	/*tracking.id_lote=record.get('id_lote');
+																	/*tracking.getImagen(record.get('imagen'));*/
+																	/*Ext.getCmp(tracking.id+'-txt-nombre').setValue(record.get('nombre'));
+																	Ext.getCmp(tracking.id+'-txt-tipdoc').setValue(record.get('tipdoc'));
+																	Ext.getCmp(tracking.id+'-txt-fecha').setValue(record.get('fecha'));
+																	Ext.getCmp(tracking.id+'-txt-estado').setValue(record.get('estado'));
+																	Ext.getCmp(tracking.id+'-txt-tot_folder').setValue(record.get('tot_folder'));
+
+																	Ext.getCmp(tracking.id+'-txt-nombre').setReadOnly(true);
+																	Ext.getCmp(tracking.id+'-txt-tipdoc').setReadOnly(true);
+																	Ext.getCmp(tracking.id+'-txt-fecha').setReadOnly(true);
+																	Ext.getCmp(tracking.id+'-txt-estado').setReadOnly(true);
+																	Ext.getCmp(tracking.id+'-txt-tot_folder').setReadOnly(true);
 
 
-													    for(var i in items){
-													        if(items[i].config.node.data.read == false){
-													            items[i].destroy();
-													        }
-													    }
-													},
-							                        trackMouseOver: false,
-							                        listeners:{
-							                            afterrender: function(obj){
-							                                //tracking.getImagen('default.png');
-							                                
-							                            },
-														beforeselect:function(obj, record, index, eOpts ){
-															tracking.getStatusPanel(record.get('lot_estado'));
+																	var botonTxt = Ext.getCmp('boton').getText();
+																	if (botonTxt == 'Guardar' || botonTxt == 'Update') {
+																		Ext.getCmp('boton').setText('Editar');
+																		Ext.getCmp('boton').setIcon('/images/icon/editar.png');
+																	}*/
 
-															document.getElementById('imagen-tracking').innerHTML='<img src="'+record.get('path')+record.get('img')+'" width="100%" height="100%"/>'
+																	//tracking.getReloadGridtracking2(tracking.id_lote);
 
-															//console.log(record);
-															/*tracking.opcion='U';*/
-															/*tracking.id_lote=record.get('id_lote');
-															/*tracking.getImagen(record.get('imagen'));*/
-															/*Ext.getCmp(tracking.id+'-txt-nombre').setValue(record.get('nombre'));
-															Ext.getCmp(tracking.id+'-txt-tipdoc').setValue(record.get('tipdoc'));
-															Ext.getCmp(tracking.id+'-txt-fecha').setValue(record.get('fecha'));
-															Ext.getCmp(tracking.id+'-txt-estado').setValue(record.get('estado'));
-															Ext.getCmp(tracking.id+'-txt-tot_folder').setValue(record.get('tot_folder'));
-
-															Ext.getCmp(tracking.id+'-txt-nombre').setReadOnly(true);
-															Ext.getCmp(tracking.id+'-txt-tipdoc').setReadOnly(true);
-															Ext.getCmp(tracking.id+'-txt-fecha').setReadOnly(true);
-															Ext.getCmp(tracking.id+'-txt-estado').setReadOnly(true);
-															Ext.getCmp(tracking.id+'-txt-tot_folder').setReadOnly(true);
-
-
-															var botonTxt = Ext.getCmp('boton').getText();
-															if (botonTxt == 'Guardar' || botonTxt == 'Update') {
-																Ext.getCmp('boton').setText('Editar');
-																Ext.getCmp('boton').setIcon('/images/icon/editar.png');
-															}*/
-
-															//tracking.getReloadGridtracking2(tracking.id_lote);
-
-														}
-							                        }
-							                    }
+																}
+									                        }
+									                    }
+													]
+												}
 							                ]
 							            },
 										{
@@ -689,10 +909,86 @@
 								},
 								{
 									region:'east',
-									title:'Imagen',
+									title:'Historia',
 									//width:'100%',
 									width:500,
-									html: '<div id="imagen-tracking" style="width:100%; height:"100%;overflow: none;" ><img src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
+									items:[
+										{
+											region:'north',
+											layout:'fit',
+											height:200,
+											border:false,
+											items:[
+												{
+							                        xtype: 'grid',
+							                        id: tracking.id + '-grid-history',
+							                        store: store_history, 
+							                        columnLines: true,
+							                        columns:{
+							                            items:[
+							                            	{
+							                            		text: 'N°',
+															    xtype: 'rownumberer',
+															    width: 40,
+															    sortable: false,
+															    locked: true
+															},
+															{
+							                                    text: 'ST',
+							                                    dataIndex: 'lot_estado',
+							                                    //loocked : true,
+							                                    width: 40,
+							                                    align: 'center'/*,
+							                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+							                                        //console.log(record);
+							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        return global.permisos({
+							                                            type: 'link',
+							                                            id_menu: tracking.id_menu,
+							                                            icons:[
+							                                                {id_serv: 8, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "tracking.setRemoveEscaner(false,'"+record.get('file')+"')"}
+
+							                                            ]
+							                                        });
+							                                    }*/
+							                                },
+							                                {
+							                                    text: 'Historia',
+							                                    dataIndex: 'fecact',
+							                                    flex: 1
+							                                },
+							                                {
+							                                    text: 'Usuario',
+							                                    dataIndex: 'usr_nombre',
+							                                    width: 200
+							                                }
+							                            ],
+							                            defaults:{
+							                                menuDisabled: true
+							                            }
+							                        },
+							                        multiSelect: true,
+							                        trackMouseOver: false,
+							                        listeners:{
+							                            afterrender: function(obj){
+							                                
+							                            },
+							                            beforeselect:function(obj, record, index, eOpts ){
+							                            	//scanning.setImageFile(record.get('path'),record.get('file'));
+							                            }
+							                        }
+							                    }
+											]
+										},
+										{
+											region:'center',
+											id: tracking.id + '-panel-imagen',
+											title:'Imagen',
+											//width:'100%',
+											//width:500,
+											html: '<div id="imagen-tracking" style="width:100%; height:"100%;overflow: none;" ><img id="imagen-tracking-img" src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
+										}
+									]
 								}
 							]
 						}
@@ -739,6 +1035,18 @@
 		        	break;
 		        }
 		    },
+		    getHistory:function(lo){
+		    	if(tracking.lote!=parseInt(lo)){
+		    		tracking.lote=parseInt(lo);
+			    	Ext.getCmp(tracking.id + '-grid-history').getStore().removeAll();
+					Ext.getCmp(tracking.id + '-grid-history').getStore().load(
+		                {params: {vp_lote:tracking.lote},
+		                callback:function(){
+		                	//Ext.getCmp(tracking.id+'-form').el.unmask();
+		                }
+		            });
+	            }
+		    },
 			getImagen:function(param){
 				win.getGalery({container:'GaleryFull',width:390,height:250,params:{forma:'F',img_path:'/images/icon/'+param}});///tracking/
 			},
@@ -753,10 +1061,12 @@
 			},
 			getReloadGridtracking:function(){
 				//Ext.getCmp(tracking.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				tracking.lote=0;
+				Ext.getCmp(tracking.id + '-grid-history').getStore().removeAll();
 				tracking.getStatusPanel('N');
 				var shi_codigo = Ext.getCmp(tracking.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(tracking.id+'-cbx-contrato').getValue();
-				var lote = Ext.getCmp(tracking.id+'-txt-lote').getValue();
+				var lote = '';//Ext.getCmp(tracking.id+'-txt-lote').getValue();
 				var name = Ext.getCmp(tracking.id+'-txt-tracking').getValue();
 				var estado = Ext.getCmp(tracking.id+'-txt-estado-filter').getValue();
 				var fecha = Ext.getCmp(tracking.id+'-txt-fecha-filtro').getRawValue();

@@ -139,6 +139,8 @@
 		        fields: ['code', 'name']
 		    });
 
+		    
+
 				var panel = Ext.create('Ext.form.Panel',{
 					id:ireturn.id+'-form',
 					bodyStyle: 'background: transparent',
@@ -257,7 +259,7 @@
 		                            logo: 'LT',
 		                            title: 'Listado de Lotes',
 		                            legend: 'Búsqueda de Lotes registrados',
-		                            width:850,
+		                            width:1000,
 		                            height:90,
 		                            items:[
 		                                {
@@ -287,7 +289,7 @@
 		                                            ]
 		                                        },
 		                                        {
-		                                            width:300,border:false,
+		                                            width:250,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -376,31 +378,9 @@
 									                        }
 									                    }
 		                                            ]
-		                                        }
-		                                    ]
-		                                }
-		                            ]
-		                        },
-		                        {
-		                            region:'east',
-		                            border:false,
-		                            xtype: 'uePanelS',
-		                            logo: 'DV',
-		                            title: 'Devolución de Lotes',
-		                            legend: 'Devolución de Lotes registrados',
-		                            width:450,
-		                            height:90,
-		                            items:[
-		                                {
-		                                    xtype:'panel',
-		                                    border:false,
-		                                    bodyStyle: 'background: transparent',
-		                                    padding:'2px 5px 1px 5px',
-		                                    layout:'column',
-
-		                                    items: [
+		                                        },
 		                                        {
-		                                            width: 150,border:false,
+		                                            width: 80,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
