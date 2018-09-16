@@ -411,7 +411,15 @@
 			                                                            // obj.getStore().load();
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
-			                                                			
+			                                                        	var shi_codigo = Ext.getCmp(tracking.id+'-cbx-cliente').getValue();
+			                                                			Ext.getCmp(tracking.id+'-filter-plantillas').getStore().removeAll();
+			                                                			Ext.getCmp(tracking.id+'-filter-trazos').getStore().removeAll();
+																		Ext.getCmp(tracking.id+'-filter-plantillas').getStore().load(
+															                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:obj.getValue(),vp_name:'',fecha:''},
+															                callback:function(){
+															                	//Ext.getCmp(tracking.id+'-form').el.unmask();
+															                }
+															            });
 			                                                        }
 			                                                    }
 			                                                }
@@ -494,8 +502,8 @@
 		                                                    store: store_plantillas,
 		                                                    queryMode: 'local',
 		                                                    triggerAction: 'all',
-		                                                    valueField: 'code',
-		                                                    displayField: 'name',
+		                                                    valueField: 'cod_plantilla',
+		                                                    displayField: 'nombre',
 		                                                    emptyText: '[Seleccione]',
 		                                                    labelAlign:'right',
 		                                                    //allowBlank: false,
@@ -508,7 +516,14 @@
 		                                                            //Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('N');
 		                                                        },
 		                                                        select:function(obj, records, eOpts){
-		                                                			
+		                                                			Ext.getCmp(tracking.id+'-filter-trazos').getStore().removeAll();
+																	Ext.getCmp(tracking.id+'-filter-trazos').getStore().load(
+														                {params: {vp_cod_plantilla:obj.getValue()},
+														                callback:function(){
+														                	//Ext.getCmp(tracking.id+'-form').el.unmask();
+														                	Ext.getCmp(tracking.id+'-filter-trazos').setValue('');
+														                }
+														            });
 		                                                        }
 		                                                    }
 		                                                }
@@ -528,8 +543,8 @@
 		                                                    store: store_trazos,
 		                                                    queryMode: 'local',
 		                                                    triggerAction: 'all',
-		                                                    valueField: 'code',
-		                                                    displayField: 'name',
+		                                                    valueField: 'cod_trazo',
+		                                                    displayField: 'nombre',
 		                                                    emptyText: '[Seleccione]',
 		                                                    labelAlign:'right',
 		                                                    //allowBlank: false,
@@ -749,7 +764,7 @@
 								                                {
 								                                    text: 'Fecha',
 								                                    dataIndex: 'fecha',
-								                                    width: 100,
+								                                    width: 140,
 								                                    align: 'center'
 								                                },
 								                                {
@@ -1064,10 +1079,17 @@
 				tracking.lote=0;
 				Ext.getCmp(tracking.id + '-grid-history').getStore().removeAll();
 				tracking.getStatusPanel('N');
+				var vp_op = Ext.getCmp(tracking.id+'-filter-por').getValue();
 				var shi_codigo = Ext.getCmp(tracking.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(tracking.id+'-cbx-contrato').getValue();
-				var lote = '';//Ext.getCmp(tracking.id+'-txt-lote').getValue();
+
+				var lote = 0;//Ext.getCmp(tracking.id+'-txt-lote').getValue();
+
+				var vp_cod_trazo=Ext.getCmp(tracking.id+'-filter-trazos').getValue();
 				var name = Ext.getCmp(tracking.id+'-txt-tracking').getValue();
+
+
+
 				var estado = Ext.getCmp(tracking.id+'-txt-estado-filter').getValue();
 				var fecha = Ext.getCmp(tracking.id+'-txt-fecha-filtro').getRawValue();
 
@@ -1079,16 +1101,35 @@
 		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
+
+		        if(vp_op=='L'){
+					lote=name;
+					name='';
+				}
+
 		        if(lote== null || lote==''){
+		        	if(vp_op=='L'){
+		        		global.Msg({msg:"Ingrese un Lote.",icon:2,fn:function(){}});
+		            	return false;
+		        	}
 		        	lote=0;
 		        }
+		        if(vp_op=='T'){
+			        if(vp_cod_trazo== null || vp_cod_trazo==''){
+			            global.Msg({msg:"Seleccione un Trazo por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+			    }else{
+			    	vp_cod_trazo=0;
+			    }
+
 				if(fecha== null || fecha==''){
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
 		        //Ext.getCmp(tracking.id + '-grid-tracking').getStore().removeAll();
 		        Ext.getCmp(tracking.id + '-grid-tracking').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_op:vp_op,vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_cod_trazo:vp_cod_trazo,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
 	                }
