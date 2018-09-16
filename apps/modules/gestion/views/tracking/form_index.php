@@ -473,6 +473,7 @@
 		                                                            Ext.getCmp(tracking.id+'-filter-por').setValue('L');
 		                                                        },
 		                                                        select:function(obj, records, eOpts){
+		                                                        	Ext.getCmp(tracking.id+'-txt-tracking').setValue('');
 		                                                			switch(obj.getValue()){
 		                                                				case 'T': 
 		                                                					Ext.getCmp(tracking.id+'-panel-plantillas').setVisible(true);
@@ -557,7 +558,7 @@
 		                                                            //Ext.getCmp(tracking.id+'-txt-estado-filter').setValue('N');
 		                                                        },
 		                                                        select:function(obj, records, eOpts){
-		                                                
+		                                                			
 		                                                        }
 		                                                    }
 		                                                }
@@ -591,7 +592,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:50,
 			                                                labelAlign:'right',
-			                                                value:new Date(),
+			                                                value:'',//new Date(),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
 			                                                width: '100%',
@@ -1122,11 +1123,11 @@
 			    }else{
 			    	vp_cod_trazo=0;
 			    }
-
+				/*
 				if(fecha== null || fecha==''){
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
-		        }
+		        }*/
 		        //Ext.getCmp(tracking.id + '-grid-tracking').getStore().removeAll();
 		        Ext.getCmp(tracking.id + '-grid-tracking').getStore().load(
 	                {params: {vp_op:vp_op,vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_cod_trazo:vp_cod_trazo,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
