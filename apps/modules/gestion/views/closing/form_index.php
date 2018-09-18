@@ -17,6 +17,7 @@
 				    fields: [
 				        {name: 'hijo', type: 'string'},
 				        {name: 'padre', type: 'string'},
+				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
@@ -33,7 +34,8 @@
 	                    {name: 'id_user', type: 'string'},
 	                    {name: 'usr_update', type: 'string'},
 	                    {name: 'fec_update', type: 'string'},
-	                    {name: 'estado', type: 'string'}
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'nivel', type: 'string'}
 				    ]
 				});
 				var storeTree = new Ext.data.TreeStore({
@@ -579,13 +581,13 @@
 						                                        metaData.style = "padding: 0px; margin: 0px";
 						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
 						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-						                                        
+
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: closing.id_menu,
 						                                            icons:[
 						                                            	{id_serv: 5, img: estado, qtip: qtip, js: ""},
-						                                                {id_serv: 5, img: 'print.png', qtip: 'Imprimir', js: ""}
+						                                                {id_serv: 5, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
 						                                            ]
 						                                        });
 						                                    }
@@ -676,6 +678,28 @@
 					}
 
 				}).show();
+			},
+			getPrint:function(index){
+				var record=Ext.getCmp(closing.id + '-grid-closing').getStore().getAt(index);
+				var hijo=record.data.hijo;
+			    var padre=record.data.padre;
+			    var lote =record.data.id_lote;
+			    var nivel=record.data.nivel;
+			    var shi_codigo=record.data.shi_codigo;
+
+			    var id_pag=0;
+			    var id_det=0;
+
+			    if(nivel!=1){
+			    	if(nivel==2){
+			    		id_det=hijo;
+			    	}else{
+			    		id_pag=hijo;
+			    		id_det=padre;
+			    	}
+			    }
+
+				window.open(closing.url+'get_print/?vp_shi_codigo='+shi_codigo+'&vp_id_lote='+lote+'&vp_id_det='+id_det+'&vp_id_pag='+id_pag, '_blank');
 			},
 			getStatusPanel: function(ES) {
 		        /*Ext.getCmp(closing.id+'-check-status').getStore().removeAll();

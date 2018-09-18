@@ -77,7 +77,7 @@ class closingController extends AppController {
         header('Content-type: application/json');
         $this->rs_ = $this->objDatos->get_list_lotizer($p);
         if(!empty($this->rs_)){
-            return '{"text": ".","children":['.$this->get_recursivo(1,'',true).']}';
+            return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
             
         }else{
             return json_encode(
@@ -101,17 +101,15 @@ class closingController extends AppController {
         }
     }
 
-    public function get_recursivo($_nivel,$_hijo,$bool){
+    public function get_recursivo($_nivel,$_hijo){
         $coma = '';
-        //var_export($this->rs_);
         foreach ($this->rs_ as $key => $value){
-            //if($bool)$_hijo=$value['hijo'];
-            //echo $key.'-';
-            
-            if($value['nivel'] == $_nivel && (int)$value['padre'] == (int)$value['hijo']){
+            $_hijo=((int)$_nivel==1)?$value['hijo']:$_hijo;
+            if($value['nivel'] == $_nivel && (int)$value['padre'] == (int)$_hijo){
                 $json.=$coma."{";
                 $json.='"hijo":"'.$value['hijo'].'"';
                 $json.=',"padre":"'.$value['padre'].'"';
+                $json.=',"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 //$json.=',"read":true';
@@ -132,8 +130,8 @@ class closingController extends AppController {
                 $json.=',"id_user":"'.$value['id_user'].'"';
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
-                //unset($this->rs_[$key]);
-                $js = $this->get_recursivo_hijos($value['nivel'],$value['hijo'],false);
+                unset($this->rs_[$key]);
+                $js = $this->get_recursivo((int)$value['nivel']+1,$value['hijo']);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{
@@ -213,6 +211,8 @@ class closingController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-
+    public function get_print($p){
+        require APPPATH_VIEW . 'closing/print_pdf.php';
+    }
 
 }
