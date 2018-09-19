@@ -43,6 +43,23 @@ class indexController extends AppController {
         }
     }
 
+     /**
+     * Valida el inicio de session via Desktop.
+     */
+    public function getValidaDesktop($p){
+        $p['ip'] = Common::get_Ip();
+        $rs = $this->objDatos->usr_sis_login($p);
+        $rs = $rs[0];
+        if (intval($rs['sql_error']) >= 0 ){
+            $data = array('success' => true,'error' => 'OK','msn' => 'Validacion Correcta','nombre'=>$rs['nombre'],'id_user'=>$rs['id_user'],'usr_tipo'=>$rs['usr_tipo'],'perfil'=>$rs['perfil'],'time_session'=>$rs['time_session']);
+        }else{
+            $data = array('success' => true,'error' => 'ER','msn' => trim($rs['msn_error']),'nombre'=>'','id_user'=>0,'usr_tipo'=>'','perfil'=>'','time_session'=>'');
+        }
+
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
     /**
      * Se encarga de validar y almacenar las variables del inicio de session. 
      */
