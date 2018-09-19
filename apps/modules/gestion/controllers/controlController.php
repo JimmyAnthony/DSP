@@ -224,9 +224,12 @@ class controlController extends AppController {
         return $this->response($data);
     }
     public function set_list_page_trazos($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
         $rs = $this->objDatos->get_list_page_trazos($p);
         //var_export($rs);
         $array = array();
+        $page=$p['vp_id_pag'];
         foreach ($rs as $index => $value){
                 $p['vp_id_pag'] = intval($value['id_pag']);
                 $p['vp_path'] = utf8_encode(trim($value['path']));
@@ -255,10 +258,16 @@ class controlController extends AppController {
                 }
                 $data = array('success' => true,'error' => $status?'OK':'ER','msn' => $status=='OK'?'Procesado correctamente':'Ocurrio un error al generar el trazo','data'=>$array);
         }
+        //header('Content-Type: application/json');
+        //return $this->response($data);
+        $p['vp_id_pag']=$page;
+        $data=$this->setProcessingOCR($p);
         header('Content-Type: application/json');
         return $this->response($data);
     }
     public function setDropImg($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
         $bool=true;
         //$path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
         $ext=$p['extension'];
@@ -295,7 +304,25 @@ class controlController extends AppController {
         }
         return $bool;
     }
+    public function setProcessingOCR($p){
 
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(PATH . '&' . trim($p['vp_id_pag']) . '&' . trim($p['vp_shi_codigo']) . '&' . trim($p['vp_id_det']). '&' . trim($p['vp_id_lote']));
+        $comando = "python " . PATH . "apps/modules/gestion/views/control/python/OCR.py " . $params;
+        $output = array();
+        //echo $comando;die();
+        try{
+            exec($comando, $output);
+
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
     public function hyphenize($string) {
         $dict = array(
             "I'm"      => "I am",

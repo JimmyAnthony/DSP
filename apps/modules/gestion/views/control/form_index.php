@@ -13,6 +13,8 @@
 			trabajando:1,
 			recordsToSend:[],
 			init:function(){
+				Ext.Ajax.timeout = 180000;
+            	Ext.QuickTips.init();
 				Ext.tip.QuickTipManager.init();
 
 				Ext.define('Task', {
@@ -696,6 +698,34 @@
 									layout:'border',
 									border:true,
 									padding:'5px 5px 5px 5px',
+									bbar:[
+										{
+					                        xtype:'button',
+					                        id:control.id+'-btn-ocr',
+					                        //disabled:true,
+					                        scale: 'large',
+					                        //iconAlign: 'top',
+					                        //disabled:true,
+					                        width:'99%',
+                                            anchor:'99%',
+					                        text: 'Procesar todo con OCR',
+					                        icon: '/images/icon/if_SVG_LINE_TECHNOLOGY-01_2897334.png',
+					                        listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){
+					                            	//scanning.work=!scanning.work;
+					                            	control.setProcessingOCR();
+					                            }
+					                        }
+					                    }
+									],
 									items:[
 										{
 											region:'center',
@@ -814,6 +844,7 @@
 										{
 											region:'south',
 											id:control.id+'-panel-imagen-trazo',
+											hidden:true,
 											border:false,
 											height:300,
 											bbar:[
@@ -829,34 +860,6 @@
 			                                        anchor:'100%',
 			                                        height:60
 			                                    }
-											],
-											tbar:[
-												{
-							                        xtype:'button',
-							                        id:control.id+'-btn-ocr',
-							                        //disabled:true,
-							                        scale: 'large',
-							                        //iconAlign: 'top',
-							                        //disabled:true,
-							                        width:'99%',
-                                                    anchor:'99%',
-							                        text: 'Procesar todo con OCR',
-							                        icon: '/images/icon/if_SVG_LINE_TECHNOLOGY-01_2897334.png',
-							                        listeners:{
-							                            beforerender: function(obj, opts){
-							                                /*global.permisos({
-							                                    id: 15,
-							                                    id_btn: obj.getId(), 
-							                                    id_menu: gestion_devolucion.id_menu,
-							                                    fn: ['panel_asignar_gestion.limpiar']
-							                                });*/
-							                            },
-							                            click: function(obj, e){
-							                            	//scanning.work=!scanning.work;
-							                            	control.setProcessingOCR();
-							                            }
-							                        }
-							                    }
 											],
 											html: '<img id="imagen-trazo-control" src="" style="width:100%;overflow: scroll;" />'
 										}
@@ -912,6 +915,71 @@
 				}
 			},
 			setProcessingOCR:function(){
+				global.Msg({
+                    msg: '¿Está seguro de procesar todas las Páginas con OCR?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(control.id+'-form').el.mask('Guardando Texto de Trazos - OCR', 'x-mask-loading');
+							control.getLoader(true);
+							try{
+						    	//Procesar OCR
+						    	Ext.Ajax.request({
+				                    url: control.url + 'set_list_page_trazos/',
+				                    params:{
+				                    	vp_id_pag:0,
+				                		vp_shi_codigo:control.shi_codigo,
+				                    	vp_id_det:control.id_det,
+				                    	vp_id_lote:control.id_lote,
+				                    	vp_ocr:'N'
+				                    },
+				                    timeout: 300000,
+				                    success: function(response, options){
+				                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+				                        var res = Ext.JSON.decode(response.responseText);
+				                        Ext.getCmp(control.id+'-form').el.unmask();
+				                        control.getLoader(false);
+				                        if (res.error == 'OK'){
+				                        	//console.log(res.data);
+				                        	global.Msg({
+				                                msg: res.msn,
+				                                icon: 1,
+				                                buttons: 1,
+				                                fn: function(btn){
+				                        			control.getReloadPage();
+				                                }
+				                            });
+				                        	
+				                        }else{
+				                            global.Msg({
+				                                msg: res.msn,
+				                                icon: 0,
+				                                buttons: 1,
+				                                fn: function(btn){
+				                                    //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+				                                    Ext.getCmp(control.id+'-form').el.unmask();
+				                                }
+				                            });
+				                        }
+				                    }
+				                });
+							}catch(err){
+								global.Msg({
+	                                msg: err.message,
+	                                icon: 0,
+	                                buttons: 1,
+	                                fn: function(btn){
+	                                    Ext.getCmp(control.id+'-form').el.unmask();
+										control.getLoader(false);
+	                                }
+	                            });
+							}
+						}
+					}
+				});
+			},
+			setProcessingOCR2:function(){
 				global.Msg({
                     msg: '¿Está seguro de procesar todas las Páginas con OCR?',
                     icon: 3,
