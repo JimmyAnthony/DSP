@@ -145,7 +145,7 @@
                     run: function(){
                         inicio.status();
                     },
-                    interval: (1000 * 60)
+                    interval: (1000 * 120)
                 });
 
                 inicio.task.start();

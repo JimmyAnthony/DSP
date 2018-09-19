@@ -70,7 +70,7 @@ class controlModels extends Adodb {
         parent::SetParameterSP($p['vp_id_lote'], 'int');
         parent::SetParameterSP($p['vp_text'], 'varchar');
         parent::SetParameterSP(USR_ID, 'int');
-         //echo '=>' . parent::getSql().'<br>'; //exit();
+        // echo '=>' . parent::getSql().'<br>'; //exit();
         $array = parent::ExecuteSPArray();
         return $array;
     }

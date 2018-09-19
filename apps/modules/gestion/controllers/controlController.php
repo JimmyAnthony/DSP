@@ -11,6 +11,7 @@ class controlController extends AppController {
 
     private $objDatos;
     private $arrayMenu;
+    static $imap_base64 ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,';
 
     public function __construct(){
         /**
@@ -294,6 +295,53 @@ class controlController extends AppController {
         }
         return $bool;
     }
+
+    public function hyphenize($string) {
+        $dict = array(
+            "I'm"      => "I am",
+            "thier"    => "their",
+            // Add your own replacements here
+        );
+        return strtolower(
+            preg_replace(
+              array( '#[\\s-]+#', '#[^A-Za-z0-9\. -]+#' ),
+              array( '-', '' ),
+              // the full cleanString() can be downloaded from http://www.unexpectedit.com/php/php-clean-string-of-utf8-chars-convert-to-similar-ascii-char
+              $this->cleanString(
+                  str_replace( // preg_replace can be used to support more complicated replacements
+                      array_keys($dict),
+                      array_values($dict),
+                      urldecode($string)
+                  )
+              )
+            )
+        );
+    }
+
+    public function cleanString($text) {
+        $utf8 = array(
+            '/[áàâãªä]/u'   =>   'a',
+            '/[ÁÀÂÃÄ]/u'    =>   'A',
+            '/[ÍÌÎÏ]/u'     =>   'I',
+            '/[íìîï]/u'     =>   'i',
+            '/[éèêë]/u'     =>   'e',
+            '/[ÉÈÊË]/u'     =>   'E',
+            '/[óòôõºö]/u'   =>   'o',
+            '/[ÓÒÔÕÖ]/u'    =>   'O',
+            '/[úùûü]/u'     =>   'u',
+            '/[ÚÙÛÜ]/u'     =>   'U',
+            '/ç/'           =>   'c',
+            '/Ç/'           =>   'C',
+            '/ñ/'           =>   'n',
+            '/Ñ/'           =>   'N',
+            '/–/'           =>   '-', // UTF-8 hyphen to "normal" hyphen
+            '/[’‘‹›‚]/u'    =>   ' ', // Literally a single quote
+            '/[“”«»„]/u'    =>   ' ', // Double quote
+            '/ /'           =>   ' ', // nonbreaking space (equiv. to 0x160)
+        );
+        return preg_replace(array_keys($utf8), array_values($utf8), $text);
+    }
+
     public function strip_carriage_returns($string){
         $badchar=array(
             // control characters
@@ -305,40 +353,79 @@ class controlController extends AppController {
             chr(127)
         );
         $string = str_replace($badchar, '', $string);
+        $string = str_replace(array('\"'), "'", $string);
         $string = str_replace(array("\\"), 't', $string);
-        return str_replace(array("\n\r", "\n", "\r","'","\\"), '', $string);
+        $string = str_replace(array("`"), '', $string);
+        $string = str_replace(array("|"), ' ', $string);
+        return str_replace(array("\n\r", "\n", "\r","'","\\",'\"'), '', $string);
+    }
+    public function normalize ($string) {
+        $table = array(
+            'Š'=>'S', 'š'=>'s', 'Đ'=>'Dj', 'đ'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'Č'=>'C', 'č'=>'c', 'Ć'=>'C', 'ć'=>'c',
+            'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+            'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+            'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+            'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+            'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
+            'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r',
+        );
+        return strtr($string, $table);
+    }
+    public function cp1250_to_utf2($text){
+        $dict  = array(chr(225) => 'á', chr(228) =>  'ä', chr(232) => 'č', chr(239) => 'ď', 
+            chr(233) => 'é', chr(236) => 'ě', chr(237) => 'í', chr(229) => 'ĺ', chr(229) => 'ľ', 
+            chr(242) => 'ň', chr(244) => 'ô', chr(243) => 'ó', chr(154) => 'š', chr(248) => 'ř', 
+            chr(250) => 'ú', chr(249) => 'ů', chr(157) => 'ť', chr(253) => 'ý', chr(158) => 'ž',
+            chr(193) => 'Á', chr(196) => 'Ä', chr(200) => 'Č', chr(207) => 'Ď', chr(201) => 'É', 
+            chr(204) => 'Ě', chr(205) => 'Í', chr(197) => 'Ĺ',    chr(188) => 'Ľ', chr(210) => 'Ň', 
+            chr(212) => 'Ô', chr(211) => 'Ó', chr(138) => 'Š', chr(216) => 'Ř', chr(218) => 'Ú', 
+            chr(217) => 'Ů', chr(141) => 'Ť', chr(221) => 'Ý', chr(142) => 'Ž', 
+            chr(150) => '-');
+        return strtr($text, $dict);
+    }
+    function jsonRemoveUnicodeSequences($struct) {
+       return preg_replace("/\\\\u([a-f0-9]{4})/e", "iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))", json_encode($struct));
     }
     public function set_ocr_pages($p){
-        //header("Content-Type: text/html; charset=UTF-8");
-        $p['vp_recordsToSend']=$this->strip_carriage_returns(utf8_decode($p['vp_recordsToSend']));
-        $records = json_decode(stripslashes($p['vp_recordsToSend'])); //parse the string to PHP objects
-        //var_export($p['vp_recordsToSend']);
-        if(isset($records)){
-            $records1=$records;
-            foreach($records1 as $record1){
-                if((int)$record1->cod_trazo==0){
+        header("Content-Type: text/html; charset=UTF-8");
+        //$p['vp_recordsToSend']=$this->cp1250_to_utf2($this->normalize($this->strip_carriage_returns(utf8_decode($p['vp_recordsToSend']))));
+        $data = $p['vp_recordsToSend'];
+        $data = str_replace(array('\"'), "", $data);
+        $data = str_replace(array("'"), "", $data);
+        $data =utf8_decode($data);
+        $data =$this->strip_carriage_returns($data);
+        //$data =$this->hyphenize($data);
+        //$data =$this->decode($data);
+        $data =$this->cp1250_to_utf2($data);
+        $data =$this->normalize($data);
+        $data =stripslashes($data);
+        //echo $data;
+        $records = json_decode($data); //parse the string to PHP objects
+        //echo $records;
+        //echo $data;
+        //var_export($records);
+        if(!empty($records)){
+            foreach($records as $record){
+                if((int)$record->cod_trazo==0){
                     
-                    $pp['vp_text']=$this->strip_carriage_returns(utf8_decode($record->text));
+                    $pp['vp_text']=$record->text;
                     $pp['vp_op']='X';
-                    $pp['vp_id_pag']=$record1->id_pag;
+                    $pp['vp_id_pag']=$record->id_pag;
                     $pp['vp_cod_trazo']='0';
-                    $pp['vp_id_det']=$record1->id_det;
-                    $pp['vp_id_lote']=$record1->id_lote;
+                    $pp['vp_id_det']=$record->id_det;
+                    $pp['vp_id_lote']=$record->id_lote;
 
                     $rs = $this->objDatos->set_ocr_pages($pp);
                     $rs = $rs[0];
                     $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
-                }
-            }
-
-            foreach($records as $record){
-                if((int)$record->cod_trazo!=0){
+                }else{
                     $px['vp_op']='I';
                     $px['vp_id_pag']=$record->id_pag;
                     $px['vp_cod_trazo']=$record->cod_trazo;
                     $px['vp_id_det']=$record->id_det;
                     $px['vp_id_lote']=$record->id_lote;
-                    $px['vp_text']=$this->strip_carriage_returns(utf8_decode($record->text));
+                    $px['vp_text']=$record->text;
 
                     $rs = $this->objDatos->set_ocr_pages($px);
                     $rs = $rs[0];
@@ -377,5 +464,83 @@ class controlController extends AppController {
     public function delete_tiff($p){
         /*$path = REALPATHAPP.'apps/public/imagenes/'.trim($p['img']).'.jpg';
         unlink($path);*/
+    }
+
+    static private function encode_b64imap($s) {    
+        $a=0; $al=0; $res=''; $n=strlen($s);
+        for($i=0;$i<$n;$i++) {
+            $a=($a<<8)|ord($s[$i]); $al+=8;
+            for(;$al>=6;$al-=6) $res.=self::$imap_base64[($a>>($al-6))&0x3F];
+        }
+        if ($al>0) { $res.=self::$imap_base64[($a<<(6-$al))&0x3F]; }
+        return $res;
+    }
+    static private function encode_utf8_char($w) {
+        if ($w&0x80000000) return '';
+        if ($w&0xFC000000) $n=5; else
+        if ($w&0xFFE00000) $n=4; else
+        if ($w&0xFFFF0000) $n=3; else
+        if ($w&0xFFFFF800) $n=2; else
+        if ($w&0xFFFFFF80) $n=1; else return chr($w);
+        $res=chr(( (255<<(7-$n)) | ($w>>($n*6)) )&255); 
+        while(--$n>=0) $res.=chr((($w>>($n*6))&0x3F)|0x80);
+        return $res;
+    }
+    static private function decode_b64imap($s) {
+        $a=0; $al=0; $res=''; $n=strlen($s);
+        for($i=0;$i<$n;$i++) {
+            $k=strpos(self::$imap_base64,$s[$i]); if ($k===FALSE) continue;
+            $a=($a<<6)|$k; $al+=6;
+            if ($al>=8) { $res.=chr(($a>>($al-8))&255);$al-=8; }
+        }
+        $r2=''; $n=strlen($res);
+        for($i=0;$i<$n;$i++) {
+            $c=ord($res[$i]); $i++;
+            if ($i<$n) $c=($c<<8) | ord($res[$i]);
+            $r2.=self::encode_utf8_char($c);
+        }
+        return $r2;
+    }
+    static function encode($s) {
+        $n=strlen($s);$err=0;$buf='';$res='';
+        for($i=0;$i<$n;) {
+            $x=ord($s[$i++]);
+            if (($x&0x80)==0x00) { $r=$x;$w=0; } 
+            else if (($x&0xE0)==0xC0) { $w=1; $r=$x &0x1F; } 
+            else if (($x&0xF0)==0xE0) { $w=2; $r=$x &0x0F; } 
+            else if (($x&0xF8)==0xF0) { $w=3; $r=$x &0x07; } 
+            else if (($x&0xFC)==0xF8) { $w=4; $r=$x &0x03; } 
+            else if (($x&0xFE)==0xFC) { $w=5; $r=$x &0x01; } 
+            else if (($x&0xC0)==0x80) { $w=0; $r=-1; $err++; } 
+            else { $w=0;$r=-2;$err++; }
+            for($k=0;$k<$w && $i<$n; $k++) {
+                $x=ord($s[$i++]); if ($x&0xE0!=0x80) { $err++; }
+                $r=($r<<6)|($x&0x3F);
+            }
+            if ($r<0x20 || $r>0x7E ) {
+                $buf.=chr(($r>>8)&0xFF); $buf.=chr($r&0xFF);
+            } else {
+                if (strlen($buf)) { 
+                    $res.='&'.self::encode_b64imap($buf).'-';
+                    $buf=''; 
+                }
+                if ($r==0x26) { $res.='&-'; } else $res.=chr($r);
+            }
+        }
+        if (strlen($buf)) $res.='&'.self::encode_b64imap($buf).'-';
+        return $res;
+    }
+    static function decode($s) {
+        $res=''; $n=strlen($s); $h=0;
+        while($h<$n) {
+            $t=strpos($s,'&',$h); if ($t===false) $t=$n;
+            $res.=substr($s,$h,$t-$h); $h=$t+1; if ($h>=$n) break;
+            $t=strpos($s,'-',$h); if ($t===false) $t=$n;
+            $k=$t-$h; 
+            if ($k==0) $res.='&'; 
+            else $res.=self::decode_b64imap(substr($s,$h,$k));
+            $h=$t+1;
+        }
+        return $res;
     }
 }
