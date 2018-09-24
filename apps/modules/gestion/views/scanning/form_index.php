@@ -1086,6 +1086,7 @@
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
+											                                timeout: 300000,
 											                                success: function(response, options){
 											                                    Ext.getCmp(scanning.id+'-form').el.unmask();
 											                                    var res = Ext.JSON.decode(response.responseText);
