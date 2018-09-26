@@ -15,15 +15,18 @@
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
 				    fields: [
+				        {name: 'hijo', type: 'string'},
+				        {name: 'padre', type: 'string'},
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
-				        {name: 'id_det', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
 	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'tot_folder', type: 'string'},
 	                    {name: 'tot_pag', type: 'string'},
@@ -31,7 +34,8 @@
 	                    {name: 'id_user', type: 'string'},
 	                    {name: 'usr_update', type: 'string'},
 	                    {name: 'fec_update', type: 'string'},
-	                    {name: 'estado', type: 'string'}
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'nivel', type: 'string'}
 				    ]
 				});
 				var storeTree = new Ext.data.TreeStore({
@@ -46,13 +50,15 @@
 	                	beforeload: function (store, operation, opts) {
 					    },
 	                    load: function(obj, records, successful, opts){
-	                 		Ext.getCmp(ireturn.id + '-grid').doLayout();
+		                    Ext.getCmp(ireturn.id + '-grid').doLayout();
+	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
 	                 		storeTree.removeAt(0);
 	                 		Ext.getCmp(ireturn.id + '-grid').collapseAll();
 		                    Ext.getCmp(ireturn.id + '-grid').getRootNode().cascadeBy(function (node) {
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
-		                     });
+		                    });
+		                    Ext.getCmp(ireturn.id + '-grid').expandAll();
 	                    }
 	                }
 	            });
@@ -433,130 +439,532 @@
 							items:[
 								{
 									region:'center',
-
 									layout:'border',
 									items:[
 										{
 											region:'center',
 											border:false,
-											layout:'fit',
+											layout:'border',
 											items:[
 												{
-							                        xtype: 'treepanel',
-											        useArrows: true,
-											        rootVisible: true,
-											        multiSelect: true,
-							                        id: ireturn.id + '-grid',
-							                        columnLines: true,
-							                        store: storeTree,
-										            columns: [
-											            {
-											            	xtype: 'treecolumn',
-											            	id: ireturn.id + '-grid-lote_nombre',
-						                                    text: 'Nombre',
-						                                    dataIndex: 'lote_nombre',
-						                                    sortable: true,
-						                                    flex: 1
-						                                },
-						                                {
-						                                 	hidden:true,
-						                                    text: 'id_lote',
-						                                    dataIndex: 'id_lote',
-						                                    flex: 1
-						                                },
-						                                {
-						                                	hidden:true,
-						                                    text: 'id_det',
-						                                    dataIndex: 'id_det',
-						                                    flex: 1
-						                                },
-
-
-
-						                                {
-						                                    text: 'Descripción',
-						                                    dataIndex: 'descripcion',
-						                                    flex: 1
-						                                },
-						                                {
-						                                    text: 'Estado Lote',
-						                                    dataIndex: 'lot_estado',
-						                                    loocked : true,
-						                                    width: 100,
-						                                    align: 'center',
-						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-						                                        //console.log(record);
-						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        if(parseInt(record.get('nivel'))==1){
-							                                        var estado = (record.get('lot_estado')=='LT')?'baggage_cart_box.png':'contraer.png';
-							                                        var qtip = (record.get('lot_estado')=='LT')?'Lotizado.':'Lote en otro Estado.';
-						                                        }else{
-						                                        	var estado = (record.get('lot_estado')=='LT')?'basket_put_gray.png':'basket_put.png';
-							                                        var qtip = (record.get('lot_estado')=='LT')?'Folder Vacio.':'Folder en otro Estado.';
-						                                        }
-						                                        
-
-						                                        return global.permisos({
-						                                            type: 'link',
-						                                            id_menu: ireturn.id_menu,
-						                                            icons:[
-						                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
-						                                            ]
-						                                        });
-						                                    }
-						                                },
-						                                {
-						                                    text: 'Fecha y Hora',
-						                                    dataIndex: 'fecha',
-						                                    width: 180,
-						                                    align: 'center'
-						                                },
-
+													region:'center',
+													title:'Pendientes a Devolución',
+													border:true,
+													layout:'fit',
+													items:[
 														{
-											                xtype: 'checkcolumn',
-											                header: 'Done',
-											                dataIndex: 'done',
-											                width: 55,
-											                stopSelection: false,
-											                menuDisabled: true/*,
-											                listeners: {
-											                	 checkchange: 'onCheckcolumnCheckChange'
-											                	}*/
-											            }
-											        ],
-							                        hideItemsReadFalse: function () {
-													    var me = this,
-													        items = me.getReferences().treelistRef.itemMap;
+									                        xtype: 'treepanel',
+													        useArrows: true,
+													        rootVisible: true,
+													        multiSelect: true,
+									                        id: ireturn.id + '-grid',
+									                        columnLines: true,
+									                        store: storeTree,
+
+												            columns: [
+													            {
+													            	xtype: 'treecolumn',
+													            	id: ireturn.id + '-grid-lote_nombre',
+								                                    text: 'Nombre',
+								                                    dataIndex: 'lote_nombre',
+								                                    sortable: true,
+								                                    flex: 1
+								                                },
+								                                {
+								                                    text: 'Descripción',
+								                                    dataIndex: 'descripcion',
+								                                    flex: 2
+								                                },
+								                                {
+								                                    text: 'Estado Lote',
+								                                    dataIndex: 'lot_estado',
+								                                    loocked : true,
+								                                    width: 100,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var estado = 'basket_put.png';
+								                                        if(parseInt(record.get('nivel'))==1){
+									                                        switch(record.get('lot_estado')){
+																	        	case 'N':
+																	        		estado='';
+																	        	break;
+																	        	case 'LT':
+																	        		estado='baggage_cart_box.png';
+																	        	break;
+																	        	case 'ES':
+																	        		estado='print.png';
+																	        	break;
+																	        	case 'CO':
+																	        		estado='console.png';
+																	        	break;
+																	        	case 'RE':
+																	        		estado='1348695561_stock_mail-send-receive.png';
+																	        	break;
+																	        	case 'DI':
+																	        		estado='approval.png';
+																	        	break;
+																	        	case 'DE':
+																	        		estado='compartir.png';
+																	        	break;
+																	        }
+																        }
+								                                        var qtip = record.get('lot_estado');
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: ireturn.id_menu,
+								                                            icons:[
+								                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
+								                                            ]
+								                                        });
+								                                    }
+								                                },
+								                                {
+								                                    text: 'Fecha y Hora',
+								                                    dataIndex: 'fecha',
+								                                    width: 180,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Total Folder',
+								                                    dataIndex: 'tot_folder',
+								                                    width: 80,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Total Página',
+								                                    dataIndex: 'tot_pag',
+								                                    width: 80,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Total Pag. Errores',
+								                                    dataIndex: 'tot_errpag',
+								                                    width: 100,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'User',
+								                                    dataIndex: 'usr_update',
+								                                    width: 100,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Estado',
+								                                    dataIndex: 'estado',
+								                                    loocked : true,
+								                                    width: 50,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        //console.log(record);
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+								                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: ireturn.id_menu,
+								                                            icons:[
+								                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
+								                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
+								                                            ]
+								                                        });
+								                                    }
+								                                }/*,
+																{
+													                xtype: 'checkcolumn',
+													                header: 'Done',
+													                dataIndex: 'done',
+													                width: 55,
+													                stopSelection: false,
+													                headerCheckbox: true,
+													                menuDisabled: true/*,
+													                listeners: {
+													                	 checkchange: 'onCheckcolumnCheckChange'
+													                	}*/
+													            /*}*/
+													        ],
+									                        hideItemsReadFalse: function () {
+															    var me = this,
+															        items = me.getReferences().treelistRef.itemMap;
 
 
-													    for(var i in items){
-													        if(items[i].config.node.data.read == false){
-													            items[i].destroy();
-													        }
-													    }
-													},
-							                        trackMouseOver: false,
-							                        listeners:{
-							                            afterrender: function(obj){
-							                                
-							                            },
-														beforeselect:function(obj, record, index, eOpts ){
+															    for(var i in items){
+															        if(items[i].config.node.data.read == false){
+															            items[i].destroy();
+															        }
+															    }
+															},
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                
+									                            },
+																beforeselect:function(obj, record, index, eOpts ){
 
+																},
+			
+														        checkchange: function( node, checked, eOpts ){
+														            if(node.hasChildNodes()){
+														                node.eachChild(function(childNode){
+														                    childNode.set('checked', checked);
+														                });
+														            }
+														        }
+														    
+
+
+
+									                        }
+									                    }
+													]
+												},
+												{
+													region:'east',
+													title:'Preparar Devolución',
+													border:true,
+													width:400,
+													layout:'border',
+													items:[
+														{
+															region:'south',
+															layout:'fit',
+															height:150,
+															border:false,
+															bbar:[
+																{
+											                        xtype:'button',
+											                        id:ireturn.id+'-btn-confirmar',
+											                        //disabled:true,
+											                        scale: 'large',
+											                        //iconAlign: 'top',
+											                        //disabled:true,
+											                        width:'99%',
+						                                            anchor:'99%',
+											                        text: 'Confirmar Devolución',
+											                        icon: '/images/icon/if_General_Office_15_2530780.png',
+											                        listeners:{
+											                            beforerender: function(obj, opts){
+											                                /*global.permisos({
+											                                    id: 15,
+											                                    id_btn: obj.getId(), 
+											                                    id_menu: gestion_devolucion.id_menu,
+											                                    fn: ['panel_asignar_gestion.limpiar']
+											                                });*/
+											                            },
+											                            click: function(obj, e){
+											                            	//scanning.work=!scanning.work;
+											                            	//ireturn.setProcessingOCR();
+											                            }
+											                        }
+											                    }
+															],
+															items:[
+																{
+															        xtype: 'textarea',
+															        fieldLabel: 'Ingrese el motivo de Devolución',
+															        emptyText: 'Ingrese el motivo de Devolución',
+															        hideLabel: true,
+															        name: 'msg',
+															        flex: 1  // Take up all *remaining* vertical space (kicks in when resized)
+															    }
+															]
 														},
-	
-												        checkchange: function( node, checked, eOpts ){
-												            if(node.hasChildNodes()){
-												                node.eachChild(function(childNode){
-												                    childNode.set('checked', checked);
-												                });
-												            }
-												        }
-												    
+														{
+															region:'center',
+															layout:'fit',
+															border:false,
+															items:[
+																{
+											                        xtype: 'treepanel',
+															        useArrows: true,
+															        rootVisible: true,
+															        multiSelect: true,
+											                        id: ireturn.id + '-grid-devoluciones',
+											                        columnLines: true,
+											                        store: storeTree,
+
+														            columns: [
+															            {
+															            	xtype: 'treecolumn',
+															            	id: ireturn.id + '-grid-lote_devoluciones',
+										                                    text: 'Nombre',
+										                                    dataIndex: 'lote_nombre',
+										                                    sortable: true,
+										                                    flex: 1
+										                                },
+										                                {
+										                                    text: 'Estado Lote',
+										                                    dataIndex: 'lot_estado',
+										                                    loocked : true,
+										                                    width: 100,
+										                                    align: 'center',
+										                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+										                                        metaData.style = "padding: 0px; margin: 0px";
+										                                        var estado = 'basket_put.png';
+										                                        if(parseInt(record.get('nivel'))==1){
+											                                        switch(record.get('lot_estado')){
+																			        	case 'N':
+																			        		estado='';
+																			        	break;
+																			        	case 'LT':
+																			        		estado='baggage_cart_box.png';
+																			        	break;
+																			        	case 'ES':
+																			        		estado='print.png';
+																			        	break;
+																			        	case 'CO':
+																			        		estado='console.png';
+																			        	break;
+																			        	case 'RE':
+																			        		estado='1348695561_stock_mail-send-receive.png';
+																			        	break;
+																			        	case 'FI':
+																			        		estado='approval.png';
+																			        	break;
+																			        	case 'DE':
+																			        		estado='compartir.png';
+																			        	break;
+																			        }
+																		        }
+										                                        var qtip = record.get('descripcion');
+										                                        return global.permisos({
+										                                            type: 'link',
+										                                            id_menu: ireturn.id_menu,
+										                                            icons:[
+										                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
+										                                            ]
+										                                        });
+										                                    }
+										                                },
+										                                {
+										                                    text: 'Estado',
+										                                    dataIndex: 'estado',
+										                                    loocked : true,
+										                                    width: 50,
+										                                    align: 'center',
+										                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+										                                        //console.log(record);
+										                                        metaData.style = "padding: 0px; margin: 0px";
+										                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+										                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+
+										                                        return global.permisos({
+										                                            type: 'link',
+										                                            id_menu: ireturn.id_menu,
+										                                            icons:[
+										                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
+										                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
+										                                            ]
+										                                        });
+										                                    }
+										                                }
+															        ],
+											                        hideItemsReadFalse: function () {
+																	    var me = this,
+																	        items = me.getReferences().treelistRef.itemMap;
 
 
+																	    for(var i in items){
+																	        if(items[i].config.node.data.read == false){
+																	            items[i].destroy();
+																	        }
+																	    }
+																	},
+											                        trackMouseOver: false,
+											                        listeners:{
+											                            afterrender: function(obj){
+											                                
+											                            },
+																		beforeselect:function(obj, record, index, eOpts ){
 
-							                        }
-							                    }
+																		},
+					
+																        checkchange: function( node, checked, eOpts ){
+																            if(node.hasChildNodes()){
+																                node.eachChild(function(childNode){
+																                    childNode.set('checked', checked);
+																                });
+																            }
+																        }
+											                        }
+											                    }
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											region:'east',
+											title:'Devueltos',
+											layout:'border',
+											width:400,
+											border:true,
+											items:[
+												{
+													region:'center',
+													layout:'fit',
+													border:false,
+													items:[
+														{
+									                        xtype: 'grid',
+									                        id: ireturn.id + '-grid-devueltos',
+									                        store: store,
+									                        columnLines: true,
+									                        columns:{
+									                            items:[
+									                                {
+									                                    text: 'Campaña',
+									                                    dataIndex: 'nombre',
+									                                    flex: 1
+									                                },
+									                                {
+									                                    text: 'Descripcion',
+									                                    dataIndex: 'descripcion',
+									                                    width: 200
+									                                }
+									                            ],
+									                            defaults:{
+									                                menuDisabled: true
+									                            }
+									                        },
+									                        viewConfig: {
+									                            stripeRows: true,
+									                            enableTextSelection: false,
+									                            markDirty: false
+									                        },
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                
+									                            }
+									                        }
+									                    }
+													]
+												},
+												{
+													region:'south',
+													title:'Detalle',
+													layout:'fit',
+													height:'50%',
+													items:[
+														{
+									                        xtype: 'treepanel',
+													        useArrows: true,
+													        rootVisible: true,
+													        multiSelect: true,
+									                        id: ireturn.id + '-grid-detalle',
+									                        columnLines: true,
+									                        store: storeTree,
+
+												            columns: [
+													            {
+													            	xtype: 'treecolumn',
+													            	id: ireturn.id + '-grid-detalle-column',
+								                                    text: 'Nombre',
+								                                    dataIndex: 'lote_nombre',
+								                                    sortable: true,
+								                                    flex: 1
+								                                },
+								                                {
+								                                    text: 'Estado Lote',
+								                                    dataIndex: 'lot_estado',
+								                                    loocked : true,
+								                                    width: 100,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var estado = 'basket_put.png';
+								                                        if(parseInt(record.get('nivel'))==1){
+									                                        switch(record.get('lot_estado')){
+																	        	case 'N':
+																	        		estado='';
+																	        	break;
+																	        	case 'LT':
+																	        		estado='baggage_cart_box.png';
+																	        	break;
+																	        	case 'ES':
+																	        		estado='print.png';
+																	        	break;
+																	        	case 'CO':
+																	        		estado='console.png';
+																	        	break;
+																	        	case 'RE':
+																	        		estado='1348695561_stock_mail-send-receive.png';
+																	        	break;
+																	        	case 'FI':
+																	        		estado='approval.png';
+																	        	break;
+																	        	case 'DE':
+																	        		estado='compartir.png';
+																	        	break;
+																	        }
+																        }
+								                                        var qtip = record.get('descripcion');
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: ireturn.id_menu,
+								                                            icons:[
+								                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
+								                                            ]
+								                                        });
+								                                    }
+								                                },
+								                                {
+								                                    text: 'Estado',
+								                                    dataIndex: 'estado',
+								                                    loocked : true,
+								                                    width: 50,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        //console.log(record);
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+								                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: ireturn.id_menu,
+								                                            icons:[
+								                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
+								                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
+								                                            ]
+								                                        });
+								                                    }
+								                                }
+													        ],
+									                        hideItemsReadFalse: function () {
+															    var me = this,
+															        items = me.getReferences().treelistRef.itemMap;
+
+
+															    for(var i in items){
+															        if(items[i].config.node.data.read == false){
+															            items[i].destroy();
+															        }
+															    }
+															},
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                
+									                            },
+																beforeselect:function(obj, record, index, eOpts ){
+
+																},
+			
+														        checkchange: function( node, checked, eOpts ){
+														            if(node.hasChildNodes()){
+														                node.eachChild(function(childNode){
+														                    childNode.set('checked', checked);
+														                });
+														            }
+														        }
+									                        }
+									                    }
+													]
+												}
 											]
 										}
 									]
@@ -727,7 +1135,7 @@
 		            return false;
 		        }
 				Ext.getCmp(ireturn.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'DI',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 
 	                }

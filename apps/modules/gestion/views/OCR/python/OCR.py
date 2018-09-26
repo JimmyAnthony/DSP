@@ -372,8 +372,12 @@ def main():
     else:
         sys.stderr.write('Usage: python pytesseract.py [-l lang] input_file\n')
         exit(2)
-    
+
+    BASE_DIR = '/sistemas/weburbano/config/'
+    path_ini = BASE_DIR + 'config.ini'
+    server_config = 'server_scm30'
     Config = ConfigParser.ConfigParser()
+    Config.read(path_ini)
 
     try:
 

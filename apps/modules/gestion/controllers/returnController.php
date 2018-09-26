@@ -77,7 +77,7 @@ class returnController extends AppController {
         header('Content-type: application/json');
         $this->rs_ = $this->objDatos->get_list_return($p);
         if(!empty($this->rs_)){
-            return '{"text": ".","children":['.$this->get_recursivo(1).']}';
+            return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
             
         }else{
             return json_encode(
@@ -101,23 +101,27 @@ class returnController extends AppController {
         }
     }
 
-    public function get_recursivo($_nivel){
+    public function get_recursivo($_nivel,$_hijo){
         $coma = '';
         foreach ($this->rs_ as $key => $value){
-            if ($value['nivel'] == $_nivel){
+            $_hijo=((int)$_nivel==1)?$value['hijo']:$_hijo;
+            if($value['nivel'] == $_nivel && (int)$value['padre'] == (int)$_hijo){
                 $json.=$coma."{";
-                $json.='"id_lote":"'.$value['id_lote'].'"';
+                $json.='"hijo":"'.$value['hijo'].'"';
+                $json.=',"padre":"'.$value['padre'].'"';
+                $json.=',"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
-                $json.=',"id_det":"'.$value['id_det'].'"';
                 //$json.=',"read":true';
                 //$json.=',"expanded":true';
                 $json.=',"iconCls":"task"';
-                $json.=',"lot_estado":"'.utf8_encode(trim($value['lot_estado'])).'"';
+                $json.=',"lot_estado":"'.$value['lot_estado'].'"';
                 $json.=',"tipdoc":"'.$value['tipdoc'].'"';
                 $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
                 $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
                 $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
+                $json.=',"path":"'.utf8_encode(trim($value['path'])).'"';
+                $json.=',"img":"'.utf8_encode(trim($value['img'])).'"';
                 $json.=',"fecha":"'.$value['fecha'].'"';
                 $json.=',"tot_folder":"'.$value['tot_folder'].'"';
                 $json.=',"tot_pag":"'.$value['tot_pag'].'"';
@@ -126,7 +130,8 @@ class returnController extends AppController {
                 $json.=',"id_user":"'.$value['id_user'].'"';
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
-                $js = $this->getRecursividad_children($_nivel,$value['id_lote'],$value['lot_estado']);
+                unset($this->rs_[$key]);
+                $js = $this->get_recursivo((int)$value['nivel']+1,$value['hijo']);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{
