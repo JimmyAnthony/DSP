@@ -33,7 +33,7 @@ class controlModels extends Adodb {
         parent::SetParameterSP($p['vp_name'], 'varchar');
         parent::SetParameterSP($p['fecha'], 'varchar');
         parent::SetParameterSP($p['vp_estado'], 'varchar');
-        // echo '=>' . parent::getSql().'<br>'; exit();
+         echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
         return $array;
     }

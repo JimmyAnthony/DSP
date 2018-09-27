@@ -9,6 +9,7 @@
 			id_lote:0,
 			shi_codigo:0,
 			fac_cliente:0,
+			id_dev:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -63,29 +64,33 @@
 	                }
 	            });
 				var store = Ext.create('Ext.data.Store',{
-                fields: [
-                    {name: 'id_lote', type: 'string'},
-                    {name: 'tipdoc', type: 'string'},
-                    {name: 'nombre', type: 'string'},
-                    {name: 'fecha', type: 'string'},
-                    {name: 'tot_folder', type: 'string'},                    
-                    {name: 'id_user', type: 'string'},                    
-                    {name: 'estado', type: 'string'}
-                ],
-                autoLoad:false,
-                proxy:{
-                    type: 'ajax',
-                    url: ireturn.url+'get_list_return/',
-                    reader:{
-                        type: 'json',
-                        rootProperty: 'data'
-                    }
-                },
-                listeners:{
-                    load: function(obj, records, successful, opts){
-                        
-                    }
-                }
+	                fields: [
+	                    {name: 'id_dev', type: 'string'},
+	                    {name: 'motivo', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'hora', type: 'string'},
+	                    {name: 'responsable', type: 'string'},                    
+	                    {name: 'mensaje', type: 'string'},                    
+	                    {name: 'tot_lotes', type: 'string'},
+	                    {name: 'tot_folders', type: 'string'},
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'fecha_registro', type: 'string'},
+	                    {name: 'usr_nombre', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: ireturn.url+'get_lista_devoluciones/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
             });
 			var store_shipper = Ext.create('Ext.data.Store',{
                 fields: [
@@ -142,6 +147,31 @@
 		        storeId: 'estado',
 		        autoLoad: true,
 		        data: myDataLote,
+		        fields: ['code', 'name']
+		    });
+
+		    var myDataMotivos = [
+				['EN','Entrega de documentos por fin de proceso'],
+			    ['PO','Problemas con documentos no legibles'],
+			    ['PE','Perdida de documentos'],
+			    ['PD','Pedido de Devolución antes de termino del proceso']
+			];
+			var store_motivos = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'motivos',
+		        autoLoad: true,
+		        data: myDataMotivos,
+		        fields: ['code', 'name']
+		    });
+		    
+		    var myDataEstadoDevolucion = [
+				['P','Pendiente de Cierre'],
+			    ['D','Devolución Cerrada'],
+			    ['C','Devolución Cancelada']
+			];
+			var store_estado_devolucion = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'estado_devolucion',
+		        autoLoad: true,
+		        data: myDataEstadoDevolucion,
 		        fields: ['code', 'name']
 		    });
 
@@ -248,7 +278,7 @@
 
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
-			                                                			
+			                                                			ireturn.getDevoluciones();
 			                                                        }
 			                                                    }
 			                                                }
@@ -448,6 +478,7 @@
 											items:[
 												{
 													region:'center',
+													padding:'5px 5px 5px 5px',
 													title:'Pendientes a Devolución',
 													border:true,
 													layout:'fit',
@@ -470,13 +501,20 @@
 								                                    sortable: true,
 								                                    flex: 1
 								                                },
-								                                {
+								                                /*{
 								                                    text: 'Descripción',
 								                                    dataIndex: 'descripcion',
 								                                    flex: 2
-								                                },
+								                                },*/
 								                                {
 								                                    text: 'Estado Lote',
+								                                    dataIndex: 'lot_estado',
+								                                    loocked : true,
+								                                    width: 100,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Acción',
 								                                    dataIndex: 'lot_estado',
 								                                    loocked : true,
 								                                    width: 100,
@@ -484,32 +522,7 @@
 								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 								                                        metaData.style = "padding: 0px; margin: 0px";
 								                                        var estado = 'basket_put.png';
-								                                        if(parseInt(record.get('nivel'))==1){
-									                                        switch(record.get('lot_estado')){
-																	        	case 'N':
-																	        		estado='';
-																	        	break;
-																	        	case 'LT':
-																	        		estado='baggage_cart_box.png';
-																	        	break;
-																	        	case 'ES':
-																	        		estado='print.png';
-																	        	break;
-																	        	case 'CO':
-																	        		estado='console.png';
-																	        	break;
-																	        	case 'RE':
-																	        		estado='1348695561_stock_mail-send-receive.png';
-																	        	break;
-																	        	case 'DI':
-																	        		estado='approval.png';
-																	        	break;
-																	        	case 'DE':
-																	        		estado='compartir.png';
-																	        	break;
-																	        }
-																        }
-								                                        var qtip = record.get('lot_estado');
+								                                        var qtip = 'Agregar Registro a pre devolución';
 								                                        return global.permisos({
 								                                            type: 'link',
 								                                            id_menu: ireturn.id_menu,
@@ -522,7 +535,7 @@
 								                                {
 								                                    text: 'Fecha y Hora',
 								                                    dataIndex: 'fecha',
-								                                    width: 180,
+								                                    width: 140,
 								                                    align: 'center'
 								                                },
 								                                {
@@ -530,7 +543,7 @@
 								                                    dataIndex: 'tot_folder',
 								                                    width: 80,
 								                                    align: 'center'
-								                                },
+								                                },/*
 								                                {
 								                                    text: 'Total Página',
 								                                    dataIndex: 'tot_pag',
@@ -542,7 +555,7 @@
 								                                    dataIndex: 'tot_errpag',
 								                                    width: 100,
 								                                    align: 'center'
-								                                },
+								                                },*/
 								                                {
 								                                    text: 'User',
 								                                    dataIndex: 'usr_update',
@@ -550,10 +563,10 @@
 								                                    align: 'center'
 								                                },
 								                                {
-								                                    text: 'Estado',
+								                                    text: 'Estado RG',
 								                                    dataIndex: 'estado',
 								                                    loocked : true,
-								                                    width: 50,
+								                                    width: 70,
 								                                    align: 'center',
 								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 								                                        //console.log(record);
@@ -565,8 +578,8 @@
 								                                            type: 'link',
 								                                            id_menu: ireturn.id_menu,
 								                                            icons:[
-								                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
-								                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
+								                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""}//,
+								                                                //{id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
 								                                            ]
 								                                        });
 								                                    }
@@ -622,27 +635,84 @@
 												{
 													region:'east',
 													title:'Preparar Devolución',
+													padding:'5px 5px 5px 0px',
 													border:true,
-													width:400,
+													width:350,
 													layout:'border',
 													items:[
 														{
 															region:'south',
-															layout:'fit',
-															height:150,
+															bodyStyle: 'background: transparent',
+		                                    				padding:'5px 5px 1px 5px',
+															//layout:'fit',
+															height:315,
 															border:false,
 															bbar:[
+																{
+											                        xtype:'button',
+											                        id:ireturn.id+'-btn-nuevo-devolucion',
+											                        //disabled:true,
+											                        scale: 'large',
+											                        flex:1,
+											                        //iconAlign: 'top',
+											                        //disabled:true,
+											                        //width:'50%',
+						                                            //anchor:'50%',
+											                        text: 'Nuevo',
+											                        icon: '/images/icon/if_General_Office_01_2530843.png',
+											                        listeners:{
+											                            beforerender: function(obj, opts){
+											                                /*global.permisos({
+											                                    id: 15,
+											                                    id_btn: obj.getId(), 
+											                                    id_menu: gestion_devolucion.id_menu,
+											                                    fn: ['panel_asignar_gestion.limpiar']
+											                                });*/
+											                            },
+											                            click: function(obj, e){
+											                            	//scanning.work=!scanning.work;
+											                            	ireturn.setNuevaDevolucion();
+											                            }
+											                        }
+											                    },
 																{
 											                        xtype:'button',
 											                        id:ireturn.id+'-btn-confirmar',
 											                        //disabled:true,
 											                        scale: 'large',
+											                        flex:1,
 											                        //iconAlign: 'top',
 											                        //disabled:true,
-											                        width:'99%',
-						                                            anchor:'99%',
-											                        text: 'Confirmar Devolución',
+											                        //width:'50%',
+						                                            //anchor:'50%',
+											                        text: 'Grabar',
 											                        icon: '/images/icon/if_General_Office_15_2530780.png',
+											                        listeners:{
+											                            beforerender: function(obj, opts){
+											                                /*global.permisos({
+											                                    id: 15,
+											                                    id_btn: obj.getId(), 
+											                                    id_menu: gestion_devolucion.id_menu,
+											                                    fn: ['panel_asignar_gestion.limpiar']
+											                                });*/
+											                            },
+											                            click: function(obj, e){
+											                            	ireturn.setDevolucion();
+											                            }
+											                        }
+											                    },
+											                    {
+											                        xtype:'button',
+											                        id:ireturn.id+'-btn-cancelar-devolucion',
+											                        //disabled:true,
+											                        flex:1,
+											                        scale: 'large',
+											                        //iconAlign: 'top',
+											                        //disabled:true,
+											                        //width:'50%',
+						                                            //anchor:'50%',
+											                        text: 'Cancelar',
+											                        icon: '/images/icon/if_button_cancel_3206.png',
 											                        listeners:{
 											                            beforerender: function(obj, opts){
 											                                /*global.permisos({
@@ -661,13 +731,124 @@
 															],
 															items:[
 																{
+								                                    xtype:'panel',
+								                                    border:false,
+								                                    bodyStyle: 'background: transparent',
+								                                    padding:'5px 5px 5px 5px',
+								                                    layout:'column',
+								                                    items: [
+							                                    		{
+																	        xtype: 'datefield',
+																	        id:ireturn.id+'-txt-fecha-entrega',
+																	        //padding:'5px 5px 5px 5px',
+																	        name: 'date1',
+																	        labelAlign:'right',
+																	        value:new Date(),
+					                                                		format: 'Ymd',
+																	        labelWidth: 85,
+																	        width:180,
+																	        fieldLabel: 'Fecha Entrega'
+																	    },
+																	    {
+																	    	xtype: 'timefield',
+																		    fieldLabel: 'Hora',
+																		    name: 'startTime',
+																		    id:ireturn.id+'-txt-hora-entrega',
+																		    format: 'H:i',
+																		    altFormats:'H:i',
+																		    labelAlign:'right',
+																		    value:new Date(),
+																		    increment: 30,
+																		    labelWidth: 40,
+																		    width:120,
+																		    listeners:{
+						                                                        afterrender:function(obj, e){
+						                                                        	var timeOut = new Date();
+						                                                            obj.setValue(timeOut);
+						                                                        },
+						                                                        select:function(obj, records, eOpts){
+						                                                
+						                                                        }
+						                                                    }
+																		}
+																	]
+																},
+															    {
+				                                                    xtype:'combo',
+				                                                    fieldLabel: 'Motivo',
+				                                                    padding:'5px 5px 5px 5px',
+				                                                    id:ireturn.id+'-cbo-motivo',
+				                                                    store: store_motivos,
+				                                                    queryMode: 'local',
+				                                                    triggerAction: 'all',
+				                                                    valueField: 'code',
+				                                                    displayField: 'name',
+				                                                    emptyText: '[Seleccione]',
+				                                                    labelAlign:'right',
+				                                                    //allowBlank: false,
+				                                                    labelWidth: 85,
+				                                                    width:'98%',
+				                                                    anchor:'98%',
+				                                                    //readOnly: true,
+				                                                    listeners:{
+				                                                        afterrender:function(obj, e){
+				                                                            Ext.getCmp(ireturn.id+'-cbo-motivo').setValue('EN');
+				                                                        },
+				                                                        select:function(obj, records, eOpts){
+				                                                
+				                                                        }
+				                                                    }
+				                                                },
+				                                                {
+				                                                    xtype: 'textfield',	
+				                                                    fieldLabel: 'Responsable',
+				                                                    padding:'5px 5px 5px 5px',
+				                                                    id:ireturn.id+'-txt-responsable',
+				                                                    labelWidth:85,
+				                                                    //readOnly:true,
+				                                                    labelAlign:'right',
+				                                                    width:'98%',
+				                                                    anchor:'98%'
+				                                                },
+																{
 															        xtype: 'textarea',
-															        fieldLabel: 'Ingrese el motivo de Devolución',
-															        emptyText: 'Ingrese el motivo de Devolución',
+															        id:ireturn.id+'-txt-mensaje',
+															        padding:'5px 5px 5px 5px',
+															        fieldLabel: 'Ingrese el mensaje de Devolución',
+															        emptyText: 'Ingrese el mensaje de Devolución',
 															        hideLabel: true,
-															        name: 'msg',
-															        flex: 1  // Take up all *remaining* vertical space (kicks in when resized)
-															    }
+															        height:120,
+															        width:'98%',
+															        anchor:'98%',
+															        name: 'msg'
+															    },
+															    {
+				                                                    xtype:'combo',
+				                                                    fieldLabel: 'Estado Devolución',
+				                                                    readOnly:true,
+				                                                    padding:'5px 5px 5px 5px',
+				                                                    id:ireturn.id+'-cbo-estado-devolucion',
+				                                                    store: store_estado_devolucion,
+				                                                    queryMode: 'local',
+				                                                    triggerAction: 'all',
+				                                                    valueField: 'code',
+				                                                    displayField: 'name',
+				                                                    emptyText: '[Seleccione]',
+				                                                    labelAlign:'right',
+				                                                    //allowBlank: false,
+				                                                    labelWidth: 110,
+				                                                    width:'98%',
+				                                                    anchor:'98%',
+				                                                    //readOnly: true,
+				                                                    listeners:{
+				                                                        afterrender:function(obj, e){
+				                                                            Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('P');
+				                                                        },
+				                                                        select:function(obj, records, eOpts){
+				                                                
+				                                                        }
+				                                                    }
+				                                                }
 															]
 														},
 														{
@@ -798,8 +979,9 @@
 										{
 											region:'east',
 											title:'Devueltos',
+											padding:'5px 5px 5px 0px',
 											layout:'border',
-											width:400,
+											width:'35%',
 											border:true,
 											items:[
 												{
@@ -814,15 +996,72 @@
 									                        columnLines: true,
 									                        columns:{
 									                            items:[
+									                            	{
+									                                    text: 'código',
+									                                    dataIndex: 'id_dev',
+									                                    width: 40
+									                                },
 									                                {
-									                                    text: 'Campaña',
-									                                    dataIndex: 'nombre',
+									                                    text: 'Motivo',
+									                                    dataIndex: 'motivo',
 									                                    flex: 1
 									                                },
 									                                {
-									                                    text: 'Descripcion',
-									                                    dataIndex: 'descripcion',
-									                                    width: 200
+									                                    text: 'Fecha',
+									                                    dataIndex: 'fecha',
+									                                    width: 60
+									                                },
+									                                {
+									                                    text: 'Hora',
+									                                    dataIndex: 'hora',
+									                                    width: 40
+									                                },
+									                                {
+									                                    text: 'Responsable',
+									                                    dataIndex: 'responsable',
+									                                    width: 100
+									                                },
+									                                {
+									                                    text: 'Tot.Lotes',
+									                                    dataIndex: 'tot_lotes',
+									                                    width: 60
+									                                },
+									                                {
+									                                    text: 'Tot.Folders',
+									                                    dataIndex: 'tot_folders',
+									                                    width: 70
+									                                },
+									                                {
+									                                    text: 'Estado', 
+									                                    dataIndex: 'estado',
+									                                    loocked : true,
+									                                    width: 50,
+									                                    align: 'center',
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        var estado = '';
+									                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+									                                       switch(record.get('lot_estado')){
+																	        	case 'P':
+																	        		estado='up_alt.png';
+																	        	break;
+																	        	case 'D':
+																	        		estado='close_nov.ico';
+																	        	break;
+																	        	case 'C':
+																	        		estado='close.png';
+																	        	break;
+																	        }
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: ireturn.id_menu,
+									                                            icons:[
+									                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
+									                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "ireturn.getPrint("+rowIndex+")"}
+									                                            ]
+									                                        });
+									                                    }
 									                                }
 									                            ],
 									                            defaults:{
@@ -988,8 +1227,133 @@
 
 				}).show();
 			},
-			getImagen:function(param){
+			getDevoluciones:function(){
+				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
 
+				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().removeAll();
+				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().load(
+	                {params: {
+	                	vp_shi_codigo:shi_codigo,
+	                	vp_fac_cliente:fac_cliente,
+	                	vp_id_dev:0,
+	                	vp_motivo:'',
+	                	vp_fecha:'',
+	                	vp_estado:''
+	                },
+	                callback:function(){
+
+	                }
+	            });
+			},
+			setNuevaDevolucion:function(){
+				var timeOut = new Date();
+				Ext.getCmp(ireturn.id+'-txt-fecha-entrega').setValue(timeOut);
+				Ext.getCmp(ireturn.id+'-txt-hora-entrega').setValue(timeOut);
+				Ext.getCmp(ireturn.id+'-cbo-motivo').setValue('EN');
+				Ext.getCmp(ireturn.id+'-txt-responsable').setValue('');
+				Ext.getCmp(ireturn.id+'-txt-mensaje').setValue('');
+				Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('P');
+				Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+				Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+			},
+			setDevolucion:function(){
+				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
+				var fecha = Ext.getCmp(ireturn.id+'-txt-fecha-entrega').getRawValue();
+				var hora = Ext.getCmp(ireturn.id+'-txt-hora-entrega').getRawValue();
+				var motivo = Ext.getCmp(ireturn.id+'-cbo-motivo').getValue();
+				var responsable = Ext.getCmp(ireturn.id+'-txt-responsable').getValue();
+				var mensaje = Ext.getCmp(ireturn.id+'-txt-mensaje').getValue();
+				var estado = Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').getValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
+		    	if(fecha== null || fecha==''){
+		            global.Msg({msg:"Seleccione una fecha por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(hora== null || hora==''){
+		            global.Msg({msg:"Seleccione la hora por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(motivo== null || motivo==''){
+		            global.Msg({msg:"Seleccione un motivo.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(responsable== null || responsable==''){
+		            global.Msg({msg:"Ingrese nombre de responsable o entidad.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
+
+				global.Msg({
+                    msg: (ireturn.id_dev!=0)?'¿Está seguro de cerrar la Devolución, recuerde que no será posible volver al estado anterior':'¿Está seguro de registrar la Devolución?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
+			                Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(true);
+	                        Ext.getCmp(ireturn.id+'-tab').el.mask('Guardando Devolución', 'x-mask-loading');
+	                        Ext.Ajax.request({
+			                    url: ireturn.url + 'set_return/',
+			                    params:{
+			                    	vp_op:(ireturn.id_dev!=0)?'U':'I',
+			                    	vp_shi_codigo:shi_codigo,
+			                    	vp_fac_cliente:fac_cliente,
+			                    	vp_id_dev:ireturn.id_dev,
+						            vp_motivo:motivo,
+						            vp_fecha:fecha,
+						            vp_hora:hora,
+						            vp_responsable:responsable,
+						            vp_mensaje:mensaje
+			                    },
+			                    success: function(response, options){
+			                    	Ext.getCmp(ireturn.id+'-tab').el.unmask(); 
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	//refrescar devoluciones
+			                                	if(ireturn.id_dev!=0){
+			                                		Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
+			                                		Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(true);
+			                                	}else{
+			                                		ireturn.id_dev=res.id_dev;
+			                                	}
+			                                	Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('D');
+			                                	ireturn.getDevoluciones();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    //ireturn.getReloadGridOCR();
+			                                	Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+			                                	Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+		            }
+                });
+				
 			},
 			setEditLote:function(index,op){
 				var rec = Ext.getCmp(ireturn.id + '-grid').getStore().getAt(index);

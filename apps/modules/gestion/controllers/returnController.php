@@ -25,6 +25,32 @@ class returnController extends AppController {
         $this->view('return/form_index.php', $p);
     }
 
+    public function get_lista_devoluciones($p){
+        $rs = $this->objDatos->get_lista_devoluciones($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+                $value_['id_dev'] = intval($value['id_dev']);
+                $value_['fecha'] = utf8_encode(trim($value['fecha']));
+                $value_['hora'] = utf8_encode(trim($value['hora']));
+                $value_['responsable'] = utf8_encode(trim($value['responsable']));
+                $value_['mensaje'] = utf8_encode(trim($value['mensaje']));
+                $value_['tot_lotes'] = intval($value['tot_lotes']);
+                $value_['tot_folders'] = intval($value['tot_folders']);
+                $value_['estado'] = utf8_encode(trim($value['estado']));
+                $value_['fecha_registro'] = utf8_encode(trim($value['fecha_registro']));
+                $value_['usr_nombre'] = utf8_encode(trim($value['usr_nombre']));
+                $array[]=$value_;
+        }
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
    public function get_list_shipper($p){
         $rs = $this->objDatos->get_list_shipper($p);
         //var_export($rs);
@@ -209,8 +235,9 @@ class returnController extends AppController {
         $rs = $rs[0];
         $data = array(
             'success' => true,
-            'error' => ($rs['status']=='OK')?'1':'0',
-            'msn' => utf8_encode(trim($rs['response']))
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response'])),
+            'id_dev' => $rs['id_dev']
         );
         header('Content-Type: application/json');
         return $this->response($data);
