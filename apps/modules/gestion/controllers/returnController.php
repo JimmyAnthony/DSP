@@ -33,7 +33,9 @@ class returnController extends AppController {
                 $value_['id_dev'] = intval($value['id_dev']);
                 $value_['fecha'] = utf8_encode(trim($value['fecha']));
                 $value_['hora'] = utf8_encode(trim($value['hora']));
+                $value_['motivo'] = utf8_encode(trim($value['motivo']));
                 $value_['responsable'] = utf8_encode(trim($value['responsable']));
+                $value_['documento'] = utf8_encode(trim($value['documento']));
                 $value_['mensaje'] = utf8_encode(trim($value['mensaje']));
                 $value_['tot_lotes'] = intval($value['tot_lotes']);
                 $value_['tot_folders'] = intval($value['tot_folders']);

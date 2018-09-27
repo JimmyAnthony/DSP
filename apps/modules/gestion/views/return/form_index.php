@@ -70,6 +70,7 @@
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'hora', type: 'string'},
 	                    {name: 'responsable', type: 'string'},                    
+	                    {name: 'documento', type: 'string'},
 	                    {name: 'mensaje', type: 'string'},                    
 	                    {name: 'tot_lotes', type: 'string'},
 	                    {name: 'tot_folders', type: 'string'},
@@ -645,7 +646,7 @@
 															bodyStyle: 'background: transparent',
 		                                    				padding:'5px 5px 1px 5px',
 															//layout:'fit',
-															height:315,
+															height:375,
 															border:false,
 															bbar:[
 																{
@@ -711,7 +712,7 @@
 											                        //disabled:true,
 											                        //width:'50%',
 						                                            //anchor:'50%',
-											                        text: 'Cancelar',
+											                        text: 'Liberar',
 											                        icon: '/images/icon/if_button_cancel_3206.png',
 											                        listeners:{
 											                            beforerender: function(obj, opts){
@@ -724,12 +725,25 @@
 											                            },
 											                            click: function(obj, e){
 											                            	//scanning.work=!scanning.work;
-											                            	//ireturn.setProcessingOCR();
+											                            	var id_dev =Ext.getCmp(ireturn.id+'-txt-cod-devolucion').getValue();
+											                            	ireturn.setClose(id_dev,'C');
 											                            }
 											                        }
 											                    }
 															],
 															items:[
+															    {
+				                                                    xtype: 'textfield',	
+				                                                    fieldLabel: 'Código',
+				                                                    padding:'5px 5px 5px 5px',
+				                                                    id:ireturn.id+'-txt-cod-devolucion',
+				                                                    labelWidth:85,
+				                                                    readOnly:true,
+				                                                    labelAlign:'right',
+				                                                    value:0,
+				                                                    width:'50%',
+				                                                    anchor:'50%'
+				                                                },
 																{
 								                                    xtype:'panel',
 								                                    border:false,
@@ -746,7 +760,7 @@
 																	        value:new Date(),
 					                                                		format: 'Ymd',
 																	        labelWidth: 85,
-																	        width:180,
+																	        width:185,
 																	        fieldLabel: 'Fecha Entrega'
 																	    },
 																	    {
@@ -809,6 +823,17 @@
 				                                                    labelAlign:'right',
 				                                                    width:'98%',
 				                                                    anchor:'98%'
+				                                                },
+				                                                {
+				                                                    xtype: 'textfield',	
+				                                                    fieldLabel: 'Documento',
+				                                                    padding:'5px 5px 5px 5px',
+				                                                    id:ireturn.id+'-txt-documento',
+				                                                    labelWidth:85,
+				                                                    //readOnly:true,
+				                                                    labelAlign:'right',
+				                                                    width:'70%',
+				                                                    anchor:'70%'
 				                                                },
 																{
 															        xtype: 'textarea',
@@ -1004,22 +1029,46 @@
 									                                {
 									                                    text: 'Motivo',
 									                                    dataIndex: 'motivo',
-									                                    flex: 1
+									                                    flex: 1,
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        //metaData.style = "padding: 0px; margin: 0px";
+									                                        var estado = '';
+									                                        var qtip = '';
+									                                       switch(record.get('motivo')){
+																	        	case 'EN':
+																	        		qtip='Entrega de documentos por fin de proceso';
+																	        	break;
+																	        	case 'PO':
+																	        		qtip='Problemas con documentos no legibles';
+																	        	break;
+																	        	case 'PE':
+																	        		qtip='Perdida de documentos';
+																	        	break;
+																	        	case 'PD':
+																	        		qtip='Pedido de Devolución antes de termino del proceso';
+																	        	break;
+																	        }
+									                                        return record.get('motivo') + '-' + qtip;
+									                                    }
 									                                },
 									                                {
 									                                    text: 'Fecha',
 									                                    dataIndex: 'fecha',
-									                                    width: 60
+									                                    width: 80
 									                                },
 									                                {
 									                                    text: 'Hora',
 									                                    dataIndex: 'hora',
-									                                    width: 40
+									                                    width: 60
 									                                },
 									                                {
 									                                    text: 'Responsable',
 									                                    dataIndex: 'responsable',
-									                                    width: 100
+									                                    width: 100,
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        return record.get('responsable') + '-' + record.get('documento');
+									                                    }
 									                                },
 									                                {
 									                                    text: 'Tot.Lotes',
@@ -1039,26 +1088,66 @@
 									                                    align: 'center',
 									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 									                                        //console.log(record);
-									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        //metaData.style = "padding: 0px; margin: 0px";
 									                                        var estado = '';
-									                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-									                                       switch(record.get('lot_estado')){
+									                                        var qtip = '';
+									                                       switch(record.get('estado')){
 																	        	case 'P':
 																	        		estado='up_alt.png';
+																	        		qtip='Devolución Pendiente';
 																	        	break;
 																	        	case 'D':
 																	        		estado='close_nov.ico';
+																	        		qtip='Devuelto';
 																	        	break;
 																	        	case 'C':
 																	        		estado='close.png';
+																	        		qtip='Cancelado';
 																	        	break;
 																	        }
 									                                        return global.permisos({
 									                                            type: 'link',
 									                                            id_menu: ireturn.id_menu,
 									                                            icons:[
-									                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
-									                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "ireturn.getPrint("+rowIndex+")"}
+									                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""}//,
+									                                                //{id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "ireturn.getPrint("+rowIndex+")"}
+									                                            ]
+									                                        });
+									                                    }
+									                                },
+									                                {
+									                                    text: 'Acción', 
+									                                    dataIndex: 'estado',
+									                                    loocked : true,
+									                                    width: 50,
+									                                    align: 'center',
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        //metaData.style = "padding: 0px; margin: 0px";
+									                                        var estado = '';
+									                                        var qtip = '';
+									                                       switch(record.get('estado')){
+																	        	case 'P':
+																	        		estado='up_alt.png';
+																	        		qtip='Devolución Pendiente';
+																	        	break;
+																	        	case 'D':
+																	        		estado='close_nov.ico';
+																	        		qtip='Devuelto';
+																	        	break;
+																	        	case 'C':
+																	        		estado='close.png';
+																	        		qtip='Cancelado';
+																	        	break;
+																	        }
+																	        var serv=0;
+																	        if(record.get('estado')=='P')serv=7;
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: ireturn.id_menu,
+									                                            icons:[
+									                                            	{id_serv: 7, img: '1348695561_stock_mail-send-receive.png', qtip: 'Ver Devolución', js: "ireturn.getView("+rowIndex+")"},
+									                                                {id_serv: serv, img: 'padlock-closed.png', qtip: 'Cerrar Devolución', js: "ireturn.setClose("+record.get('id_dev')+",'D')"}
 									                                            ]
 									                                        });
 									                                    }
@@ -1078,128 +1167,6 @@
 									                            afterrender: function(obj){
 									                                
 									                            }
-									                        }
-									                    }
-													]
-												},
-												{
-													region:'south',
-													title:'Detalle',
-													layout:'fit',
-													height:'50%',
-													items:[
-														{
-									                        xtype: 'treepanel',
-													        useArrows: true,
-													        rootVisible: true,
-													        multiSelect: true,
-									                        id: ireturn.id + '-grid-detalle',
-									                        columnLines: true,
-									                        store: storeTree,
-
-												            columns: [
-													            {
-													            	xtype: 'treecolumn',
-													            	id: ireturn.id + '-grid-detalle-column',
-								                                    text: 'Nombre',
-								                                    dataIndex: 'lote_nombre',
-								                                    sortable: true,
-								                                    flex: 1
-								                                },
-								                                {
-								                                    text: 'Estado Lote',
-								                                    dataIndex: 'lot_estado',
-								                                    loocked : true,
-								                                    width: 100,
-								                                    align: 'center',
-								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-								                                        metaData.style = "padding: 0px; margin: 0px";
-								                                        var estado = 'basket_put.png';
-								                                        if(parseInt(record.get('nivel'))==1){
-									                                        switch(record.get('lot_estado')){
-																	        	case 'N':
-																	        		estado='';
-																	        	break;
-																	        	case 'LT':
-																	        		estado='baggage_cart_box.png';
-																	        	break;
-																	        	case 'ES':
-																	        		estado='print.png';
-																	        	break;
-																	        	case 'CO':
-																	        		estado='console.png';
-																	        	break;
-																	        	case 'RE':
-																	        		estado='1348695561_stock_mail-send-receive.png';
-																	        	break;
-																	        	case 'FI':
-																	        		estado='approval.png';
-																	        	break;
-																	        	case 'DE':
-																	        		estado='compartir.png';
-																	        	break;
-																	        }
-																        }
-								                                        var qtip = record.get('descripcion');
-								                                        return global.permisos({
-								                                            type: 'link',
-								                                            id_menu: ireturn.id_menu,
-								                                            icons:[
-								                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
-								                                            ]
-								                                        });
-								                                    }
-								                                },
-								                                {
-								                                    text: 'Estado',
-								                                    dataIndex: 'estado',
-								                                    loocked : true,
-								                                    width: 50,
-								                                    align: 'center',
-								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-								                                        //console.log(record);
-								                                        metaData.style = "padding: 0px; margin: 0px";
-								                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
-								                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-
-								                                        return global.permisos({
-								                                            type: 'link',
-								                                            id_menu: ireturn.id_menu,
-								                                            icons:[
-								                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
-								                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
-								                                            ]
-								                                        });
-								                                    }
-								                                }
-													        ],
-									                        hideItemsReadFalse: function () {
-															    var me = this,
-															        items = me.getReferences().treelistRef.itemMap;
-
-
-															    for(var i in items){
-															        if(items[i].config.node.data.read == false){
-															            items[i].destroy();
-															        }
-															    }
-															},
-									                        trackMouseOver: false,
-									                        listeners:{
-									                            afterrender: function(obj){
-									                                
-									                            },
-																beforeselect:function(obj, record, index, eOpts ){
-
-																},
-			
-														        checkchange: function( node, checked, eOpts ){
-														            if(node.hasChildNodes()){
-														                node.eachChild(function(childNode){
-														                    childNode.set('checked', checked);
-														                });
-														            }
-														        }
 									                        }
 									                    }
 													]
@@ -1227,6 +1194,26 @@
 
 				}).show();
 			},
+			getView:function(index){
+				var record=Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().getAt(index);
+				var hijo=record.data.hijo;
+
+				Ext.getCmp(ireturn.id+'-txt-cod-devolucion').setValue(record.data.id_dev);
+				Ext.getCmp(ireturn.id+'-txt-fecha-entrega').setValue(record.data.fecha);
+				Ext.getCmp(ireturn.id+'-txt-hora-entrega').setValue(record.data.hora);
+				Ext.getCmp(ireturn.id+'-cbo-motivo').setValue(record.data.motivo);
+				Ext.getCmp(ireturn.id+'-txt-responsable').setValue(record.data.responsable);
+				Ext.getCmp(ireturn.id+'-txt-documento').setValue(record.data.documento);
+				Ext.getCmp(ireturn.id+'-txt-mensaje').setValue(record.data.mensaje);
+				Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue(record.data.estado);
+				if(record.data.estado=='P'){
+					Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+					Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+				}else{
+					Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
+					Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(true);
+				}
+			},
 			getDevoluciones:function(){
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
@@ -1247,23 +1234,85 @@
 	            });
 			},
 			setNuevaDevolucion:function(){
+				Ext.getCmp(ireturn.id+'-txt-cod-devolucion').setValue(0);
 				var timeOut = new Date();
 				Ext.getCmp(ireturn.id+'-txt-fecha-entrega').setValue(timeOut);
 				Ext.getCmp(ireturn.id+'-txt-hora-entrega').setValue(timeOut);
 				Ext.getCmp(ireturn.id+'-cbo-motivo').setValue('EN');
 				Ext.getCmp(ireturn.id+'-txt-responsable').setValue('');
+				Ext.getCmp(ireturn.id+'-txt-documento').setValue('');
 				Ext.getCmp(ireturn.id+'-txt-mensaje').setValue('');
 				Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('P');
-				Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+				Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
 				Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+			},
+			setClose:function(id_dev,op){
+				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
+				global.Msg({
+                    msg: (op=='D')?'¿Está seguro de cerrar la Devolución?, recuerde que no será posible volver al estado anterior.':'¿Está seguro de liberar el registro previo de Devolución?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
+			                Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(true);
+	                        Ext.getCmp(ireturn.id+'-tab').el.mask('Guardando Devolución', 'x-mask-loading');
+	                        Ext.Ajax.request({
+			                    url: ireturn.url + 'set_return/',
+			                    params:{
+			                    	vp_op:op,
+			                    	vp_shi_codigo:shi_codigo,
+			                    	vp_fac_cliente:fac_cliente,
+			                    	vp_id_dev:id_dev,
+						            vp_motivo:'',
+						            vp_fecha:'',
+						            vp_hora:'',
+						            vp_responsable:'',
+						            vp_documento:'',
+						            vp_mensaje:''
+			                    },
+			                    success: function(response, options){
+			                    	Ext.getCmp(ireturn.id+'-tab').el.unmask(); 
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	//refrescar devoluciones
+			                                	ireturn.setNuevaDevolucion();
+			                                	ireturn.getDevoluciones();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    //ireturn.getReloadGridOCR();
+			                                	Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+			                                	Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+		            }
+                });
 			},
 			setDevolucion:function(){
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
+				var id_dev =Ext.getCmp(ireturn.id+'-txt-cod-devolucion').getValue();
 				var fecha = Ext.getCmp(ireturn.id+'-txt-fecha-entrega').getRawValue();
 				var hora = Ext.getCmp(ireturn.id+'-txt-hora-entrega').getRawValue();
 				var motivo = Ext.getCmp(ireturn.id+'-cbo-motivo').getValue();
 				var responsable = Ext.getCmp(ireturn.id+'-txt-responsable').getValue();
+				var documento = Ext.getCmp(ireturn.id+'-txt-documento').getValue();
 				var mensaje = Ext.getCmp(ireturn.id+'-txt-mensaje').getValue();
 				var estado = Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').getValue();
 
@@ -1295,7 +1344,7 @@
 
 
 				global.Msg({
-                    msg: (ireturn.id_dev!=0)?'¿Está seguro de cerrar la Devolución, recuerde que no será posible volver al estado anterior':'¿Está seguro de registrar la Devolución?',
+                    msg: (id_dev!=0)?'¿Está seguro de actualizar la Devolución?':'¿Está seguro de registrar la Devolución?',
                     icon: 3,
                     buttons: 3,
                     fn: function(btn){
@@ -1306,14 +1355,15 @@
 	                        Ext.Ajax.request({
 			                    url: ireturn.url + 'set_return/',
 			                    params:{
-			                    	vp_op:(ireturn.id_dev!=0)?'U':'I',
+			                    	vp_op:(id_dev!=0)?'U':'I',
 			                    	vp_shi_codigo:shi_codigo,
 			                    	vp_fac_cliente:fac_cliente,
-			                    	vp_id_dev:ireturn.id_dev,
+			                    	vp_id_dev:id_dev,
 						            vp_motivo:motivo,
 						            vp_fecha:fecha,
 						            vp_hora:hora,
 						            vp_responsable:responsable,
+						            vp_documento:documento,
 						            vp_mensaje:mensaje
 			                    },
 			                    success: function(response, options){
@@ -1326,12 +1376,9 @@
 			                                buttons: 1,
 			                                fn: function(btn){
 			                                	//refrescar devoluciones
-			                                	if(ireturn.id_dev!=0){
-			                                		Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
-			                                		Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(true);
-			                                	}else{
-			                                		ireturn.id_dev=res.id_dev;
-			                                	}
+			                                	Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+		                                		Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+		                                		Ext.getCmp(ireturn.id+'-txt-cod-devolucion').setValue(res.id_dev);
 			                                	Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('D');
 			                                	ireturn.getDevoluciones();
 			                                }
@@ -1343,7 +1390,9 @@
 			                                buttons: 1,
 			                                fn: function(btn){
 			                                    //ireturn.getReloadGridOCR();
-			                                	Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+			                                    if(id_dev!=0){
+			                                		Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
+			                                	}
 			                                	Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
 			                                }
 			                            });

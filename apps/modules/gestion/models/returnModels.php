@@ -87,16 +87,13 @@ class returnModels extends Adodb {
             parent::SetParameterSP($p['vp_fecha'], 'varchar');
             parent::SetParameterSP($p['vp_hora'], 'varchar');
             parent::SetParameterSP(utf8_decode(trim($p['vp_responsable'])), 'varchar');
+            parent::SetParameterSP(utf8_decode(trim($p['vp_documento'])), 'varchar');
             parent::SetParameterSP(utf8_decode(trim($p['vp_mensaje'])), 'varchar');
             parent::SetParameterSP(USR_ID, 'int');
              //echo '=>' . parent::getSql().'<br>'; exit();
             $array = parent::ExecuteSPArray();
             return $array;
     }
-
-
-
-
 
     public function get_list_shipper($p){
         parent::ReiniciarSQL();
