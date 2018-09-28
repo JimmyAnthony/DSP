@@ -335,7 +335,7 @@
 
 			                                                        },
 			                                                        select:function(obj, records, eOpts){
-			                                                			ireturn.getDevoluciones();
+			                                                			//ireturn.getDevoluciones();
 			                                                        }
 			                                                    }
 			                                                }
@@ -981,7 +981,7 @@
 										                                    align: 'center',
 										                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 										                                        metaData.style = "padding: 0px; margin: 0px";
-										                                        var estado = 'basket_put.png';
+										                                        var estado = 'document-list-16.png';
 										                                        if(parseInt(record.get('nivel'))==1){
 											                                        switch(record.get('lot_estado')){
 																			        	case 'N':
@@ -999,7 +999,7 @@
 																			        	case 'RE':
 																			        		estado='1348695561_stock_mail-send-receive.png';
 																			        	break;
-																			        	case 'FI':
+																			        	case 'DI':
 																			        		estado='approval.png';
 																			        	break;
 																			        	case 'DE':
@@ -1007,7 +1007,7 @@
 																			        	break;
 																			        }
 																		        }
-										                                        var qtip = record.get('descripcion');
+										                                        var qtip = record.get('lot_estado');
 										                                        return global.permisos({
 										                                            type: 'link',
 										                                            id_menu: ireturn.id_menu,
@@ -1091,6 +1091,32 @@
 													region:'center',
 													layout:'fit',
 													border:false,
+													tbar:[
+														{
+													        xtype: 'datefield',
+													        id:ireturn.id+'-txt-fecha-devolucion',
+													        //padding:'5px 5px 5px 5px',
+													        name: 'date_dev',
+													        labelAlign:'right',
+													        value:new Date(),
+	                                                		format: 'Y-m-d',
+													        labelWidth: 115,
+													        width:210,
+													        fieldLabel: 'Fecha Registro'
+													    },
+													    {
+									                        xtype:'button',
+									                        text: 'Buscar',
+									                        icon: '/images/icon/binocular.png',
+									                        listeners:{
+									                            beforerender: function(obj, opts){
+									                            },
+									                            click: function(obj, e){	             	
+		                               					            ireturn.getDevoluciones();
+									                            }
+									                        }
+									                    }
+													],
 													items:[
 														{
 									                        xtype: 'grid',
@@ -1350,6 +1376,7 @@
 				ireturn.getReloadPreDevolucion(record.data.id_dev);
 			},
 			getDevoluciones:function(){
+				var fecha = Ext.getCmp(ireturn.id+'-txt-fecha-devolucion').getRawValue();
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
 
@@ -1360,7 +1387,7 @@
 	                	vp_fac_cliente:fac_cliente,
 	                	vp_id_dev:0,
 	                	vp_motivo:'',
-	                	vp_fecha:'',
+	                	vp_fecha:fecha,
 	                	vp_estado:''
 	                },
 	                callback:function(){
