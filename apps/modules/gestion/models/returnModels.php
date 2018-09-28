@@ -28,7 +28,32 @@ class returnModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
-
+    public function get_list_pre_return($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_pre_return');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP($p['vp_id_dev'], 'int');
+        parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function get_list_pending_return($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_pending_return');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP($p['vp_lote'], 'int');
+        parent::SetParameterSP($p['vp_lote_estado'], 'varchar');
+        parent::SetParameterSP($p['vp_name'], 'varchar');
+        parent::SetParameterSP($p['fecha'], 'varchar');
+        parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
     public function get_list_return($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_list_return');
@@ -89,6 +114,20 @@ class returnModels extends Adodb {
             parent::SetParameterSP(utf8_decode(trim($p['vp_responsable'])), 'varchar');
             parent::SetParameterSP(utf8_decode(trim($p['vp_documento'])), 'varchar');
             parent::SetParameterSP(utf8_decode(trim($p['vp_mensaje'])), 'varchar');
+            parent::SetParameterSP(USR_ID, 'int');
+             //echo '=>' . parent::getSql().'<br>'; exit();
+            $array = parent::ExecuteSPArray();
+            return $array;
+    }
+    public function set_pre_return($p){
+            parent::ReiniciarSQL();
+            parent::ConnectionOpen($this->dsn, 'set_pre_return');
+            parent::SetParameterSP($p['vp_op'], 'varchar');
+            parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+            parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+            parent::SetParameterSP($p['vp_id_lote'], 'int');
+            parent::SetParameterSP($p['vp_id_det'], 'int');
+            parent::SetParameterSP($p['vp_id_dev'], 'int');
             parent::SetParameterSP(USR_ID, 'int');
              //echo '=>' . parent::getSql().'<br>'; exit();
             $array = parent::ExecuteSPArray();

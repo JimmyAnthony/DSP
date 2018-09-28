@@ -36,7 +36,9 @@
 	                    {name: 'usr_update', type: 'string'},
 	                    {name: 'fec_update', type: 'string'},
 	                    {name: 'estado', type: 'string'},
-	                    {name: 'nivel', type: 'string'}
+	                    {name: 'nivel', type: 'string'},
+	                    {name: 'id_dev', type: 'string'},
+	                    {name: 'usr_dev', type: 'string'}
 				    ]
 				});
 				var storeTree = new Ext.data.TreeStore({
@@ -44,7 +46,7 @@
 				    autoLoad:false,
 	                proxy: {
 	                    type: 'ajax',
-	                    url: ireturn.url+'get_list_return/'
+	                    url: ireturn.url+'get_list_pending_return/'
 	                },
 	                folderSort: true,
 	                listeners:{
@@ -63,6 +65,60 @@
 	                    }
 	                }
 	            });
+
+	            Ext.define('Task_pre', {
+				    extend: 'Ext.data.TreeModel',
+				    fields: [
+				        {name: 'hijo', type: 'string'},
+				        {name: 'padre', type: 'string'},
+				        {name: 'id_lote', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'},
+	                    {name: 'nivel', type: 'string'},
+	                    {name: 'id_dev', type: 'string'},
+	                    {name: 'usr_dev', type: 'string'}
+				    ]
+				});
+				var storeTreePRE = new Ext.data.TreeStore({
+	                model: 'Task_pre',
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: ireturn.url+'get_list_pre_return/'
+	                },
+	                folderSort: true,
+	                listeners:{
+	                	beforeload: function (store, operation, opts) {
+					    },
+	                    load: function(obj, records, successful, opts){
+		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').doLayout();
+	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		storeTree.removeAt(0);
+	                 		Ext.getCmp(ireturn.id + '-grid-devoluciones').collapseAll();
+		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                    });
+		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').expandAll();
+	                    }
+	                }
+	            });
+
 				var store = Ext.create('Ext.data.Store',{
 	                fields: [
 	                    {name: 'id_dev', type: 'string'},
@@ -407,15 +463,14 @@
 									                            beforerender: function(obj, opts){
 									                            },
 									                            click: function(obj, e){	             	
-									                            	var name = Ext.getCmp(ireturn.id+'-txt-lotizer').getValue();
-		                               					            ireturn	.getReloadGridlotizer(name);
+		                               					            ireturn	.getReloadGridlotizer();
 
 
 									                            }
 									                        }
 									                    }
 		                                            ]
-		                                        },
+		                                        }/*,
 		                                        {
 		                                            width: 80,border:false,
 		                                            padding:'0px 2px 0px 0px',  
@@ -456,7 +511,7 @@
 									                        }
 									                    }
 		                                            ]
-		                                        }
+		                                        }*/
 		                                    ]
 		                                }
 		                            ]
@@ -524,11 +579,16 @@
 								                                        metaData.style = "padding: 0px; margin: 0px";
 								                                        var estado = 'basket_put.png';
 								                                        var qtip = 'Agregar Registro a pre devolución';
+
+																		var id_det = 0;
+																		if(parseInt(record.get('nivel'))==2){
+																			var id_det = record.get('hijo');
+																		}
 								                                        return global.permisos({
 								                                            type: 'link',
 								                                            id_menu: ireturn.id_menu,
 								                                            icons:[
-								                                                {id_serv: 7, img: estado, qtip: qtip, js: ""}
+								                                                {id_serv: 7, img: estado, qtip: qtip, js: "ireturn.setAddPreReturn('A',"+record.get('shi_codigo')+","+record.get('fac_cliente')+","+id_det+","+record.get('id_lote')+")"}
 								                                            ]
 								                                        });
 								                                    }
@@ -888,12 +948,12 @@
 															        multiSelect: true,
 											                        id: ireturn.id + '-grid-devoluciones',
 											                        columnLines: true,
-											                        store: storeTree,
+											                        store: storeTreePRE,
 
 														            columns: [
 															            {
 															            	xtype: 'treecolumn',
-															            	id: ireturn.id + '-grid-lote_devoluciones',
+															            	id: ireturn.id + '-grid-lote_devoluciones-pre',
 										                                    text: 'Nombre',
 										                                    dataIndex: 'lote_nombre',
 										                                    sortable: true,
@@ -944,23 +1004,25 @@
 										                                    }
 										                                },
 										                                {
-										                                    text: 'Estado',
-										                                    dataIndex: 'estado',
+										                                    text: 'Acción',
+										                                    dataIndex: 'lot_estado',
 										                                    loocked : true,
-										                                    width: 50,
+										                                    width: 100,
 										                                    align: 'center',
 										                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-										                                        //console.log(record);
 										                                        metaData.style = "padding: 0px; margin: 0px";
-										                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
-										                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
+										                                        var estado = 'basket_put.png';
+										                                        var qtip = 'Agregar Registro a pre devolución';
 
+																				var id_det = 0;
+																				if(parseInt(record.get('nivel'))==2){
+																					var id_det = record.get('hijo');
+																				}
 										                                        return global.permisos({
 										                                            type: 'link',
 										                                            id_menu: ireturn.id_menu,
 										                                            icons:[
-										                                            	{id_serv: 7, img: estado, qtip: qtip, js: ""},
-										                                                {id_serv: 7, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
+										                                                {id_serv: 7, img: estado, qtip: qtip, js: "ireturn.setAddPreReturn('D',"+record.get('shi_codigo')+","+record.get('fac_cliente')+","+id_det+","+record.get('id_lote')+")"}
 										                                            ]
 										                                        });
 										                                    }
@@ -1194,10 +1256,65 @@
 
 				}).show();
 			},
+			setAddPreReturn:function(vp_op,shi_codigo,fac_cliente,id_det,id_lote){
+				var id_dev =Ext.getCmp(ireturn.id+'-txt-cod-devolucion').getValue();
+				var estado = Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').getValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        if(id_dev== null || id_dev==0){
+		            global.Msg({msg:"Seleccione un registro de pre devolucion por favor.",icon:2,fn:function(){}});
+		            return false;
+		        } 
+		        if(estado== null || estado=='' || estado!='P'){
+		            global.Msg({msg:"El estado de la pre devolucion no esta pendiente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
+                Ext.getCmp(ireturn.id+'-tab').el.mask('Guardando Devolución', 'x-mask-loading');
+                Ext.Ajax.request({
+                    url: ireturn.url + 'set_pre_return/',
+                    params:{
+                    	vp_op:vp_op,
+                    	vp_shi_codigo:shi_codigo,
+                    	vp_fac_cliente:fac_cliente,
+                    	vp_id_lote:id_lote,
+                    	vp_id_det:id_det,
+                    	vp_id_dev:id_dev
+                    },
+                    success: function(response, options){
+                    	Ext.getCmp(ireturn.id+'-tab').el.unmask(); 
+                        var res = Ext.JSON.decode(response.responseText);
+                        if (res.error == 'OK'){
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 1,
+                                buttons: 1,
+                                fn: function(btn){
+                                	ireturn.getReloadPreDevolucion(res.id_dev);
+                                }
+                            });
+                        } else{
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 0,
+                                buttons: 1,
+                                fn: function(btn){
+                                    //ireturn.getReloadGridOCR();
+                                }
+                            });
+                        }
+                    }
+                });
+			},
 			getView:function(index){
 				var record=Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().getAt(index);
-				var hijo=record.data.hijo;
-
 				Ext.getCmp(ireturn.id+'-txt-cod-devolucion').setValue(record.data.id_dev);
 				Ext.getCmp(ireturn.id+'-txt-fecha-entrega').setValue(record.data.fecha);
 				Ext.getCmp(ireturn.id+'-txt-hora-entrega').setValue(record.data.hora);
@@ -1213,6 +1330,7 @@
 					Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
 					Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(true);
 				}
+				ireturn.getReloadPreDevolucion(record.data.id_dev);
 			},
 			getDevoluciones:function(){
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
@@ -1503,7 +1621,7 @@
 		                                buttons: 1,
 		                                fn: function(btn){
 		                                    if(parseInt(res.error)==1){
-		                                    	ireturn.getReloadGridlotizer('');
+		                                    	ireturn.getReloadGridlotizer();
 		                                    	ireturn.set_lotizer_clear();
 		                                    }
 		                                }
@@ -1523,7 +1641,7 @@
 	                }
 	            });
 			},
-			getReloadGridlotizer:function(name){
+			getReloadGridlotizer:function(){
 				ireturn.set_lotizer_clear();
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
@@ -1554,13 +1672,16 @@
 	                }
 	            });
 			},
-			getReloadGridlotizer2:function(id_lote){
-				Ext.getCmp(ireturn.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+			getReloadPreDevolucion:function(id_dev){
+				//Ext.getCmp(ireturn.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
 
-				Ext.getCmp(ireturn.id + '-grid-lotizer').getStore().load(
-	                {params: {vp_id_lote:id_lote},
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().load(
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_dev:id_dev},
 	                callback:function(){
-	                	Ext.getCmp(ireturn.id+'-form').el.unmask();
+	                	//Ext.getCmp(ireturn.id+'-tab').el.unmask();
+	                	ireturn.getReloadGridlotizer();
 	                }
 	            });
 			},
@@ -1613,7 +1734,7 @@
 						                                    	if (ireturn.opcion == 'U' || ireturn.opcion == 'I') {
 
 						                                    	}
-						                                    	ireturn.getReloadGridlotizer('');
+						                                    	ireturn.getReloadGridlotizer();
 						                                    	ireturn.set_lotizer_clear();
 						                                    }
 						                                }

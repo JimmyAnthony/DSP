@@ -99,11 +99,40 @@ class returnController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function get_list_return($p){
+    public function get_list_pre_return($p){
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json');
-        $this->rs_ = $this->objDatos->get_list_return($p);
+        $this->rs_ = $this->objDatos->get_list_pre_return($p);
+        if(!empty($this->rs_)){
+            return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
+            
+        }else{
+            return json_encode(
+                array(
+                    'text'=>'root',
+                    'children'=>array(
+                        'id_lote'=>0,
+                        'iconCls'=>'task',
+                        'tipdoc'=>'',
+                        'nombre'=>'',
+                        'fecha'=>'',
+                        'tot_folder'=>0,
+                        'tot_pag'=>0,
+                        'tot_errpag'=>0,
+                        'id_user'=>0,
+                        'estado'=>'',
+                        'leaf'=>'true'
+                        )
+                    )
+                );
+        }
+    }
+    public function get_list_pending_return($p){
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json');
+        $this->rs_ = $this->objDatos->get_list_pending_return($p);
         if(!empty($this->rs_)){
             return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
             
@@ -158,6 +187,8 @@ class returnController extends AppController {
                 $json.=',"id_user":"'.$value['id_user'].'"';
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
+                $json.=',"id_dev":"'.$value['id_dev'].'"';
+                $json.=',"usr_dev":"'.$value['usr_dev'].'"';
                 unset($this->rs_[$key]);
                 $js = $this->get_recursivo((int)$value['nivel']+1,$value['hijo']);
                 if(!empty($js)){
@@ -234,6 +265,21 @@ class returnController extends AppController {
         //$this->valida_mobil($p);
         
         $rs = $this->objDatos->set_return($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response'])),
+            'id_dev' => $rs['id_dev']
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+     public function set_pre_return($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->set_pre_return($p);
         $rs = $rs[0];
         $data = array(
             'success' => true,
