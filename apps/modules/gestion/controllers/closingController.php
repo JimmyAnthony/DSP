@@ -21,7 +21,7 @@ class closingController extends AppController {
         $this->objDatos = new closingModels();
     }
 
-    public function index($p){        
+    public function index($p){
         $this->view('closing/form_index.php', $p);
     }
 
@@ -214,5 +214,23 @@ class closingController extends AppController {
     public function get_print($p){
         require APPPATH_VIEW . 'closing/print_pdf.php';
     }
+    public function get_zip($p){
+        $time = time();
+        $RD=date("dmY His", $time);
+        $zipname = 'DSP-FILE-'.$RD.'.zip';
 
+        $zip = new ZipArchive;
+        $zip->open($zipname, ZipArchive::CREATE|ZipArchive::OVERWRITE);
+        $rs = $this->objDatos->get_load_page($p);
+        foreach ($rs as $index => $value){
+            $zip->addFile(PATH.'public_html'.trim($value['path']).trim($value['img']),trim($value['img']));
+        }
+        $zip->close();
+
+        ///Then download the zipped file.
+        header('Content-Type: application/zip');
+        header('Content-disposition: attachment; filename='.$zipname);
+        header('Content-Length: ' . filesize($zipname));
+        readfile($zipname);
+    }
 }

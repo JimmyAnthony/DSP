@@ -574,7 +574,7 @@
 						                                    text: 'Estado',
 						                                    dataIndex: 'estado',
 						                                    loocked : true,
-						                                    width: 50,
+						                                    width: 70,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
@@ -587,7 +587,8 @@
 						                                            id_menu: closing.id_menu,
 						                                            icons:[
 						                                            	{id_serv: 5, img: estado, qtip: qtip, js: ""},
-						                                                {id_serv: 5, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"}
+						                                                {id_serv: 5, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"},
+						                                                {id_serv: 5, img: 'download_.png', qtip: 'Descargar Zip', js: "closing.getZip("+rowIndex+")"}
 						                                            ]
 						                                        });
 						                                    }
@@ -700,6 +701,27 @@
 			    }
 
 				window.open(closing.url+'get_print/?vp_shi_codigo='+shi_codigo+'&vp_id_lote='+lote+'&vp_id_det='+id_det+'&vp_id_pag='+id_pag, '_blank');
+			},
+			getZip:function(index){
+				var record=Ext.getCmp(closing.id + '-grid-closing').getStore().getAt(index);
+				var hijo=record.data.hijo;
+			    var padre=record.data.padre;
+			    var lote =record.data.id_lote;
+			    var nivel=record.data.nivel;
+			    var shi_codigo=record.data.shi_codigo;
+
+			    var id_pag=0;
+			    var id_det=0;
+
+			    if(nivel!=1){
+			    	if(nivel==2){
+			    		id_det=hijo;
+			    	}else{
+			    		id_pag=hijo;
+			    		id_det=padre;
+			    	}
+			    }
+				window.open(closing.url+'get_zip/?vp_shi_codigo='+shi_codigo+'&vp_id_lote='+lote+'&vp_id_det='+id_det+'&vp_id_pag='+id_pag, '_blank');
 			},
 			getStatusPanel: function(ES) {
 		        /*Ext.getCmp(closing.id+'-check-status').getStore().removeAll();
