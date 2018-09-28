@@ -6,6 +6,9 @@
  * @author  Jimmy Anthony Bazán Solis (https://twitter.com/jbazan)
  * @version 2.0
  */
+error_reporting(NULL);
+set_time_limit(1000);
+ini_set("memory_limit", "-1");
 
 class OCRController extends AppController {
 

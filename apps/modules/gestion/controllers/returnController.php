@@ -108,24 +108,7 @@ class returnController extends AppController {
             return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
             
         }else{
-            return json_encode(
-                array(
-                    'text'=>'root',
-                    'children'=>array(
-                        'id_lote'=>0,
-                        'iconCls'=>'task',
-                        'tipdoc'=>'',
-                        'nombre'=>'',
-                        'fecha'=>'',
-                        'tot_folder'=>0,
-                        'tot_pag'=>0,
-                        'tot_errpag'=>0,
-                        'id_user'=>0,
-                        'estado'=>'',
-                        'leaf'=>'true'
-                        )
-                    )
-                );
+            return '';
         }
     }
     public function get_list_pending_return($p){
@@ -137,24 +120,7 @@ class returnController extends AppController {
             return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
             
         }else{
-            return json_encode(
-                array(
-                    'text'=>'root',
-                    'children'=>array(
-                        'id_lote'=>0,
-                        'iconCls'=>'task',
-                        'tipdoc'=>'',
-                        'nombre'=>'',
-                        'fecha'=>'',
-                        'tot_folder'=>0,
-                        'tot_pag'=>0,
-                        'tot_errpag'=>0,
-                        'id_user'=>0,
-                        'estado'=>'',
-                        'leaf'=>'true'
-                        )
-                    )
-                );
+            return '';
         }
     }
 

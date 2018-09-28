@@ -10,6 +10,7 @@
 			shi_codigo:0,
 			fac_cliente:0,
 			id_dev:0,
+			paramsStore:{},
 			paramsStorePRE:{},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
@@ -52,6 +53,7 @@
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
+	                		store.proxy.extraParams = ireturn.paramsStore;
 					    },
 	                    load: function(obj, records, successful, opts){
 		                    Ext.getCmp(ireturn.id + '-grid').doLayout();
@@ -691,7 +693,8 @@
 									                        trackMouseOver: false,
 									                        listeners:{
 									                            afterrender: function(obj){
-									                                
+									                                obj.getStore().removeAll();
+																	obj.getView().refresh();
 									                            },
 																beforeselect:function(obj, record, index, eOpts ){
 
@@ -1063,7 +1066,8 @@
 											                        trackMouseOver: false,
 											                        listeners:{
 											                            afterrender: function(obj){
-											                                
+											                                obj.getStore().removeAll();
+																			obj.getView().refresh();
 											                            },
 																		beforeselect:function(obj, record, index, eOpts ){
 
@@ -1719,8 +1723,11 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
+		        Ext.getCmp(ireturn.id + '-grid').getStore().removeAll();
+				Ext.getCmp(ireturn.id + '-grid').getView().refresh();
+		        ireturn.paramsStore={vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'DI',vp_name:name,fecha:fecha,vp_estado:estado};
 				Ext.getCmp(ireturn.id + '-grid').getStore().loadPage(1,
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'DI',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params:ireturn.paramsStore,
 	                callback:function(){
 
 	                }

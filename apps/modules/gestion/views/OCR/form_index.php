@@ -29,6 +29,7 @@
 			},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
+				Ext.Ajax.timeout = 300000;
 
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
@@ -1254,6 +1255,7 @@
 							        vp_texto:texto,
 							        vp_estado:'A'
 			                    },
+			                    timeout: 300000,
 			                    success: function(response, options){
 			                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
@@ -1327,6 +1329,7 @@
 			                        vp_fec_ingreso:Ext.getCmp(OCR.id+'-date-re').getRawValue(),
 			                        vp_estado:Ext.getCmp(OCR.id+'-cmb-estado').getValue()
 			                    },
+			                    timeout: 300000,
 			                    success: function( fp, o ){
 			                    	//console.log(o);
 			                        var res = o.result;

@@ -10,6 +10,7 @@
 			shi_codigo:0,
 			fac_cliente:0,
 			lote:0,
+			paramsStore:{},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -52,6 +53,7 @@
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
+	                		store.proxy.extraParams = tracking.paramsStore;
 					        /*Ext.apply(operation, {
 					            params: {
 					                to: 'test1',
@@ -470,7 +472,7 @@
 		                                                    //readOnly: true,
 		                                                    listeners:{
 		                                                        afterrender:function(obj, e){
-		                                                            Ext.getCmp(tracking.id+'-filter-por').setValue('L');
+		                                                            Ext.getCmp(tracking.id+'-filter-por').setValue('N');
 		                                                        },
 		                                                        select:function(obj, records, eOpts){
 		                                                        	Ext.getCmp(tracking.id+'-txt-tracking').setValue('');
@@ -592,7 +594,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:50,
 			                                                labelAlign:'right',
-			                                                value:'',//new Date(),
+			                                                value:new Date(),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
 			                                                width: '100%',
@@ -744,7 +746,7 @@
 																	        	case 'RE':
 																	        		estado='1348695561_stock_mail-send-receive.png';
 																	        	break;
-																	        	case 'FI':
+																	        	case 'DI':
 																	        		estado='approval.png';
 																	        	break;
 																	        	case 'DE':
@@ -833,7 +835,8 @@
 									                        listeners:{
 									                            afterrender: function(obj){
 									                                //tracking.getImagen('default.png');
-									                                
+									                                Ext.getCmp(tracking.id + '-grid-tracking').getStore().removeAll();
+		        													Ext.getCmp(tracking.id + '-grid-tracking').getView().refresh();
 									                            },
 																beforeselect:function(obj, record, index, eOpts ){
 																	tracking.getStatusPanel(record.get('lot_estado'));
@@ -1128,9 +1131,11 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }*/
-		        //Ext.getCmp(tracking.id + '-grid-tracking').getStore().removeAll();
+		        Ext.getCmp(tracking.id + '-grid-tracking').getStore().removeAll();
+		        Ext.getCmp(tracking.id + '-grid-tracking').getView().refresh();
+		        tracking.paramsStore={vp_op:vp_op,vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_cod_trazo:vp_cod_trazo,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado};
 		        Ext.getCmp(tracking.id + '-grid-tracking').getStore().load(
-	                {params: {vp_op:vp_op,vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_cod_trazo:vp_cod_trazo,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: tracking.paramsStore,
 	                callback:function(){
 	                	//Ext.getCmp(tracking.id+'-form').el.unmask();
 	                }

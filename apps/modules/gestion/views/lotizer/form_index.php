@@ -9,6 +9,7 @@
 			id_lote:0,
 			shi_codigo:0,
 			fac_cliente:0,
+			paramsStore:{},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -47,6 +48,7 @@
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
+	                		store.proxy.extraParams = lotizer.paramsStore;
 					        /*Ext.apply(operation, {
 					            params: {
 					                to: 'test1',
@@ -753,7 +755,8 @@
 							                        listeners:{
 							                            afterrender: function(obj){
 							                                //lotizer.getImagen('default.png');
-							                                
+							                                obj.getStore().removeAll();
+		        											obj.getView().refresh();
 							                            },
 														beforeselect:function(obj, record, index, eOpts ){
 															//console.log(record);
@@ -1015,8 +1018,11 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
+		        Ext.getCmp(lotizer.id + '-grid').getStore().removeAll();
+		        Ext.getCmp(lotizer.id + '-grid').getView().refresh();
+		        lotizer.paramsStore={vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado}
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params:lotizer.paramsStore,
 	                callback:function(){
 	                	//Ext.getCmp(lotizer.id+'-form').el.unmask();
 	                }
