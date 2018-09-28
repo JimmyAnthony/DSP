@@ -6,7 +6,9 @@
  * @author  Jimmy Anthony Bazán Solis (https://twitter.com/jbazan)
  * @version 2.0
  */
-
+error_reporting(NULL);
+set_time_limit(1000);
+ini_set("memory_limit", "-1");
 class reprocessingController extends AppController {
 
     private $objDatos;
@@ -88,7 +90,16 @@ class reprocessingController extends AppController {
     public function set_remove_scanner_file_one($p){
         $array = array();
         if (file_exists(PATH.'public_html/tmp/'.$p['file'])){
-            unlink(PATH.'public_html/tmp/'.$p['file']);
+            try{
+                unlink(PATH.'public_html/tmp/'.$p['file']);
+            } catch (Exception $e) {
+                //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            }
+            try{
+                unlink(PATH.'public_html/tumblr/'.$p['file']);
+            } catch (Exception $e) {
+                //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            }
         }
         $data = array(
             'success' => true,
@@ -101,7 +112,7 @@ class reprocessingController extends AppController {
     }
     public function set_remove_file($p){
 
-        $rs = $this->objDatos->get_load_page($p);
+        $rs = $this->objDatos->get_list_page_delete($p);
         //var_export($rs);
         $array = array();
         foreach ($rs as $index => $value){
@@ -113,7 +124,16 @@ class reprocessingController extends AppController {
                 $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
                 if($rs['status']=='OK'){
                     if (file_exists(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])))){
-                        unlink(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])));
+                        try{
+                            unlink(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])));
+                        } catch (Exception $e) {
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
+                        try{
+                            unlink(PATH.'public_html/tumblr/'.utf8_encode(trim($value['img'])));
+                        } catch (Exception $e) {
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
                     }
                 }
         }
@@ -132,7 +152,16 @@ class reprocessingController extends AppController {
                             if(trim($file)!="." ){
                                 try {
                                     if (file_exists(PATH.'public_html/tmp/'.$file)) {
-                                        unlink(PATH.'public_html/tmp/'.$file);
+                                        try{
+                                            unlink(PATH.'public_html/tmp/'.$file);
+                                        } catch (Exception $e) {
+                                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                        }
+                                        try{
+                                            unlink(PATH.'public_html/tumblr/'.$file);
+                                        } catch (Exception $e) {
+                                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                        }
                                     }
                                 } catch (Exception $e) {
                                     //echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -209,7 +238,7 @@ class reprocessingController extends AppController {
                                     $value_['estado'] = 'A';
                                     $value_['include'] ='N';
                                     $array[]=$value_;
-
+                                    $this->setResizeImage(utf8_encode(trim($file)));
                                 } catch (Exception $e) {
                                     //echo 'Caught exception: ',  $e->getMessage(), "\n";
                                 }
@@ -232,6 +261,55 @@ class reprocessingController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+
+    public function setResizeImage($nameimg){
+        $path_parts = pathinfo(PATH.'public_html/tmp/'.$nameimg);
+        $ext=$path_parts['extension'];
+        $w=40;
+        $y=60;
+        switch($ext){
+            #case 'bmp': $sourceImage = $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, 50, 70); break;
+            case 'gif': 
+                $img = $this->resize_imagegif(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+            break;
+            case 'jpg': 
+                $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+            break;
+            case 'png': 
+                $img = $this->resize_imagepng(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+            break;
+            default : 
+                $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+            break;
+        }
+        imagejpeg($img, PATH.'public_html/tumblr/'.$nameimg);
+    }
+    // for jpg 
+    public function resize_imagejpg($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefromjpeg($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
+
+     // for png
+    public function resize_imagepng($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefrompng($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
+
+    // for gif
+    public function resize_imagegif($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefromgif($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
     public function set_scanner_file_one_to_one($p){
         $records = json_decode(stripslashes($p['vp_recordsToSend'])); //parse the string to PHP objects
         if(isset($records)){
@@ -246,7 +324,9 @@ class reprocessingController extends AppController {
                     $p['vp_img']='-page.'.$ext;
                     $p['vp_imgorigen']=$file;
                     $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
-
+                    list($width, $height) = getimagesize(PATH.'public_html/tmp/'.$file);
+                    $p['vp_w']=$width;
+                    $p['vp_h']=$height;
                     $p['vp_lado']='A';
                     $rs = $this->objDatos->set_page($p);
                     $rs = $rs[0];
@@ -254,6 +334,11 @@ class reprocessingController extends AppController {
 
                     if($rs['status']=='OK'){
                         rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                        try{
+                            rename(PATH.'public_html/tumblr/'.$file, PATH.'public_html/tumblr/'.$rs['id_pag'].$p['vp_img']);
+                        } catch (Exception $e) {
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
                     }
                 }else{
                     $data = array('success' => true,'error' => 'ER','msn' => 'No existen archivos a procesar');
@@ -277,27 +362,39 @@ class reprocessingController extends AppController {
                     while (false !== ($file = readdir($dh))) {
                         //echo $file.'xx';
                     #while (($file = readdir($dh)) !== false){ 
-                      if($file!='.' or $file!='..'){
-                        //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
-                        try {
-                            $path_parts = pathinfo(PATH.'public_html/tmp/'.$file);
-                            $ext=$path_parts['extension'];
-                            $p['vp_img']='-page.'.$ext;
-                            $p['vp_imgorigen']=$file;
-                            $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
-                            $p['vp_lado']='A';
-                            $rs = $this->objDatos->set_page($p);
-                            $rs = $rs[0];
-                            $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+                      if(trim($file)!=".." ){
+                            if(trim($file)!="." ){
+                                if (file_exists(PATH.'public_html/tmp/'.$file)){
+                                    //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
+                                    try {
+                                        $path_parts = pathinfo(PATH.'public_html/tmp/'.$file);
+                                        $ext=$path_parts['extension'];
+                                        $p['vp_img']='-page.'.$ext;
+                                        $p['vp_imgorigen']=$file;
+                                        $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
+                                        $p['vp_lado']='A';
+                                        list($width, $height) = getimagesize(PATH.'public_html/tmp/'.$file);
+                                        $p['vp_w']=$width;
+                                        $p['vp_h']=$height;
+                                        $rs = $this->objDatos->set_page($p);
+                                        $rs = $rs[0];
+                                        $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
 
-                            if($rs['status']=='OK'){
-                                rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                                        if($rs['status']=='OK'){
+                                            rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                                            try{
+                                                rename(PATH.'public_html/tumblr/'.$file, PATH.'public_html/tumblr/'.$rs['id_pag'].$p['vp_img']);
+                                            } catch (Exception $e) {
+                                                //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                            }
+                                        }
+
+                                    } catch (Exception $e) {
+                                        //echo 'Caught exception: ',  $e->getMessage(), "\n";k
+                                    }
+                                }
                             }
-
-                        } catch (Exception $e) {
-                            //echo 'Caught exception: ',  $e->getMessage(), "\n";k
                         }
-                      }
                     }
                     closedir($dh);
                 }
@@ -362,26 +459,8 @@ class reprocessingController extends AppController {
         $this->rs_ = $this->objDatos->get_list_lotizer($p);
         if(!empty($this->rs_)){
             return '{"text": ".","children":['.$this->get_recursivo(1).']}';
-            
         }else{
-            return json_encode(
-                array(
-                    'text'=>'root',
-                    'children'=>array(
-                        'id_lote'=>0,
-                        'iconCls'=>'task',
-                        'tipdoc'=>'',
-                        'nombre'=>'',
-                        'fecha'=>'',
-                        'tot_folder'=>0,
-                        'tot_pag'=>0,
-                        'tot_errpag'=>0,
-                        'id_user'=>0,
-                        'estado'=>'',
-                        'leaf'=>'true'
-                        )
-                    )
-                );
+            return '';
         }
     }
 

@@ -17,6 +17,7 @@
 			trabajando:1,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
+				Ext.Ajax.timeout = 300000;
 				/*
 				reprocessing.task = reprocessing.runner.newTask({
                     run: function(){
@@ -836,20 +837,32 @@
 									                            	{
 									                            		text: 'N°',
 																	    xtype: 'rownumberer',
-																	    width: 40,
+																	    width: 30,
 																	    sortable: false,
 																	    locked: true
 																	},
+																	{
+									                                    text: 'IMG',
+									                                    dataIndex: 'estado',
+									                                    //loocked : true,
+									                                    width: 80,
+									                                    align: 'center',
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + record.get('file') + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+									                                    }
+									                                },
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
 									                                    flex: 1
-									                                },
+									                                },/*
 									                                {
 									                                    text: 'Lado',
 									                                    dataIndex: 'flag',
 									                                    width: 50
-									                                },
+									                                },*/
 									                                {
 									                                    text: 'DLT',
 									                                    dataIndex: 'estado',
@@ -954,7 +967,7 @@
 									                        //iconAlign: 'top',
 									                        //disabled:true,
 									                        flex:1,
-									                        text: 'Reordenar',
+									                        text: 'Reordenar(N)',
 									                        icon: '/images/icon/if_stock_reverse-order_94695.png',
 									                        listeners:{
 									                            beforerender: function(obj, opts){
@@ -1007,15 +1020,27 @@
 																	    sortable: false,
 																	    locked: true
 																	},
+									                                /*{
+									                                    text: 'Lado',
+									                                    dataIndex: 'flag',
+									                                    width: 50
+									                                },*/
+									                                {
+									                                    text: 'IMG',
+									                                    dataIndex: 'file',
+									                                    //loocked : true,
+									                                    width: 80,
+									                                    align: 'center',
+									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+									                                        //console.log(record);
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + record.get('file') + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+									                                    }
+									                                },
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
 									                                    flex: 1
-									                                },
-									                                {
-									                                    text: 'Lado',
-									                                    dataIndex: 'flag',
-									                                    width: 50
 									                                },
 									                                {
 									                                    text: 'DLT',
@@ -1086,6 +1111,7 @@
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
+											                                timeout: 300000,
 											                                success: function(response, options){
 											                                    Ext.getCmp(reprocessing.id+'-form').el.unmask();
 											                                    var res = Ext.JSON.decode(response.responseText);
@@ -1098,6 +1124,7 @@
 														                                fn: function(btn){
 														                                	reprocessing.getReloadPage();
 														                                	reprocessing.getreprocessingFile();
+														                                	reprocessing.getReloadGridreprocessing();
 														                                }
 														                            });
 														                        } else{
@@ -1108,6 +1135,7 @@
 														                                fn: function(btn){
 														                                	reprocessing.getReloadPage();
 														                                    reprocessing.getreprocessingFile();
+														                                    reprocessing.getReloadGridreprocessing();
 														                                }
 														                            });
 														                        }
@@ -1313,6 +1341,7 @@
 			                    	vp_shi_codigo:shi_codigo,
 			                    	vp_id_lote:id_lote
 			                    },
+			                    timeout: 300000,
 			                    success: function(response, options){
 			                        Ext.getCmp(reprocessing.id+'-form').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
@@ -1394,6 +1423,7 @@
 			                    	vp_id_det:reprocessing.id_det,
 			                    	vp_id_lote:reprocessing.id_lote
 			                    },
+			                    timeout: 300000,
 			                    success: function(response, options){
 			                        Ext.getCmp(reprocessing.id+'-form').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
@@ -1404,6 +1434,7 @@
 			                                icon: 1,
 			                                buttons: 1,
 			                                fn: function(btn){
+			                                	reprocessing.getReloadGridreprocessing();
 			                                	reprocessing.getReloadPage();
 			                                	//reprocessing.getreprocessingFile();
 			                                }
@@ -1414,6 +1445,7 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
+			                                	reprocessing.getReloadGridreprocessing();
 			                                	reprocessing.getReloadPage();
 			                                    //reprocessing.getreprocessingFile();
 			                                }
@@ -1437,7 +1469,7 @@
 	                },
 	                callback:function(){
 	                	//Ext.getCmp(reprocessing.id+'-form').el.unmask();
-	                	reprocessing.setChangeRow();
+	                	//reprocessing.setChangeRow();
 	                }
 	            });
 			},
@@ -1458,6 +1490,7 @@
 			                    	path:'C:/twain/',
 			                    	file:file
 			                    },
+			                    timeout: 300000,
 			                    success: function(response, options){
 			                    	reprocessing.getreprocessingFile();
 
@@ -1544,6 +1577,7 @@
 			                    	path:'C:/twain/',
 			                    	vp_estado:'A'
 			                    },
+			                    timeout: 300000,
 			                    success: function(response, options){
                                     Ext.getCmp(reprocessing.id+'-form').el.unmask();
                                     var res = Ext.JSON.decode(response.responseText);
@@ -1556,6 +1590,7 @@
 			                                fn: function(btn){
 			                                	reprocessing.getReloadPage();
 			                                	reprocessing.getreprocessingFile();
+			                                	reprocessing.getReloadGridreprocessing();
 			                                }
 			                            });
 			                        } else{
@@ -1566,6 +1601,7 @@
 			                                fn: function(btn){
 			                                	reprocessing.getReloadPage();
 			                                    reprocessing.getreprocessingFile();
+			                                    reprocessing.getReloadGridreprocessing();
 			                                }
 			                            });
 			                        }
@@ -1651,6 +1687,7 @@
 		                        vp_fec_ingreso:Ext.getCmp(reprocessing.id+'-date-re').getRawValue(),
 		                        vp_estado:Ext.getCmp(reprocessing.id+'-cmb-estado').getValue()
 		                    },
+		                    timeout: 300000,
 		                    success: function( fp, o ){
 		                    	//console.log(o);
 		                        var res = o.result;

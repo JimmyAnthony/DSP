@@ -34,6 +34,17 @@ class reprocessingModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function get_list_page_delete($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page_delete');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
     public function set_page($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'set_page');
@@ -46,6 +57,8 @@ class reprocessingModels extends Adodb {
         parent::SetParameterSP(utf8_decode($p['vp_imgorigen']), 'varchar');
         parent::SetParameterSP($p['vp_lado'], 'varchar');
         parent::SetParameterSP($p['vp_estado'], 'varchar');
+        parent::SetParameterSP($p['vp_w'], 'int');
+        parent::SetParameterSP($p['vp_h'], 'int');
         parent::SetParameterSP(USR_ID, 'int');
         //echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();
