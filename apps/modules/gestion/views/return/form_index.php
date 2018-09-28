@@ -10,6 +10,7 @@
 			shi_codigo:0,
 			fac_cliente:0,
 			id_dev:0,
+			paramsStorePRE:{},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -104,17 +105,23 @@
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
+	                		store.proxy.extraParams = ireturn.paramsStorePRE;
 					    },
 	                    load: function(obj, records, successful, opts){
-		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').doLayout();
-	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
-	                 		storeTreePRE.removeAt(0);
-	                 		Ext.getCmp(ireturn.id + '-grid-devoluciones').collapseAll();
-		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').getRootNode().cascadeBy(function (node) {
-		                          if (node.getDepth() < 1) { node.expand(); }
-		                          if (node.getDepth() == 0) { return false; }
-		                    });
-		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').expandAll();
+	                    	try{
+			                    Ext.getCmp(ireturn.id + '-grid-devoluciones').doLayout();
+		                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
+		                 		storeTreePRE.removeAt(0);
+		                 		Ext.getCmp(ireturn.id + '-grid-devoluciones').collapseAll();
+			                    Ext.getCmp(ireturn.id + '-grid-devoluciones').getRootNode().cascadeBy(function (node) {
+			                          if (node.getDepth() < 1) { node.expand(); }
+			                          if (node.getDepth() == 0) { return false; }
+			                    });
+			                    Ext.getCmp(ireturn.id + '-grid-devoluciones').expandAll();
+			                 }catch(err) {
+							    console.log(err.message);
+							}
+
 	                    }
 	                }
 	            });
@@ -463,9 +470,7 @@
 									                            beforerender: function(obj, opts){
 									                            },
 									                            click: function(obj, e){	             	
-		                               					            ireturn	.getReloadGridlotizer();
-
-
+		                               					            ireturn.getReloadGridlotizer();
 									                            }
 									                        }
 									                    }
@@ -1300,7 +1305,7 @@
 			},
 			setAddPreReturn:function(vp_op,shi_codigo,fac_cliente,id_det,id_lote){
 				var id_dev =Ext.getCmp(ireturn.id+'-txt-cod-devolucion').getValue();
-				var estado = Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').getValue();
+				var estado = Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').getValue(); 
 
 				if(shi_codigo== null || shi_codigo==''){
 		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
@@ -1315,7 +1320,7 @@
 		            return false;
 		        } 
 		        if(estado== null || estado=='' || estado!='P'){
-		            global.Msg({msg:"El estado de la pre devolucion no esta pendiente por favor.",icon:2,fn:function(){}});
+		            global.Msg({msg:"El estado de la pre devolucion no esta pendiente por favor seleccione una Devolución pendiente a cerrar o cree una nueva.",icon:2,fn:function(){}});
 		            return false;
 		        }
 
@@ -1341,6 +1346,7 @@
                                 fn: function(btn){
                                 	ireturn.getDevoluciones();
                                 	ireturn.getReloadPreDevolucion(res.id_dev);
+                                	ireturn.getReloadGridlotizer();
                                 }
                             });
                         } else{
@@ -1381,7 +1387,7 @@
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
 
 				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().removeAll();
-				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().load(
+				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().loadPage(1,
 	                {params: {
 	                	vp_shi_codigo:shi_codigo,
 	                	vp_fac_cliente:fac_cliente,
@@ -1391,7 +1397,7 @@
 	                	vp_estado:''
 	                },
 	                callback:function(){
-
+	                	 //ireturn.setNuevaDevolucion();
 	                }
 	            });
 			},
@@ -1448,6 +1454,7 @@
 			                                	//refrescar devoluciones
 			                                	ireturn.setNuevaDevolucion();
 			                                	ireturn.getDevoluciones();
+			                                	ireturn.getReloadGridlotizer();
 			                                }
 			                            });
 			                        } else{
@@ -1545,6 +1552,7 @@
 		                                		Ext.getCmp(ireturn.id+'-txt-cod-devolucion').setValue(res.id_dev);
 			                                	//Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('D');
 			                                	ireturn.getDevoluciones();
+			                                	ireturn.getReloadGridlotizer();
 			                                }
 			                            });
 			                        } else{
@@ -1680,7 +1688,7 @@
 			},
 			getContratos:function(shi_codigo){
 				Ext.getCmp(ireturn.id+'-cbx-contrato').getStore().removeAll();
-				Ext.getCmp(ireturn.id+'-cbx-contrato').getStore().load(
+				Ext.getCmp(ireturn.id+'-cbx-contrato').getStore().loadPage(1,
 	                {params: {vp_shi_codigo:shi_codigo},
 	                callback:function(){
 
@@ -1711,7 +1719,7 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
-				Ext.getCmp(ireturn.id + '-grid').getStore().load(
+				Ext.getCmp(ireturn.id + '-grid').getStore().loadPage(1,
 	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'DI',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 
@@ -1722,15 +1730,16 @@
 				//Ext.getCmp(ireturn.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
-				//Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().removeAll();
-				//Ext.getCmp(ireturn.id + '-grid-devoluciones').getView().refresh();
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().removeAll();
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getView().refresh();
 
 				//Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().baseParams = {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_dev:id_dev};
-				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_dev:id_dev},
+				ireturn.paramsStorePRE={vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_dev:id_dev};
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().loadPage(1,
+	                {params: ireturn.paramsStorePRE,
 	                callback:function(){
 	                	//Ext.getCmp(ireturn.id+'-tab').el.unmask();
-	                	ireturn.getReloadGridlotizer();
+	                	//ireturn.getReloadGridlotizer();
 	                }
 	            });
 			},
