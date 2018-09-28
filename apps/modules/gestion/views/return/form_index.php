@@ -1407,6 +1407,8 @@
 				Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('P');
 				Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(true);
 				Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().removeAll();
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getView().refresh();
 			},
 			setClose:function(id_dev,op){
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
@@ -1541,7 +1543,7 @@
 			                                	Ext.getCmp(ireturn.id+'-btn-cancelar-devolucion').setDisabled(false);
 		                                		Ext.getCmp(ireturn.id+'-btn-confirmar').setDisabled(false);
 		                                		Ext.getCmp(ireturn.id+'-txt-cod-devolucion').setValue(res.id_dev);
-			                                	Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('D');
+			                                	//Ext.getCmp(ireturn.id+'-cbo-estado-devolucion').setValue('D');
 			                                	ireturn.getDevoluciones();
 			                                }
 			                            });
@@ -1720,7 +1722,10 @@
 				//Ext.getCmp(ireturn.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().removeAll();
+				Ext.getCmp(ireturn.id + '-grid-devoluciones').getView().refresh();
 
+				//Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().baseParams = {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_dev:id_dev};
 				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_dev:id_dev},
 	                callback:function(){
