@@ -108,7 +108,7 @@
 	                    load: function(obj, records, successful, opts){
 		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').doLayout();
 	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
-	                 		storeTree.removeAt(0);
+	                 		storeTreePRE.removeAt(0);
 	                 		Ext.getCmp(ireturn.id + '-grid-devoluciones').collapseAll();
 		                    Ext.getCmp(ireturn.id + '-grid-devoluciones').getRootNode().cascadeBy(function (node) {
 		                          if (node.getDepth() < 1) { node.expand(); }
@@ -566,20 +566,24 @@
 								                                    text: 'Estado Lote',
 								                                    dataIndex: 'lot_estado',
 								                                    loocked : true,
-								                                    width: 100,
+								                                    width: 80,
 								                                    align: 'center'
 								                                },
 								                                {
 								                                    text: 'Acción',
 								                                    dataIndex: 'lot_estado',
 								                                    loocked : true,
-								                                    width: 100,
+								                                    width: 70,
 								                                    align: 'center',
 								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 								                                        metaData.style = "padding: 0px; margin: 0px";
 								                                        var estado = 'basket_put.png';
 								                                        var qtip = 'Agregar Registro a pre devolución';
-
+								                                        var ser = 7;
+								                                        if(parseInt(record.get('id_dev'))!=0){
+								                                        	ser=0;
+								                                        	estado = 'inicio.png';
+								                                        }
 																		var id_det = 0;
 																		if(parseInt(record.get('nivel'))==2){
 																			var id_det = record.get('hijo');
@@ -588,7 +592,7 @@
 								                                            type: 'link',
 								                                            id_menu: ireturn.id_menu,
 								                                            icons:[
-								                                                {id_serv: 7, img: estado, qtip: qtip, js: "ireturn.setAddPreReturn('A',"+record.get('shi_codigo')+","+record.get('fac_cliente')+","+id_det+","+record.get('id_lote')+")"}
+								                                                {id_serv: ser, img: estado, qtip: qtip, js: "ireturn.setAddPreReturn('A',"+record.get('shi_codigo')+","+record.get('fac_cliente')+","+id_det+","+record.get('id_lote')+")"}
 								                                            ]
 								                                        });
 								                                    }
@@ -618,10 +622,20 @@
 								                                    align: 'center'
 								                                },*/
 								                                {
-								                                    text: 'User',
-								                                    dataIndex: 'usr_update',
-								                                    width: 100,
-								                                    align: 'center'
+								                                    text: 'Devuelto Por:',
+								                                    dataIndex: 'usr_dev',
+								                                    width: 130,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        //console.log(record);
+								                                        var estado = '';
+								                                        if(parseInt(record.get('id_dev'))!=0){
+								                                        	ser=0;
+								                                        	estado = 'DEV:'+record.get('id_dev')+'-USR:'+record.get('usr_dev');
+								                                        }
+
+								                                        return estado;
+								                                    }
 								                                },
 								                                {
 								                                    text: 'Estado RG',
@@ -963,7 +977,7 @@
 										                                    text: 'Estado Lote',
 										                                    dataIndex: 'lot_estado',
 										                                    loocked : true,
-										                                    width: 100,
+										                                    width: 80,
 										                                    align: 'center',
 										                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 										                                        metaData.style = "padding: 0px; margin: 0px";
@@ -1007,11 +1021,13 @@
 										                                    text: 'Acción',
 										                                    dataIndex: 'lot_estado',
 										                                    loocked : true,
-										                                    width: 100,
+										                                    width: 80,
 										                                    align: 'center',
 										                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 										                                        metaData.style = "padding: 0px; margin: 0px";
-										                                        var estado = 'basket_put.png';
+
+										                                        var estado = 'recicle_nov.ico';
+
 										                                        var qtip = 'Agregar Registro a pre devolución';
 
 																				var id_det = 0;
@@ -1297,6 +1313,7 @@
                                 icon: 1,
                                 buttons: 1,
                                 fn: function(btn){
+                                	ireturn.getDevoluciones();
                                 	ireturn.getReloadPreDevolucion(res.id_dev);
                                 }
                             });
