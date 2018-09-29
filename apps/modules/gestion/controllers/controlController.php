@@ -28,7 +28,26 @@ class controlController extends AppController {
     public function index($p){        
         $this->view('control/form_index.php', $p);
     }
+   public function set_create_temporal_file($p){
+        $estado="ER";
+        $msn="Creado correctamente";
+        try {
+            if (file_exists(PATH.'public_html'.$p['path'].$p['img'])) {
+                copy(PATH.'public_html'.$p['path'].$p['img'], PATH.'public_html/filedit/'.$p['img']);
+                $estado="OK";
+            }else{
+                $msn="No existe archivo a editar.";
+            }
+        } catch (Exception $e) {
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            $estado="ER";
+            $msn=$e->getMessage();
+        }
 
+        $data = array('success' => true,'error' => $estado,'msn' => $msn);
+        header('Content-Type: application/json');
+        return $this->response($data);
+   }
    public function get_list($p){
         $rs = $this->objDatos->get_list($p);
         //var_export($rs);
@@ -108,7 +127,6 @@ class controlController extends AppController {
             return '';
         }
     }
-
     public function get_recursivo($_nivel){
         $coma = '';
         foreach ($this->rs_ as $key => $value){
@@ -555,5 +573,60 @@ class controlController extends AppController {
             $h=$t+1;
         }
         return $res;
+    }
+    public function set_ocr_trazos($p){
+        $img=$p['vp_img'];
+        $path=$p['vp_path'];
+        $path_parts = pathinfo(PATH.'public_html'.$path.'/'.$img);
+        $ext=$path_parts['extension'];
+        $bool=$this->setDropImg($p);
+
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'cod_trazo' => $rs['cod_trazo'],
+            'img' => $imagen,
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function setDropImg($p){
+        $bool=false;
+        $img=$p['vp_img'];
+        #$path_parts = pathinfo($p['vp_img']);
+        $ext=$p['extension'];
+        $src_original = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext;
+        $src_guardar  = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_trazo'].'-trazo.'.$ext;
+        try {
+            $destImage = imagecreatetruecolor(number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''));
+            #$sourceImage = imagecreatefromjpeg($src_original);
+
+            switch($ext){
+                case 'bmp': $sourceImage = imagecreatefromwbmp($src_original); break;
+                case 'gif': $sourceImage = imagecreatefromgif($src_original); break;
+                case 'jpg': $sourceImage = imagecreatefromjpeg($src_original); break;
+                case 'png': $sourceImage = imagecreatefrompng($src_original); break;
+                default : return "Unsupported picture type!";
+            }
+            if($ext == "gif" or $ext == "png"){
+                imagecolortransparent($destImage, imagecolorallocatealpha($destImage, 0, 0, 0, 127));
+                imagealphablending($destImage, false);
+                imagesavealpha($destImage, true);
+            }
+
+            imagecopyresampled($destImage, $sourceImage, 0, 0, number_format($p['vp_x'], 4, '.', ''), number_format($p['vp_y'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', '')); 
+
+            switch($ext){
+                case 'bmp': imagewbmp($destImage, $src_guardar); break;
+                case 'gif': imagegif($destImage, $src_guardar); break;
+                case 'jpg': imagejpeg($destImage, $src_guardar); break;
+                case 'png': imagepng($destImage, $src_guardar); break;
+            }
+        } catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            $bool=false;
+        }
+        return $bool;
     }
 }

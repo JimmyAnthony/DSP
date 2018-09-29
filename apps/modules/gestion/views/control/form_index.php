@@ -12,6 +12,8 @@
 			id_lote:0,
 			trabajando:1,
 			recordsToSend:[],
+			cropper:{},
+			cropperData:{},
 			init:function(){
 				Ext.Ajax.timeout = 180000;
             	Ext.QuickTips.init();
@@ -523,6 +525,44 @@
 									items:[
 										{
 						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-play',
+						                    icon: '/images/icon/if_Play_984752.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Inicar',
+						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.setCreateTemporalFile();
+					                            }
+					                        }
+						                },
+						                {
+						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-save',
+						                    disabled:true,
+						                    icon: '/images/icon/if_24_111010.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Guardar'
+						                    //iconAlign: 'top'
+						                },
+										/*{
+						                    xtype: 'button',
 						                    icon: '/images/icon/if_69_111122.png',
 						                    flex:1,
 						                    //glyph: 72,
@@ -564,9 +604,11 @@
 						                    //height:50
 						                    text: 'Minimizar',
 						                    //iconAlign: 'top'
-						                },
+						                },*/
 						                {
 						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-rotar',
+						                    disabled:true,
 						                    icon: '/images/icon/if_icons_update_1564533.png',
 						                    flex:1,
 						                    //glyph: 72,
@@ -578,36 +620,81 @@
 						                },
 						                {
 						                    xtype: 'button',
-						                    icon: '/images/icon/if_24_111010.png',
-						                    flex:1,
-						                    //glyph: 72,
-						                    scale: 'large',
-						                    margin:'5px 5px 5px 5px',
-						                    //height:50
-						                    text: 'Guardar'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
-						                    icon: '/images/icon/if_90_111056.png',
-						                    flex:1,
-						                    scale: 'large',
-						                    //glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    //text: '[Delete]',
-						                    text: 'Eliminar'
-						                    //iconAlign: 'top'
-						                },
-						                {
-						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-cortar',
+						                    disabled:true,
 						                    icon: '/images/icon/if_122_111086.png',
 						                    flex:1,
 						                    //glyph: 72,
 						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
 						                    //height:50
-						                    text: 'Cortar'
+						                    text: 'Cortar',
 						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.getDropImg();
+					                            }
+					                        }
+						                },
+						                {
+						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-deshacer',
+						                    disabled:true,
+						                    icon: '/images/icon/if_90_111056.png',
+						                    flex:1,
+						                    scale: 'large',
+						                    //glyph: 72,
+						                    margin:'5px 5px 5px 5px',
+						                    //text: '[Delete]',
+						                    text: 'Deshacer'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-confirn',
+						                    disabled:true,
+						                    icon: '/images/icon/if_Ok_984756.png',
+						                    flex:1,
+						                    scale: 'large',
+						                    //glyph: 72,
+						                    margin:'5px 5px 5px 5px',
+						                    //text: '[Delete]',
+						                    text: 'Confirmar Cambio'
+						                    //iconAlign: 'top'
+						                },
+						                {
+						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-cancelar',
+						                    disabled:true,
+						                    icon: '/images/icon/if_log_out_678146.png',
+						                    flex:1,
+						                    scale: 'large',
+						                    //glyph: 72,
+						                    margin:'5px 5px 5px 5px',
+						                    //text: '[Delete]',
+						                    text: 'Cancelar',
+						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.setHabilitarFunciones(true);
+					                            }
+					                        }
 						                }
 									]
 								},
@@ -835,7 +922,8 @@
 							                            },
 							                            beforeselect:function(obj, record, index, eOpts ){
 							                            	console.log(record);
-							                            	document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+record.get('path')+record.get('file')+'" width="100%" height="100%"/>'
+							                            	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+record.get('path')+record.get('file')+'" width="100%" height="100%"/>'
+							                            	control.setImageFile(record.get('path'),record.get('file'));
 							                            }
 							                        }
 							                    }
@@ -895,6 +983,172 @@
 					}
 
 				}).show();
+			},
+			setSaveDrop:function(op,json){
+				var data = control.cropper.getCropBoxData();
+
+				var container=control.cropper.getContainerData();
+				var wa = jsona.width /  parseFloat(container.width);
+				var wb = jsona.height / parseFloat(container.height);
+				
+				var top= parseFloat(data.top) * wb;
+	            var left= parseFloat(data.left)* wa;
+	            var width= parseFloat(data.width)* wa;
+	            var height= parseFloat(data.height)* wb;
+             	var path = '/filedit/';
+				var img = '219-page.jpg';
+
+             	global.Msg({
+                    msg: '¿Está seguro de guardar?',
+                    icon: ico,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+	                        Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+	                        Ext.Ajax.request({
+			                    url: control.url + 'set_ocr_trazos/',
+			                    params:{
+			                    	vp_op:'R',
+							        vp_y:top,
+							        vp_x:left,
+							        vp_w:width,
+							        vp_h:height,
+							        vp_path:path,
+							        vp_img:img,
+							        vp_width:json.width,
+							        vp_height:json.height
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                    	Ext.getCmp(control.id+'-tab').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            control.setImageFile(path,img);
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+		            }
+                });
+			},
+			setDrop:function(){
+				var path = '/scanning/1/9/';
+				var img = '219-page.jpg';
+				var image = path+img;
+				OCR.getSizeImg(image,'S',control.setSaveDrop);
+			},
+			getSizeImg:function(imgSrc,op,json,callback){
+				var newImg = new Image();
+			    newImg.onload = function () {
+			    	var imgWidth = newImg.width || newImg.naturalWidth;
+					var imgHeight = newImg.height || newImg.naturalHeight;
+					console.log(imgWidth)
+					console.log(imgHeight)
+			        if (callback != undefined)callback(op,{width: imgWidth, height: imgHeight})
+			    }
+			    newImg.src = imgSrc;
+			},
+			getDropImg:function(){
+				var image = document.getElementById('imagen-control');
+		      	try{
+			      control.cropper = new Cropper(image, {
+			      	//dragMode: 'move',
+			      	movable: false,
+			        zoomable: false,
+			        rotatable: false,
+			        scalable: false,
+			        cropBoxMovable: true,
+			        cropBoxResizable: false,
+			        ready: function (event) {
+			        },
+			        crop: function (event) {
+			          //console.log(OCR.cropper.getCropBoxData());
+			          control.cropperData=control.cropper.getCropBoxData();
+			        },
+
+			        zoom: function (event) {
+			          // Keep the image in its natural size
+			          if (event.detail.oldRatio === 1) {
+			            event.preventDefault();
+			          }
+			        },
+			      });
+				}catch(err) {
+				    console.log(err.message);
+				}
+			},
+			setCreateTemporalFile:function(){
+				control.setHabilitarFunciones(true);
+				var path = '/scanning/1/9/';
+				var img = '219-page.jpg';
+				Ext.Ajax.request({
+                    url: control.url + 'set_create_temporal_file/',
+                    params:{
+                    	path:path,
+                		img:img
+                    },
+                    timeout: 300000,
+                    success: function(response, options){
+                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+                        var res = Ext.JSON.decode(response.responseText);
+                        Ext.getCmp(control.id+'-form').el.unmask();
+                        control.getLoader(false);
+                        if (res.error == 'OK'){
+                        	//console.log(res.data);
+                        	control.setHabilitarFunciones(false);
+                        	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+path+img+'" width="100%" height="100%"/>'
+                        	control.setImageFile('/filedit/',img);
+
+                        }else{
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 0,
+                                buttons: 1,
+                                fn: function(btn){
+                                    //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+                                    Ext.getCmp(control.id+'-form').el.unmask();
+                                    control.setHabilitarFunciones(true);
+                                }
+                            });
+                        }
+                    }
+                });
+			},
+			setImageFile: function(path,file){//(rec,recA){
+				var panel = Ext.getCmp(control.id+'-panel_img');
+                panel.removeAll();
+                panel.add({
+                    html: '<img id="imagen-control" src="'+path+file+'" style="width:100%;" >'
+                });
+
+                var image = document.getElementById('imagen-control');
+                if(image!=null){
+					var downloadingImage = new Image();
+					downloadingImage.onload = function(){
+					    image.src = this.src;
+		                panel.doLayout();
+					};
+					downloadingImage.src = path+file;
+					panel.doLayout();
+				}
+		    },
+			setHabilitarFunciones:function(bool){
+				Ext.getCmp(control.id+'-txt-btn-play').setDisabled(!bool);
+				Ext.getCmp(control.id+'-txt-btn-save').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-rotar').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-cortar').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-deshacer').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-confirn').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-cancelar').setDisabled(bool);
 			},
 			getLoader:function(bool){
 				if(bool){
@@ -1326,6 +1580,7 @@
 	            });
 			},
 			getReloadGridcontrol:function(){
+				Ext.getCmp(control.id + '-grid-paginas').getStore().removeAll();
 				//control.set_control_clear();
 				//Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
