@@ -654,8 +654,21 @@
 						                    //glyph: 72,
 						                    margin:'5px 5px 5px 5px',
 						                    //text: '[Delete]',
-						                    text: 'Deshacer'
+						                    text: 'Deshacer',
 						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.setCreateTemporalFile();
+					                            }
+					                        }
 						                },
 						                {
 						                    xtype: 'button',
@@ -667,8 +680,21 @@
 						                    //glyph: 72,
 						                    margin:'5px 5px 5px 5px',
 						                    //text: '[Delete]',
-						                    text: 'Confirmar Cambio'
+						                    text: 'Confirmar Cambio',
 						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.setDrop();
+					                            }
+					                        }
 						                },
 						                {
 						                    xtype: 'button',
@@ -988,8 +1014,8 @@
 				var data = control.cropper.getCropBoxData();
 
 				var container=control.cropper.getContainerData();
-				var wa = jsona.width /  parseFloat(container.width);
-				var wb = jsona.height / parseFloat(container.height);
+				var wa = data.width /  parseFloat(container.width);
+				var wb = data.height / parseFloat(container.height);
 				
 				var top= parseFloat(data.top) * wb;
 	            var left= parseFloat(data.left)* wa;
@@ -1000,13 +1026,13 @@
 
              	global.Msg({
                     msg: '¿Está seguro de guardar?',
-                    icon: ico,
+                    icon: 2,
                     buttons: 3,
                     fn: function(btn){
                     	if (btn == 'yes'){
 	                        Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 	                        Ext.Ajax.request({
-			                    url: control.url + 'set_ocr_trazos/',
+			                    url: control.url + 'set_resize_file/',
 			                    params:{
 			                    	vp_op:'R',
 							        vp_y:top,
@@ -1030,7 +1056,7 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                    //OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
 			                                }
 			                            });
 			                        }
@@ -1044,9 +1070,9 @@
 				var path = '/scanning/1/9/';
 				var img = '219-page.jpg';
 				var image = path+img;
-				OCR.getSizeImg(image,'S',control.setSaveDrop);
+				control.getSizeImg(image,'S',control.setSaveDrop);
 			},
-			getSizeImg:function(imgSrc,op,json,callback){
+			getSizeImg:function(imgSrc,op,callback){
 				var newImg = new Image();
 			    newImg.onload = function () {
 			    	var imgWidth = newImg.width || newImg.naturalWidth;

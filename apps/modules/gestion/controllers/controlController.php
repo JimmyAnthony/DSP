@@ -574,30 +574,29 @@ class controlController extends AppController {
         }
         return $res;
     }
-    public function set_ocr_trazos($p){
+    public function set_resize_file($p){
         $img=$p['vp_img'];
         $path=$p['vp_path'];
-        $path_parts = pathinfo(PATH.'public_html'.$path.'/'.$img);
-        $ext=$path_parts['extension'];
-        $bool=$this->setDropImg($p);
+        $path_parts = pathinfo(PATH.'public_html'.$path.$img);
+        $p['extension']=$path_parts['extension'];
+        $bool=$this->setDropImgFile($p);
 
         $data = array(
             'success' => true,
-            'error' => $rs['status'],
-            'cod_trazo' => $rs['cod_trazo'],
-            'img' => $imagen,
-            'msn' => utf8_encode(trim($rs['response']))
+            'error' => $bool?'OK':'ER',
+            'msn' => 'Mensaje generado'
         );
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function setDropImg($p){
+    public function setDropImgFile($p){
         $bool=false;
         $img=$p['vp_img'];
+        $path=$p['vp_path'];
         #$path_parts = pathinfo($p['vp_img']);
         $ext=$p['extension'];
-        $src_original = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext;
-        $src_guardar  = PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_trazo'].'-trazo.'.$ext;
+        $src_original = PATH.'public_html'.$path.$img;
+        $src_guardar  = $src_original;
         try {
             $destImage = imagecreatetruecolor(number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''));
             #$sourceImage = imagecreatefromjpeg($src_original);
@@ -615,7 +614,7 @@ class controlController extends AppController {
                 imagesavealpha($destImage, true);
             }
 
-            imagecopyresampled($destImage, $sourceImage, 0, 0, number_format($p['vp_x'], 4, '.', ''), number_format($p['vp_y'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', '')); 
+            imagecopyresampled($destImage, $sourceImage, 0, 0, number_format($p['vp_x'], 4, '.', ''), number_format($p['vp_y'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''));
 
             switch($ext){
                 case 'bmp': imagewbmp($destImage, $src_guardar); break;
@@ -623,6 +622,7 @@ class controlController extends AppController {
                 case 'jpg': imagejpeg($destImage, $src_guardar); break;
                 case 'png': imagepng($destImage, $src_guardar); break;
             }
+            $bool=true;
         } catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
             $bool=false;
