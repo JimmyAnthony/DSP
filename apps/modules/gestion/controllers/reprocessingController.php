@@ -63,6 +63,8 @@ class reprocessingController extends AppController {
                 $value_['orden'] = intval($value['orden']);
                 $value_['estado'] = utf8_encode(trim($value['estado']));
                 $value_['include'] ='Y';
+                $value_['id_pag_error'] = intval($value['id_pag_error']);
+                $value_['msg_error'] = utf8_encode(trim($value['msg_error']));
                 $array[]=$value_;
         }
         $data = array(
@@ -89,9 +91,9 @@ class reprocessingController extends AppController {
     }
     public function set_remove_scanner_file_one($p){
         $array = array();
-        if (file_exists(PATH.'public_html/tmp/'.$p['file'])){
+        if (file_exists(PATH.'public_html/tmp/'.USR_ID.'/'.$p['file'])){
             try{
-                unlink(PATH.'public_html/tmp/'.$p['file']);
+                unlink(PATH.'public_html/tmp/'.USR_ID.'/'.$p['file']);
             } catch (Exception $e) {
                 //echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
@@ -144,16 +146,16 @@ class reprocessingController extends AppController {
     public function set_remove_scanner_file($p){
         $array = array();
         try {
-            if (is_dir(PATH.'public_html/tmp/')){
-                  if ($dh = opendir(PATH.'public_html/tmp/')){
+            if (is_dir(PATH.'public_html/tmp/'.USR_ID.'/')){
+                  if($dh = opendir(PATH.'public_html/tmp/'.USR_ID.'/')){
                     
                     while (false !== ($file = readdir($dh))) {
                         if(trim($file)!=".." ){
                             if(trim($file)!="." ){
                                 try {
-                                    if (file_exists(PATH.'public_html/tmp/'.$file)) {
+                                    if (file_exists(PATH.'public_html/tmp/'.USR_ID.'/'.$file)) {
                                         try{
-                                            unlink(PATH.'public_html/tmp/'.$file);
+                                            unlink(PATH.'public_html/tmp/'.USR_ID.'/'.$file);
                                         } catch (Exception $e) {
                                             //echo 'Caught exception: ',  $e->getMessage(), "\n";
                                         }
@@ -187,8 +189,8 @@ class reprocessingController extends AppController {
     }
     public function get_scanner($p){
         $array = array();
-        if (!file_exists(PATH.'public_html/tmp/')) {
-            mkdir(PATH.'public_html/tmp/', 0777, true);
+        if (!file_exists(PATH.'public_html/tmp/'.USR_ID.'/')) {
+            mkdir(PATH.'public_html/tmp/'.USR_ID.'/', 0777, true);
         }
         try {
             if (is_dir($p['path'])){
@@ -201,7 +203,7 @@ class reprocessingController extends AppController {
                             if(trim($file)!="." ){
                                 try {
                                     if (file_exists($p['path'].$file)) {
-                                        rename($p['path'].$file, PATH.'public_html/tmp/'.$file);
+                                        rename($p['path'].$file, PATH.'public_html/tmp/'.USR_ID.'/'.$file);
                                     }
 
                                 } catch (Exception $e) {
@@ -218,8 +220,8 @@ class reprocessingController extends AppController {
         }
 
         try {
-            if (is_dir(PATH.'public_html/tmp/')){
-                  if ($dh = opendir(PATH.'public_html/tmp/')){
+            if (is_dir(PATH.'public_html/tmp/'.USR_ID.'/')){
+                  if ($dh = opendir(PATH.'public_html/tmp/'.USR_ID.'/')){
                     /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
                     }*/
@@ -231,7 +233,7 @@ class reprocessingController extends AppController {
                                     $value_['id_pag'] = 0;
                                     $value_['id_det'] = 0;
                                     $value_['id_lote'] = 0;
-                                    $value_['path'] = '/tmp/';
+                                    $value_['path'] = '/tmp/'.USR_ID.'/';
                                     $value_['file'] = utf8_encode(trim($file));
                                     $value_['imgorigen'] = utf8_encode(trim($file));
                                     $value_['lado'] = 'A';
@@ -263,23 +265,23 @@ class reprocessingController extends AppController {
     }
 
     public function setResizeImage($nameimg){
-        $path_parts = pathinfo(PATH.'public_html/tmp/'.$nameimg);
+        $path_parts = pathinfo(PATH.'public_html/tmp/'.USR_ID.'/'.$nameimg);
         $ext=$path_parts['extension'];
         $w=40;
         $y=60;
         switch($ext){
             #case 'bmp': $sourceImage = $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, 50, 70); break;
             case 'gif': 
-                $img = $this->resize_imagegif(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+                $img = $this->resize_imagegif(PATH.'public_html/tmp/'.USR_ID.'/'.$nameimg, $w, $y); 
             break;
             case 'jpg': 
-                $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+                $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.USR_ID.'/'.$nameimg, $w, $y); 
             break;
             case 'png': 
-                $img = $this->resize_imagepng(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+                $img = $this->resize_imagepng(PATH.'public_html/tmp/'.USR_ID.'/'.$nameimg, $w, $y); 
             break;
             default : 
-                $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, $w, $y); 
+                $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.USR_ID.'/'.$nameimg, $w, $y); 
             break;
         }
         imagejpeg($img, PATH.'public_html/tumblr/'.$nameimg);
@@ -318,13 +320,13 @@ class reprocessingController extends AppController {
             }
             foreach($records as $record){
                 $file=$record->file;
-                if (file_exists(PATH.'public_html/tmp/'.$file)){
-                    $path_parts = pathinfo(PATH.'public_html/tmp/'.$file);
+                if (file_exists(PATH.'public_html/tmp/'.USR_ID.'/'.$file)){
+                    $path_parts = pathinfo(PATH.'public_html/tmp/'.USR_ID.'/'.$file);
                     $ext=$path_parts['extension'];
                     $p['vp_img']='-page.'.$ext;
                     $p['vp_imgorigen']=$file;
                     $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
-                    list($width, $height) = getimagesize(PATH.'public_html/tmp/'.$file);
+                    list($width, $height) = getimagesize(PATH.'public_html/tmp/'.USR_ID.'/'.$file);
                     $p['vp_w']=$width;
                     $p['vp_h']=$height;
                     $p['vp_lado']='A';
@@ -333,7 +335,11 @@ class reprocessingController extends AppController {
                     $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
 
                     if($rs['status']=='OK'){
-                        rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                        try{
+                            rename(PATH.'public_html/tmp/'.USR_ID.'/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                        } catch (Exception $e) {
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
                         try{
                             rename(PATH.'public_html/tumblr/'.$file, PATH.'public_html/tumblr/'.$rs['id_pag'].$p['vp_img']);
                         } catch (Exception $e) {
@@ -354,8 +360,8 @@ class reprocessingController extends AppController {
     }
     public function get_scanner_file($p){
         try {
-            if (is_dir(PATH.'public_html/tmp/')){
-                  if ($dh = opendir(PATH.'public_html/tmp/')){
+            if (is_dir(PATH.'public_html/tmp/'.USR_ID.'/')){
+                  if ($dh = opendir(PATH.'public_html/tmp/'.USR_ID.'/')){
                     if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
                         mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
                     }
@@ -364,16 +370,16 @@ class reprocessingController extends AppController {
                     #while (($file = readdir($dh)) !== false){ 
                       if(trim($file)!=".." ){
                             if(trim($file)!="." ){
-                                if (file_exists(PATH.'public_html/tmp/'.$file)){
+                                if (file_exists(PATH.'public_html/tmp/'.USR_ID.'/'.$file)){
                                     //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
                                     try {
-                                        $path_parts = pathinfo(PATH.'public_html/tmp/'.$file);
+                                        $path_parts = pathinfo(PATH.'public_html/tmp/'.USR_ID.'/'.$file);
                                         $ext=$path_parts['extension'];
                                         $p['vp_img']='-page.'.$ext;
                                         $p['vp_imgorigen']=$file;
                                         $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'].'/';
                                         $p['vp_lado']='A';
-                                        list($width, $height) = getimagesize(PATH.'public_html/tmp/'.$file);
+                                        list($width, $height) = getimagesize(PATH.'public_html/tmp/'.USR_ID.'/'.$file);
                                         $p['vp_w']=$width;
                                         $p['vp_h']=$height;
                                         $rs = $this->objDatos->set_page($p);
@@ -381,7 +387,7 @@ class reprocessingController extends AppController {
                                         $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
 
                                         if($rs['status']=='OK'){
-                                            rename(PATH.'public_html/tmp/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                                            rename(PATH.'public_html/tmp/'.USR_ID.'/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
                                             try{
                                                 rename(PATH.'public_html/tumblr/'.$file, PATH.'public_html/tumblr/'.$rs['id_pag'].$p['vp_img']);
                                             } catch (Exception $e) {
@@ -548,5 +554,18 @@ class reprocessingController extends AppController {
     public function delete_tiff($p){
         /*$path = REALPATHAPP.'apps/public/imagenes/'.trim($p['img']).'.jpg';
         unlink($path);*/
+    }
+    public function setSaveReproFile($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->setSaveReproFile($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
     }
 }

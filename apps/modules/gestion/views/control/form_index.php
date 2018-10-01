@@ -8,12 +8,17 @@
 			opcion:'I',
 			id_pag:0,
 			shi_codigo:0,
+			fac_cliente:0,
 			id_det:0,
 			id_lote:0,
 			trabajando:1,
 			recordsToSend:[],
 			cropper:{},
 			cropperData:{},
+			temporalFile:'none.jpg',
+			selectImg:'',
+			selectPath:'',
+			id_pag:0,
 			init:function(){
 				Ext.Ajax.timeout = 180000;
             	Ext.QuickTips.init();
@@ -106,6 +111,7 @@
 			var store_paginas = Ext.create('Ext.data.Store',{
                 fields: [
                     {name: 'id_pag', type: 'string'},
+                    {name: 'id_pag_error', type: 'string'},
                     {name: 'id_det', type: 'string'},
                     {name: 'id_lote', type: 'string'},
                     {name: 'path', type: 'string'},
@@ -113,7 +119,8 @@
                     {name: 'lado', type: 'string'},
                     {name: 'ocr', type: 'string'},
                     {name: 'estado', type: 'string'},
-                    {name: 'include', type: 'string'}
+                    {name: 'include', type: 'string'},
+	                {name: 'msg_error', type: 'string'}
                 ],
                 autoLoad:false,
                 proxy:{
@@ -214,7 +221,7 @@
 						{
 							region:'west',
 							border:true,
-							width:350,
+							width:400,
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
@@ -226,7 +233,7 @@
 		                            logo: 'BE',
 		                            title: 'Control de Lotes',
 		                            legend: 'Seleccione el Lote Registrado',
-		                            width:350,
+		                            width:385,
 		                            height:210,
 		                            items:[
 		                                {
@@ -237,7 +244,7 @@
 		                                    layout:'column',
 		                                    items: [
 		                                    	{
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -270,7 +277,7 @@
 			                                 		]
 			                                    },
 			                                    {
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'10px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -302,7 +309,7 @@
 			                                 		]
 			                                    },
 			                                    {
-		                                            width:300,border:false,
+		                                            width:350,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -320,7 +327,7 @@
 		                                            ]
 		                                        },
 		                                        {
-		                                            width:300,border:false,
+		                                            width:350,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -337,7 +344,7 @@
 		                                            ]
 		                                        },
 		                                        {
-			                                        width: 300,border:false,
+			                                        width: 350,border:false,
 			                                        padding:'0px 2px 5px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                    	layout:'column',
@@ -450,6 +457,12 @@
 				                                    align: 'center'
 				                                },
 				                                {
+				                                    text: 'Error',
+				                                    dataIndex: 'tot_errpag',
+				                                    width: 50,
+				                                    align: 'center'
+				                                },
+				                                {
 				                                    text: 'Cerrar',
 				                                    dataIndex: 'estado',
 				                                    //loocked : true,
@@ -558,8 +571,21 @@
 						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
 						                    //height:50
-						                    text: 'Guardar'
+						                    text: 'Guardar',
 						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.setSaveChangeFile();
+					                            }
+					                        }
 						                },
 										/*{
 						                    xtype: 'button',
@@ -615,8 +641,21 @@
 						                    scale: 'large',
 						                    margin:'5px 5px 5px 5px',
 						                    //height:50
-						                    text: 'Rotar'
+						                    text: 'Rotar',
 						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
+					                            click: function(obj, e){	             	
+                       					            control.setRotateImage();
+					                            }
+					                        }
 						                },
 						                {
 						                    xtype: 'button',
@@ -646,32 +685,6 @@
 						                },
 						                {
 						                    xtype: 'button',
-						                    id:control.id+'-txt-btn-deshacer',
-						                    disabled:true,
-						                    icon: '/images/icon/if_90_111056.png',
-						                    flex:1,
-						                    scale: 'large',
-						                    //glyph: 72,
-						                    margin:'5px 5px 5px 5px',
-						                    //text: '[Delete]',
-						                    text: 'Deshacer',
-						                    //iconAlign: 'top'
-						                    listeners:{
-					                            beforerender: function(obj, opts){
-					                                /*global.permisos({
-					                                    id: 15,
-					                                    id_btn: obj.getId(), 
-					                                    id_menu: gestion_devolucion.id_menu,
-					                                    fn: ['panel_asignar_gestion.limpiar']
-					                                });*/
-					                            },
-					                            click: function(obj, e){	             	
-                       					            control.setCreateTemporalFile();
-					                            }
-					                        }
-						                },
-						                {
-						                    xtype: 'button',
 						                    id:control.id+'-txt-btn-confirn',
 						                    disabled:true,
 						                    icon: '/images/icon/if_Ok_984756.png',
@@ -680,7 +693,7 @@
 						                    //glyph: 72,
 						                    margin:'5px 5px 5px 5px',
 						                    //text: '[Delete]',
-						                    text: 'Confirmar Cambio',
+						                    text: 'Confirmar Corte',
 						                    //iconAlign: 'top'
 						                    listeners:{
 					                            beforerender: function(obj, opts){
@@ -717,8 +730,35 @@
 					                                    fn: ['panel_asignar_gestion.limpiar']
 					                                });*/
 					                            },
+					                            click: function(obj, e){
+					                            	//control.setCancelarFile();
+					                            	control.setRotateBTN(true);
+					                            }
+					                        }
+						                },
+						                {
+						                    xtype: 'button',
+						                    id:control.id+'-txt-btn-deshacer',
+						                    disabled:true,
+						                    icon: '/images/icon/if_90_111056.png',
+						                    flex:1,
+						                    scale: 'large',
+						                    //glyph: 72,
+						                    margin:'5px 5px 5px 5px',
+						                    //text: '[Delete]',
+						                    text: 'Deshacer',
+						                    //iconAlign: 'top'
+						                    listeners:{
+					                            beforerender: function(obj, opts){
+					                                /*global.permisos({
+					                                    id: 15,
+					                                    id_btn: obj.getId(), 
+					                                    id_menu: gestion_devolucion.id_menu,
+					                                    fn: ['panel_asignar_gestion.limpiar']
+					                                });*/
+					                            },
 					                            click: function(obj, e){	             	
-                       					            control.setHabilitarFunciones(true);
+                       					            control.setCreateTemporalFile();
 					                            }
 					                        }
 						                }
@@ -730,7 +770,11 @@
 									border:true,
 									autoScroll:true,
 									padding:'5px 5px 5px 5px',
-									html: '<div id="imagen-control" style="width:100%; height:"100%;overflow: none;" ><img id="imagen-control-xim" src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
+									items:[
+										{
+											html:'<img id="imagen-control-xim" src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/>'
+										}
+									] 
 								},
 								{
 									region:'south',
@@ -921,12 +965,15 @@
 							                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 							                                        //console.log(record);
 							                                        metaData.style = "padding: 0px; margin: 0px";
+							                                        var ico =  (parseInt(record.get('id_pag_error'))==0)?'ER_R.png':'ER_E.png';
+							                                        var msn = (parseInt(record.get('id_pag_error'))==0)?'Sin Mensaje Reprocesar':'Mensaje Reprocesar:'+record.get('msg_error');
+
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: control.id_menu,
 							                                            icons:[
-							                                                {id_serv: 2, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setRemoveFile(false)"},
-							                                                {id_serv: 2, img: 'if_SVG_LINE.png', qtip: 'Pasar OCR.', js: "control.setRemoveFile(false)"}
+							                                                {id_serv: 2, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setRemoveFile("+rowIndex+")"},
+							                                                {id_serv: 2, img: ico, qtip: msn, js: "control.setMSGREPRO("+rowIndex+")"}
 							                                            ]
 							                                        });
 							                                    }
@@ -949,6 +996,12 @@
 							                            beforeselect:function(obj, record, index, eOpts ){
 							                            	console.log(record);
 							                            	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+record.get('path')+record.get('file')+'" width="100%" height="100%"/>'
+							                            	control.selectImg=record.get('file'),
+							                            	control.selectPath=record.get('path');
+															control.id_pag=record.get('id_pag');
+															control.id_det=record.get('id_det');
+															control.id_lote=record.get('id_lote');
+															control.setResetBtn(true);
 							                            	control.setImageFile(record.get('path'),record.get('file'));
 							                            }
 							                        }
@@ -1010,19 +1063,232 @@
 
 				}).show();
 			},
+			setMSGREPRO:function(index){
+				var rec = Ext.getCmp(control.id + '-grid-paginas').getStore().getAt(index);
+				control.id_pag=rec.data.id_pag;
+                control.id_det=rec.data.id_det;
+                control.id_lote=rec.data.id_lote; 
+                var IU = (parseInt(rec.data.id_pag_error) == 0)?'I':'U';
+
+                var msg='Página no legible.';
+                if(IU=='U'){
+                	msg= rec.data.msg_error;
+                }
+
+
+                Ext.create('Ext.window.Window',{
+	                id:control.id+'-win-form',
+	                plain: true,
+	                title:'MSG Reproceso',
+	                icon: '/images/icon/ER_E.png',
+	                height: 200,
+	                width: 450,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:20,
+	                layout:'fit',
+	                items:[
+	                	{
+                            xtype: 'textarea',
+                            //fieldLabel: 'Texto',
+                            id:control.id+'-txt-texto-reproceso',
+                            labelWidth:0,
+                            //maskRe: /[0-9]/,
+                            //readOnly:true,
+                            value:msg,
+                            labelAlign:'right',
+                            width:'100%',
+                            anchor:'100%'
+                        }
+	                ],
+	                bbar:[       
+	                    '->',
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Grabar',
+	                        icon: '/images/icon/save.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+								},
+	                            click: function(obj, e){
+	                            	control.setSaveReproFile(IU);
+	                            }
+	                        }
+	                    },
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        disabled:(IU=='I')?true:false,
+	                        text: 'Eliminar',
+	                        icon: '/images/icon/recicle_nov.ico',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+								},
+	                            click: function(obj, e){
+	                            	control.setSaveReproFile('D');
+	                            }
+	                        }
+	                    },
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(control.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+
+	                    },
+	                    'close':function(){
+
+	                    }
+	                }
+	            }).show().center();
+			},
+			setSaveReproFile:function(op){
+		    	var msn=Ext.getCmp(control.id+'-txt-texto-reproceso').getValue();
+				if(parseInt(control.id_det)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(control.id_lote)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(control.id_pag)==0){
+					global.Msg({msg:"Seleccione una página.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(msn==''){
+					global.Msg({msg:"Ingrese un mensaje para la página con error.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				global.Msg({
+                    msg: '¿Guardando configuración?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(control.id+'-win-form').el.mask('Actualizando Páginas…', 'x-mask-loading');
+	                        control.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:control.url+'setSaveReproFile/',
+			                    params:{
+			                    	vp_op:op,
+			                    	vp_id_pag:control.id_pag,
+			                    	vp_id_det:control.id_det,
+			                    	vp_id_lote:control.id_lote,
+			                    	vp_msn:msn
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                        Ext.getCmp(control.id+'-win-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        control.getLoader(false);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	control.getReloadPage();
+			                                	Ext.getCmp(control.id+'-win-form').close();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	//control.getReloadPage();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+			},
+			setSaveChangeFile:function(){
+				global.Msg({
+                    msg: '¿Está seguro de guardar la imagen editada?',
+                    icon: 2,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+							Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+							control.setHabilitarFunciones(true);
+							var path = control.selectPath;
+							var img = control.selectImg;
+							Ext.Ajax.request({
+			                    url: control.url + 'setSaveChangeFile/',
+			                    params:{
+			                    	path:path,
+			                		img:img,
+			                		temporalFile:control.temporalFile
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        
+			                        control.getLoader(false);
+			                        if (res.error == 'OK'){
+			                        	//console.log(res.data);
+			                        	control.temporalFile='none.jpg';
+			                        	//control.setHabilitarFunciones(true);
+			                        	//control.setRotateBTN(true);
+			                        	control.setResetBtn(true);
+			                        	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+path+img+'" width="100%" height="100%"/>'
+			                        	control.setImageFile(path,img);
+			                        	Ext.getCmp(control.id+'-tab').el.unmask();
+
+			                        }else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                    Ext.getCmp(control.id+'-form').el.unmask();
+			                                    control.setHabilitarFunciones(true);
+			                                    Ext.getCmp(control.id+'-tab').el.unmask();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+			    		}
+		            }
+                });
+			},
 			setSaveDrop:function(op,json){
 				var data = control.cropper.getCropBoxData();
 
 				var container=control.cropper.getContainerData();
-				var wa = data.width /  parseFloat(container.width);
-				var wb = data.height / parseFloat(container.height);
+				var wa = json.width /  parseFloat(container.width);
+				var wb = json.height / parseFloat(container.height);
 				
 				var top= parseFloat(data.top) * wb;
 	            var left= parseFloat(data.left)* wa;
 	            var width= parseFloat(data.width)* wa;
 	            var height= parseFloat(data.height)* wb;
              	var path = '/filedit/';
-				var img = '219-page.jpg';
+				var img = control.temporalFile;
 
              	global.Msg({
                     msg: '¿Está seguro de guardar?',
@@ -1046,10 +1312,12 @@
 			                    },
 			                    timeout: 300000,
 			                    success: function(response, options){
-			                    	Ext.getCmp(control.id+'-tab').el.unmask();
+			                    	control.setRotateBTN(true);
+			                    	//Ext.getCmp(control.id+'-tab').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
 			                        if (res.error == 'OK'){
-			                            control.setImageFile(path,img);
+			                        	control.temporalFile=res.file; 
+			                            control.setImageFile(path,control.temporalFile);
 			                        } else{
 			                            global.Msg({
 			                                msg: res.msn,
@@ -1057,6 +1325,7 @@
 			                                buttons: 1,
 			                                fn: function(btn){
 			                                    //OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                    Ext.getCmp(control.id+'-tab').el.unmask();
 			                                }
 			                            });
 			                        }
@@ -1067,8 +1336,8 @@
                 });
 			},
 			setDrop:function(){
-				var path = '/scanning/1/9/';
-				var img = '219-page.jpg';
+				var path = '/filedit/';
+				var img = control.temporalFile;
 				var image = path+img;
 				control.getSizeImg(image,'S',control.setSaveDrop);
 			},
@@ -1084,6 +1353,7 @@
 			    newImg.src = imgSrc;
 			},
 			getDropImg:function(){
+				control.setRotateBTN(false);
 				var image = document.getElementById('imagen-control');
 		      	try{
 			      control.cropper = new Cropper(image, {
@@ -1093,7 +1363,7 @@
 			        rotatable: false,
 			        scalable: false,
 			        cropBoxMovable: true,
-			        cropBoxResizable: false,
+			        cropBoxResizable: true,
 			        ready: function (event) {
 			        },
 			        crop: function (event) {
@@ -1113,26 +1383,110 @@
 				}
 			},
 			setCreateTemporalFile:function(){
+				if(parseInt(control.id_pag)==0){ 
+					global.Msg({msg:"Seleccione una página por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 				control.setHabilitarFunciones(true);
-				var path = '/scanning/1/9/';
-				var img = '219-page.jpg';
+				var path = control.selectPath;
+				var img = control.selectImg;
 				Ext.Ajax.request({
                     url: control.url + 'set_create_temporal_file/',
                     params:{
                     	path:path,
-                		img:img
+                		img:img,
+                		temporalFile:control.temporalFile
                     },
                     timeout: 300000,
                     success: function(response, options){
                     	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
                         var res = Ext.JSON.decode(response.responseText);
-                        Ext.getCmp(control.id+'-form').el.unmask();
+                        //Ext.getCmp(control.id+'-tab').el.unmask();
                         control.getLoader(false);
                         if (res.error == 'OK'){
                         	//console.log(res.data);
+                        	control.temporalFile=res.file;
                         	control.setHabilitarFunciones(false);
+                        	control.setRotateBTN(true);
                         	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+path+img+'" width="100%" height="100%"/>'
-                        	control.setImageFile('/filedit/',img);
+                        	control.setImageFile('/filedit/',control.temporalFile);
+
+                        }else{
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 0,
+                                buttons: 1,
+                                fn: function(btn){
+                                    //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+                                    //Ext.getCmp(control.id+'-form').el.unmask();
+                                    control.setHabilitarFunciones(true);
+                                    Ext.getCmp(control.id+'-tab').el.unmask();
+                                }
+                            });
+                        }
+                    }
+                });
+			},
+			setRotateImage:function(){
+				Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+				Ext.Ajax.request({
+                    url: control.url + 'setRotateImage/',
+                    params:{
+                		temporalFile:control.temporalFile
+                    },
+                    timeout: 300000,
+                    success: function(response, options){
+                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+                        var res = Ext.JSON.decode(response.responseText);
+                        
+                        control.getLoader(false);
+                        if (res.error == 'OK'){
+                        	//console.log(res.data);
+                        	control.temporalFile=res.file;
+                        	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+path+img+'" width="100%" height="100%"/>'
+                        	control.setImageFile('/filedit/',control.temporalFile);
+
+                        }else{
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 0,
+                                buttons: 1,
+                                fn: function(btn){
+                                    //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+                                    //control.setHabilitarFunciones(true);
+                                    Ext.getCmp(control.id+'-tab').el.unmask();
+                                }
+                            });
+                        }
+                    }
+                });
+			},
+			setCancelarFile:function(){
+				Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
+				control.setHabilitarFunciones(true);
+				var path = control.selectPath;
+				var img = control.selectImg;
+				Ext.Ajax.request({
+                    url: control.url + 'set_delete_temporal_file/',
+                    params:{
+                    	path:path,
+                		img:img,
+                		temporalFile:control.temporalFile
+                    },
+                    timeout: 300000,
+                    success: function(response, options){
+                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+                        var res = Ext.JSON.decode(response.responseText);
+                        
+                        control.getLoader(false);
+                        if (res.error == 'OK'){
+                        	//console.log(res.data);
+                        	control.temporalFile='none.jpg';
+                        	control.setHabilitarFunciones(true);
+                        	//document.getElementById('imagen-control').innerHTML='<img id="imagen-control-xim" src="'+path+img+'" width="100%" height="100%"/>'
+                        	control.setImageFile(path,img);
+                        	Ext.getCmp(control.id+'-tab').el.unmask();
 
                         }else{
                             global.Msg({
@@ -1143,17 +1497,23 @@
                                     //control.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
                                     Ext.getCmp(control.id+'-form').el.unmask();
                                     control.setHabilitarFunciones(true);
+                                    Ext.getCmp(control.id+'-tab').el.unmask();
                                 }
                             });
                         }
                     }
                 });
 			},
+			getAddMagicRefresh:function(url){
+			    var symbol = '?';//url.indexOf('?') == -1 ? '?' : '&';
+			    var magic = Math.random()*999999;
+			    return url + symbol + 'magic=' + magic;
+			},
 			setImageFile: function(path,file){//(rec,recA){
 				var panel = Ext.getCmp(control.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img id="imagen-control" src="'+path+file+'" style="width:100%;" >'
+                    html: '<img id="imagen-control" src="'+control.getAddMagicRefresh(path+file)+'" style="width:100%;" >'
                 });
 
                 var image = document.getElementById('imagen-control');
@@ -1163,18 +1523,37 @@
 					    image.src = this.src;
 		                panel.doLayout();
 					};
-					downloadingImage.src = path+file;
+					downloadingImage.src = control.getAddMagicRefresh(path+file);
 					panel.doLayout();
+					Ext.getCmp(control.id+'-tab').el.unmask();
 				}
 		    },
+		    setResetBtn:function(bool){
+				Ext.getCmp(control.id+'-txt-btn-play').setDisabled(!bool);
+				Ext.getCmp(control.id+'-txt-btn-save').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-rotar').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-cortar').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-confirn').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-cancelar').setDisabled(bool);
+				Ext.getCmp(control.id+'-txt-btn-deshacer').setDisabled(bool);
+			},
+
 			setHabilitarFunciones:function(bool){
 				Ext.getCmp(control.id+'-txt-btn-play').setDisabled(!bool);
 				Ext.getCmp(control.id+'-txt-btn-save').setDisabled(bool);
 				Ext.getCmp(control.id+'-txt-btn-rotar').setDisabled(bool);
 				Ext.getCmp(control.id+'-txt-btn-cortar').setDisabled(bool);
+				//Ext.getCmp(control.id+'-txt-btn-confirn').setDisabled(bool);
+				//Ext.getCmp(control.id+'-txt-btn-cancelar').setDisabled(bool);
 				Ext.getCmp(control.id+'-txt-btn-deshacer').setDisabled(bool);
+			},
+			setRotateBTN:function(bool){
+				Ext.getCmp(control.id+'-txt-btn-cortar').setDisabled(!bool);
 				Ext.getCmp(control.id+'-txt-btn-confirn').setDisabled(bool);
 				Ext.getCmp(control.id+'-txt-btn-cancelar').setDisabled(bool);
+				if(bool){
+					control.setImageFile('/filedit/',control.temporalFile);
+				}
 			},
 			getLoader:function(bool){
 				if(bool){
@@ -1201,7 +1580,7 @@
                     buttons: 3,
                     fn: function(btn){
                     	if (btn == 'yes'){
-                    		Ext.getCmp(control.id+'-form').el.mask('Guardando Texto de Trazos - OCR', 'x-mask-loading');
+                    		Ext.getCmp(control.id+'-tab').el.mask('Guardando Texto de Trazos - OCR', 'x-mask-loading');
 							control.getLoader(true);
 							try{
 						    	//Procesar OCR
@@ -1218,7 +1597,7 @@
 				                    success: function(response, options){
 				                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
 				                        var res = Ext.JSON.decode(response.responseText);
-				                        Ext.getCmp(control.id+'-form').el.unmask();
+				                        Ext.getCmp(control.id+'-tab').el.unmask();
 				                        control.getLoader(false);
 				                        if (res.error == 'OK'){
 				                        	//console.log(res.data);
@@ -1266,7 +1645,7 @@
                     buttons: 3,
                     fn: function(btn){
                     	if (btn == 'yes'){
-                    		Ext.getCmp(control.id+'-form').el.mask('Guardando Texto de Trazos - OCR', 'x-mask-loading');
+                    		Ext.getCmp(control.id+'-tab').el.mask('Guardando Texto de Trazos - OCR', 'x-mask-loading');
 							control.getLoader(true);
 							try{
 						    	//Procesar OCR
@@ -1280,7 +1659,7 @@
 				                    	vp_ocr:'N'
 				                    },
 				                    success: function(response, options){
-				                    	//Ext.getCmp(control.id+'-panel-trazos-form').el.unmask();
+				                    	Ext.getCmp(control.id+'-tab').el.unmask();
 				                        var res = Ext.JSON.decode(response.responseText);
 				                        if (res.error == 'OK'){
 				                        	//console.log(res.data);
@@ -1460,7 +1839,7 @@
                     buttons: 3,
                     fn: function(btn){
                     	if (btn == 'yes'){
-                    		Ext.getCmp(control.id+'-form').el.mask('Cerrando Lote…', 'x-mask-loading');
+                    		Ext.getCmp(control.id+'-tab').el.mask('Cerrando Lote…', 'x-mask-loading');
 	                        control.getLoader(true);
 			                Ext.Ajax.request({
 			                    url:control.url+'set_lotizer/',
@@ -1470,7 +1849,7 @@
 			                    	vp_id_lote:id_lote
 			                    },
 			                    success: function(response, options){
-			                        Ext.getCmp(control.id+'-form').el.unmask();
+			                        Ext.getCmp(control.id+'-tab').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
 			                        control.getLoader(false);
 			                        //scanning.setLibera();
@@ -1481,7 +1860,10 @@
 			                                buttons: 1,
 			                                fn: function(btn){
 			                                	control.getReloadGridcontrol();
-			                                	control.getReloadPage();
+			                                	//control.getReloadPage();
+			                                	control.id_pag=0;
+			                                	control.setResetBtn(true);
+			                                	Ext.getCmp(control.id + '-grid-paginas').getStore().removeAll();
 			                                }
 			                            });
 			                        } else{
@@ -1490,8 +1872,8 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                	control.getReloadGridcontrol();
-			                                	control.getReloadPage();
+			                                	//control.getReloadGridcontrol();
+			                                	//control.getReloadPage();
 			                                }
 			                            });
 			                        }
@@ -1504,6 +1886,7 @@
 			},
 			getReloadPage:function(){
 				control.id_pag=0;
+				control.setResetBtn(true);
 				Ext.getCmp(control.id + '-grid-paginas').getStore().removeAll();
 				Ext.getCmp(control.id + '-grid-paginas').getStore().load({
                 	params:{
@@ -1553,7 +1936,7 @@
                     icon: 3,
                     buttons: 3,
                     fn: function(btn){
-                        Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+                        Ext.getCmp(control.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 
 						Ext.getCmp(control.id+'-form-info').submit({
 		                    url: control.url + 'setRegisterCampana/',
@@ -1568,7 +1951,7 @@
 		                    success: function( fp, o ){
 		                    	//console.log(o);
 		                        var res = o.result;
-		                        Ext.getCmp(control.id+'-form').el.unmask();
+		                        Ext.getCmp(control.id+'-tab').el.unmask();
 		                        //console.log(res);
 		                        if (parseInt(res.error) == 0){
 		                            global.Msg({
@@ -1602,6 +1985,9 @@
 	                {params: {vp_shi_codigo:shi_codigo},
 	                callback:function(){
 	                	//Ext.getCmp(control.id+'-form').el.unmask();
+	                	control.id_pag=0;
+	                	control.setResetBtn(true);
+	                	//control.getReloadGridcontrol()
 	                }
 	            });
 			},
@@ -1631,6 +2017,8 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
+		        control.id_pag=0;
+		        control.setResetBtn(true);
 				Ext.getCmp(control.id + '-grid').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'CO',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
@@ -1691,6 +2079,81 @@
 		        panel.removeAll();        
 		        panel.doLayout();*/
 		    },
+		    setRemoveFile:function(index){
+		    	var rec = Ext.getCmp(control.id + '-grid-paginas').getStore().getAt(index);
+				control.id_pag=rec.data.id_pag;
+
+                control.id_det=rec.data.id_det; 
+                control.id_lote=rec.data.id_lote; 
+
+		    	control.shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
+				control.fac_cliente = Ext.getCmp(control.id+'-cbx-contrato').getValue();
+
+				if(parseInt(control.shi_codigo)==0){ 
+					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(control.id_det)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(control.id_lote)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(control.id_pag)==0){
+					global.Msg({msg:"Seleccione una página.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				
+				global.Msg({
+                    msg: '¿Seguro de eliminar página(s)?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(control.id+'-tab').el.mask('Elinando Páginas…', 'x-mask-loading');
+	                        scanning.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:control.url+'set_remove_file/',
+			                    params:{
+			                    	vp_op:'D',
+			                    	vp_shi_codigo:control.shi_codigo,
+			                    	vp_id_pag:control.id_pag,
+			                    	vp_id_det:control.id_det,
+			                    	vp_id_lote:control.id_lote
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                        Ext.getCmp(control.id+'-tab').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        control.getLoader(false);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	control.getReloadPage();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	control.getReloadPage();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+			},
 		    removeDiacritics:function(str) {
 
 			  var defaultDiacriticsRemovalMap = [

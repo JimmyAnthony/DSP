@@ -124,4 +124,17 @@ class reprocessingModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function setSaveReproFile($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_page_error');
+        parent::SetParameterSP($p['vp_op'], 'varchar');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP(utf8_decode(trim($p['vp_msn'])), 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+         //echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
 }

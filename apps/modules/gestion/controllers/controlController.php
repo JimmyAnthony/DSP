@@ -28,26 +28,6 @@ class controlController extends AppController {
     public function index($p){        
         $this->view('control/form_index.php', $p);
     }
-   public function set_create_temporal_file($p){
-        $estado="ER";
-        $msn="Creado correctamente";
-        try {
-            if (file_exists(PATH.'public_html'.$p['path'].$p['img'])) {
-                copy(PATH.'public_html'.$p['path'].$p['img'], PATH.'public_html/filedit/'.$p['img']);
-                $estado="OK";
-            }else{
-                $msn="No existe archivo a editar.";
-            }
-        } catch (Exception $e) {
-            //echo 'Caught exception: ',  $e->getMessage(), "\n";
-            $estado="ER";
-            $msn=$e->getMessage();
-        }
-
-        $data = array('success' => true,'error' => $estado,'msn' => $msn);
-        header('Content-Type: application/json');
-        return $this->response($data);
-   }
    public function get_list($p){
         $rs = $this->objDatos->get_list($p);
         //var_export($rs);
@@ -216,6 +196,8 @@ class controlController extends AppController {
                 $value_['orden'] = intval($value['orden']);
                 $value_['estado'] = utf8_encode(trim($value['estado']));
                 $value_['include'] ='Y';
+                $value_['id_pag_error'] = intval($value['id_pag_error']);
+                $value_['msg_error'] = utf8_encode(trim($value['msg_error']));
                 $array[]=$value_;
         }
         $data = array(
@@ -574,29 +556,107 @@ class controlController extends AppController {
         }
         return $res;
     }
+    public function set_delete_temporal_file($p){
+        $estado="ER";
+        $msn="No existe archivo a editar.";
+        if (file_exists(PATH.'public_html/filedit/'.$p['temporalFile'])) {
+            unlink(PATH.'public_html/filedit/'.$p['temporalFile']);
+            $estado="OK";
+            $msn="Creado correctamente";
+        }
+        $data = array('success' => true,'error' => $estado,'msn' => $msn);
+        header('Content-Type: application/json');
+        return $this->response($data);
+        
+    }
+    public function setSaveChangeFile($p){
+        $estado="ER";
+        $msn="No existe archivo a editar.";
+        if (file_exists(PATH.'public_html/filedit/'.$p['temporalFile'])){
+            try{
+                rename(PATH.'public_html/filedit/'.$p['temporalFile'], PATH.'public_html'.$p['path'].$p['img']);
+            } catch (Exception $e) {
+                //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            }
+            try{
+                unlink(PATH.'public_html/filedit/'.$p['temporalFile']);
+            } catch (Exception $e) {
+                //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            }
+            $estado="OK";
+            $msn="Creado correctamente";
+        }
+        $data = array('success' => true,'error' => $estado,'msn' => $msn);
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function set_create_temporal_file($p){
+        $estado="ER";
+        $msn="Creado correctamente";
+        $time = time();
+        $RD=date("dmYHis", $time);
+        $path_parts = pathinfo(PATH.'public_html'.$p['path'].$p['img']);
+        $extension=$path_parts['extension'];
+        $R=rand();
+        $file=$RD.'_'.$R.'.'.$extension;
+        try {
+            if (file_exists(PATH.'public_html'.$p['path'].$p['img'])) {
+                copy(PATH.'public_html'.$p['path'].$p['img'], PATH.'public_html/filedit/'.$file);
+                if (file_exists(PATH.'public_html/filedit/'.$p['temporalFile'])) {
+                    unlink(PATH.'public_html/filedit/'.$p['temporalFile']);
+                }
+                $estado="OK";
+            }else{
+                $msn="No existe archivo a editar.";
+            }
+        } catch (Exception $e) {
+            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+            $estado="ER";
+            $msn=$e->getMessage();
+        }
+
+        $data = array('success' => true,'error' => $estado,'msn' => $msn,'file'=>$file);
+        header('Content-Type: application/json');
+        return $this->response($data);
+   }
     public function set_resize_file($p){
         $img=$p['vp_img'];
         $path=$p['vp_path'];
         $path_parts = pathinfo(PATH.'public_html'.$path.$img);
         $p['extension']=$path_parts['extension'];
-        $bool=$this->setDropImgFile($p);
+
+
+        $time = time();
+        $RD=date("dmYHis", $time);
+        $R=rand();
+        $file=$RD.'_'.$R.'.'.$p['extension'];
+
+
+        $bool=$this->setDropImgFile($p,$file);
+
+        if($bool){
+            if (file_exists(PATH.'public_html/filedit/'.$p['vp_img'])) {
+                unlink(PATH.'public_html/filedit/'.$p['vp_img']);
+            }
+        }
 
         $data = array(
             'success' => true,
             'error' => $bool?'OK':'ER',
-            'msn' => 'Mensaje generado'
+            'msn' => 'Mensaje generado',
+            'file'=>$file
         );
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function setDropImgFile($p){
+    public function setDropImgFile($p,$file){
         $bool=false;
         $img=$p['vp_img'];
         $path=$p['vp_path'];
         #$path_parts = pathinfo($p['vp_img']);
         $ext=$p['extension'];
         $src_original = PATH.'public_html'.$path.$img;
-        $src_guardar  = $src_original;
+        $src_guardar  = PATH.'public_html'.$path.$file;
         try {
             $destImage = imagecreatetruecolor(number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''));
             #$sourceImage = imagecreatefromjpeg($src_original);
@@ -624,9 +684,92 @@ class controlController extends AppController {
             }
             $bool=true;
         } catch (Exception $e) {
-            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            $msn= $e->getMessage();
             $bool=false;
         }
         return $bool;
+    }
+
+    public function setRotateImage($p){
+        $nameimg=$p['temporalFile'];
+        $path_parts = pathinfo(PATH.'public_html/filedit/'.$nameimg);
+        $ext=$path_parts['extension'];
+        $w=40;
+        $y=60;
+        $time = time();
+        $RD=date("dmYHis", $time);
+        $R=rand();
+        $file=$RD.'_'.$R.'.'.$ext;
+        $msn='Mensaje generado';
+        try {
+            switch($ext){
+                #case 'bmp': $sourceImage = $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, 50, 70); break;
+                case 'gif': 
+                    $img = $this->resize_imagegif(PATH.'public_html/filedit/'.$nameimg); 
+                break;
+                case 'jpg': 
+                    $img = $this->resize_imagejpg(PATH.'public_html/filedit/'.$nameimg); 
+                break;
+                case 'png': 
+                    $img = $this->resize_imagepng(PATH.'public_html/filedit/'.$nameimg); 
+                break;
+                default : 
+                    $img = $this->resize_imagejpg(PATH.'public_html/filedit/'.$nameimg); 
+                break;
+            }
+            imagejpeg($img, PATH.'public_html/filedit/'.$file);
+            
+            if (file_exists(PATH.'public_html/filedit/'.$nameimg)) {
+                unlink(PATH.'public_html/filedit/'.$nameimg);
+            }
+            $bool=true;
+        } catch (Exception $e) {
+            $msn= $e->getMessage();
+            $bool=false;
+        }
+        $data = array(
+            'success' => true,
+            'error' => $bool?'OK':'ER',
+            'msn' => $msn,
+            'file'=>$file
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    // for jpg 
+    public function resize_imagejpg($file) {
+       //list($width, $height) = getimagesize($file);
+       $src = imagecreatefromjpeg($file);
+       $dst = imagerotate($src, 90,0);
+       return $dst;
+    }
+
+     // for png
+    public function resize_imagepng($file) {
+       //list($width, $height) = getimagesize($file);
+       $src = imagecreatefrompng($file);
+       $dst = imagerotate($src, 90,0);
+       return $dst;
+    }
+
+    // for gif
+    public function resize_imagegif($file) {
+       //list($width, $height) = getimagesize($file);
+       $src = imagecreatefromgif($file);
+       $dst = imagerotate($src, 90,0);
+       return $dst;
+    }
+    public function setSaveReproFile($p){
+        //$this->valida_mobil($p);
+        
+        $rs = $this->objDatos->setSaveReproFile($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
     }
 }

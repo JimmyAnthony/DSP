@@ -116,13 +116,15 @@
 				var store_paginas = Ext.create('Ext.data.Store',{
 	                fields: [
 	                    {name: 'id_pag', type: 'string'},
+	                    {name: 'id_pag_error', type: 'string'},
 	                    {name: 'id_det', type: 'string'},
 	                    {name: 'id_lote', type: 'string'},
 	                    {name: 'path', type: 'string'},
 	                    {name: 'file', type: 'string'},
 	                    {name: 'lado', type: 'string'},
 	                    {name: 'estado', type: 'string'},
-	                    {name: 'include', type: 'string'}
+	                    {name: 'include', type: 'string'},
+	                    {name: 'msg_error', type: 'string'}
 	                ],
 	                autoLoad:false,
 	                proxy:{
@@ -249,7 +251,7 @@
 							region:'west',
 							id:reprocessing.id + '-panel-west-lote',
 							border:true,
-							width:350,
+							width:400,
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
@@ -259,9 +261,9 @@
 		                            border:false,
 		                            xtype: 'uePanelS',
 		                            logo: 'BE',
-		                            title: 'Panel de Reproceso',
+		                            title: 'Panel de Re - proceso',
 		                            legend: 'Seleccione el Lote Registrado',
-		                            width:350,
+		                            width:385,
 		                            height:210,
 		                            items:[
 		                                {
@@ -272,7 +274,7 @@
 		                                    layout:'column',
 		                                    items: [
 		                                    	{
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -305,7 +307,7 @@
 			                                 		]
 			                                    },
 			                                    {
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'10px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -337,7 +339,7 @@
 			                                 		]
 			                                    },
 			                                    {
-		                                            width:300,border:false,
+		                                            width:350,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -355,7 +357,7 @@
 		                                            ]
 		                                        },
 		                                        {
-		                                            width:300,border:false,
+		                                            width:350,border:false,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -372,7 +374,7 @@
 		                                            ]
 		                                        },
 		                                        {
-			                                        width: 300,border:false,
+			                                        width: 350,border:false,
 			                                        padding:'0px 2px 5px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                    	layout:'column',
@@ -487,6 +489,12 @@
 						                                {
 						                                    text: 'Páginas',
 						                                    dataIndex: 'tot_pag',
+						                                    width: 50,
+						                                    align: 'center'
+						                                },
+						                                {
+						                                    text: 'Error',
+						                                    dataIndex: 'tot_errpag',
 						                                    width: 50,
 						                                    align: 'center'
 						                                },
@@ -998,7 +1006,7 @@
 										                    		obj.setStyle({'font-weight' : 'bold'});
 										                    	},
 										                    	click: function(obj, e){
-									                            	reprocessing.setRemoveFile(true);
+									                            	reprocessing.setRemoveFile(0,true);
 									                            }
 										                    }
 										                    //iconAlign: 'top'
@@ -1043,19 +1051,23 @@
 									                                    flex: 1
 									                                },
 									                                {
-									                                    text: 'DLT',
+									                                    text: 'OPT',
 									                                    dataIndex: 'estado',
 									                                    //loocked : true,
-									                                    width: 40,
+									                                    width: 50,
 									                                    align: 'center',
 									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 									                                        //console.log(record);
 									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        var ico =  (parseInt(record.get('id_pag_error'))==0)?'ER_R.png':'ER_E.png';
+							                                        		var msn = (parseInt(record.get('id_pag_error'))==0)?'Sin Mensaje Reprocesar':'Mensaje Reprocesar:'+record.get('msg_error');
+
 									                                        return global.permisos({
 									                                            type: 'link',
 									                                            id_menu: reprocessing.id_menu,
 									                                            icons:[
-									                                                {id_serv: 4, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "reprocessing.setRemoveFile(false)"}
+									                                                {id_serv: 4, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "reprocessing.setRemoveFile("+rowIndex+",false)"},
+									                                                {id_serv: 4, img: ico, qtip: msn, js: "reprocessing.setMSGREPRO("+rowIndex+")"}
 
 									                                            ]
 									                                        });
@@ -1316,6 +1328,150 @@
 
 				}).show();
 			},
+			setMSGREPRO:function(index){
+				var rec = Ext.getCmp(reprocessing.id + '-grid-paginas').getStore().getAt(index);
+                var msg=msg= rec.data.msg_error;
+
+                Ext.create('Ext.window.Window',{
+	                id:reprocessing.id+'-win-form',
+	                plain: true,
+	                title:'MSG Reproceso',
+	                icon: '/images/icon/ER_E.png',
+	                height: 200,
+	                width: 450,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:20,
+	                layout:'fit',
+	                items:[
+	                	{
+                            xtype: 'textarea',
+                            //fieldLabel: 'Texto',
+                            id:reprocessing.id+'-txt-texto-reproceso',
+                            labelWidth:0,
+                            //maskRe: /[0-9]/,
+                            //readOnly:true,
+                            value:msg,
+                            labelAlign:'right',
+                            width:'100%',
+                            anchor:'100%'
+                        }
+	                ],
+	                bbar:[
+	                    '->',
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Corregir',
+	                        icon: '/images/icon/save.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+								},
+	                            click: function(obj, e){
+	                            	reprocessing.setSaveReproFile('C',index);
+	                            }
+	                        }
+	                    },
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(reprocessing.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+
+	                    },
+	                    'close':function(){
+
+	                    }
+	                }
+	            }).show().center();
+			},
+			setSaveReproFile:function(op,index){
+				var rec = Ext.getCmp(reprocessing.id + '-grid-paginas').getStore().getAt(index);
+				var id_pag=rec.data.id_pag;
+                var id_det=rec.data.id_det;
+                var id_lote=rec.data.id_lote; 
+
+		    	var msn=Ext.getCmp(reprocessing.id+'-txt-texto-reproceso').getValue();
+
+				if(parseInt(id_det)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(id_lote)==0){
+					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(id_pag)==0){
+					global.Msg({msg:"Seleccione una página.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(msn==''){
+					global.Msg({msg:"Ingrese un mensaje para la página con error.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				global.Msg({
+                    msg: '¿Guardando configuración?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(reprocessing.id+'-win-form').el.mask('Actualizando Página…', 'x-mask-loading');
+	                        reprocessing.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:reprocessing.url+'setSaveReproFile/',
+			                    params:{
+			                    	vp_op:op,
+			                    	vp_id_pag:id_pag,
+			                    	vp_id_det:id_det,
+			                    	vp_id_lote:id_lote,
+			                    	vp_msn:msn
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                        Ext.getCmp(reprocessing.id+'-win-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        reprocessing.getLoader(false);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	reprocessing.getReloadPage();
+			                                	Ext.getCmp(reprocessing.id+'-win-form').close();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	//control.getReloadPage();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+			},
 			setCerrarEscaneado:function(shi_codigo,id_lote){
 				if(parseInt(shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
@@ -1346,13 +1502,14 @@
 			                        Ext.getCmp(reprocessing.id+'-form').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
 			                        reprocessing.getLoader(false);
-			                        reprocessing.setLibera();
+			                        
 			                        if (res.error == 'OK'){
 			                            global.Msg({
 			                                msg: res.msn,
 			                                icon: 1,
 			                                buttons: 1,
 			                                fn: function(btn){
+			                                	reprocessing.setLibera();
 			                                	reprocessing.getReloadGridreprocessing();
 			                                	//reprocessing.getreprocessingFile();
 			                                }
@@ -1363,7 +1520,7 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                	reprocessing.getReloadGridreprocessing();
+			                                	//reprocessing.getReloadGridreprocessing();
 			                                    //reprocessing.getreprocessingFile();
 			                                }
 			                            });
@@ -1385,7 +1542,13 @@
 				    }
 				});
 			},
-			setRemoveFile:function(bool){
+			setRemoveFile:function(index,bool){
+				if(!bool){
+					var rec = Ext.getCmp(reprocessing.id + '-grid-paginas').getStore().getAt(index);
+					reprocessing.id_pag=rec.data.id_pag; 
+	                reprocessing.id_det=rec.data.id_det; 
+	                reprocessing.id_lote=rec.data.id_lote; 
+				}
 				if(parseInt(reprocessing.shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 					return false;
@@ -1769,12 +1932,17 @@
 				Ext.getCmp(reprocessing.id+'-cmb-estado').setValue('');
 				Ext.getCmp(reprocessing.id+'-txt-nombre').focus();
 			},
+			getAddMagicRefresh:function(url){
+			    var symbol = '?';//url.indexOf('?') == -1 ? '?' : '&';
+			    var magic = Math.random()*999999;
+			    return url + symbol + 'magic=' + magic;
+			},
 			setImageFile: function(path,file){//(rec,recA){
 				
 				var panel = Ext.getCmp(reprocessing.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img id="imagen-scaneo" src="'+path+file+'" style="width:100%;" >'
+                    html: '<img id="imagen-scaneo" src="'+reprocessing.getAddMagicRefresh(path+file)+'" style="width:100%;" >'
                 });
 
                 var image = document.getElementById('imagen-scaneo');
@@ -1786,7 +1954,7 @@
 		                //reprocessing.load_file('-panel_texto','imagen-scaneo'); 
 		                panel.doLayout();
 					};
-					downloadingImage.src = path+file;
+					downloadingImage.src = reprocessing.getAddMagicRefresh(path+file);
 					panel.doLayout();
 				}
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});

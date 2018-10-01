@@ -998,7 +998,7 @@
 										                    		obj.setStyle({'font-weight' : 'bold'});
 										                    	},
 										                    	click: function(obj, e){
-									                            	scanning.setRemoveFile(true);
+									                            	scanning.setRemoveFile(0,true);
 									                            }
 										                    }
 										                    //iconAlign: 'top'
@@ -1055,7 +1055,7 @@
 									                                            type: 'link',
 									                                            id_menu: scanning.id_menu,
 									                                            icons:[
-									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveFile(false)"}
+									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveFile("+rowIndex+",false)"}
 
 									                                            ]
 									                                        });
@@ -1385,7 +1385,14 @@
 				    }
 				});
 			},
-			setRemoveFile:function(bool){
+			setRemoveFile:function(index,bool){
+				if(!bool){
+					var rec = Ext.getCmp(scanning.id + '-grid-paginas').getStore().getAt(index);
+					scanning.id_pag=rec.data.id_pag; 
+	                scanning.id_det=rec.data.id_det; 
+	                scanning.id_lote=rec.data.id_lote; 
+				}
+
 				if(parseInt(scanning.shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 					return false;
@@ -1769,12 +1776,17 @@
 				Ext.getCmp(scanning.id+'-cmb-estado').setValue('');
 				Ext.getCmp(scanning.id+'-txt-nombre').focus();
 			},
+			getAddMagicRefresh:function(url){
+			    var symbol = '?';//url.indexOf('?') == -1 ? '?' : '&';
+			    var magic = Math.random()*999999;
+			    return url + symbol + 'magic=' + magic;
+			},
 			setImageFile: function(path,file){//(rec,recA){
 				
 				var panel = Ext.getCmp(scanning.id+'-panel_img');
                 panel.removeAll();
                 panel.add({
-                    html: '<img id="imagen-scaneo" src="'+path+file+'" style="width:100%;" >'
+                    html: '<img id="imagen-scaneo" src="'+scanning.getAddMagicRefresh(path+file)+'" style="width:100%;" >'
                 });
 
                 var image = document.getElementById('imagen-scaneo');
@@ -1786,7 +1798,7 @@
 		                //scanning.load_file('-panel_texto','imagen-scaneo'); 
 		                panel.doLayout();
 					};
-					downloadingImage.src = path+file;
+					downloadingImage.src = scanning.getAddMagicRefresh(path+file);
 					panel.doLayout();
 				}
 		        /*var myMask = new Ext.LoadMask(Ext.getCmp('form-central-xim').el, {msg:"Por favor espere..."});
