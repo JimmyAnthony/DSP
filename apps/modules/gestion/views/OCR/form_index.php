@@ -1560,7 +1560,7 @@
 			        rotatable: false,
 			        scalable: false,
 			        cropBoxMovable: true,
-			        cropBoxResizable: false,
+			        cropBoxResizable: true,
 			        ready: function (event) {
 			          // Zoom the image to its natural size
 			          //OCR.cropper.zoomTo(1);
@@ -1900,7 +1900,7 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                    OCR.getReloadGridOCR();
+			                                    //OCR.getReloadGridOCR();
 			                                }
 			                            });
 			                        }

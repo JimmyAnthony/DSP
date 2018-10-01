@@ -34,7 +34,7 @@ class OCRController extends AppController {
             if (!file_exists(PATH.'public_html/plantillas/'.$p['vp_shi_codigo'])) {
                 mkdir(PATH.'public_html/plantillas/'.$p['vp_shi_codigo'], 0777, true);
             }
-            $path_parts = pathinfo($p['vp_imgorigen']);
+            $path_parts = pathinfo(PATH.'public_html'.$p['vp_pathorigen'].$p['vp_imgorigen']);
             $ext=$path_parts['extension'];
             copy(PATH.'public_html'.$p['vp_pathorigen'].$p['vp_imgorigen'], PATH.'public_html/plantillas/'.$p['vp_shi_codigo'].'/'.$p['vp_cod_plantilla'].'-plantilla.'.$ext);
             $bool=true;
@@ -45,7 +45,7 @@ class OCRController extends AppController {
         return $bool;
     }
     public function set_ocr_plantilla($p){
-        $path_parts = pathinfo($p['vp_imgorigen']);
+        $path_parts = pathinfo(PATH.'public_html'.$p['vp_pathorigen'].$p['vp_imgorigen']);
         $ext=$path_parts['extension'];
         $p['vp_path']='/plantillas/'.$p['vp_shi_codigo'].'/';
         $p['vp_img']='.'.$ext;
