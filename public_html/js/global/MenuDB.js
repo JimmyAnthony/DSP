@@ -1,6 +1,6 @@
 /**
  * Xim php (https://twitter.com/JimAntho)
- * @link    http://zucuba.com/
+ * @link    http://jimmyanthony.com/
  * @author  Jimmy Anthony B.S.
  * @version 1.0
  */

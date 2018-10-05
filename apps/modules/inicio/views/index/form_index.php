@@ -2,10 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>.: Madison :.</title>
+    <title>.: DSP :.</title>
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/css/inicio_bootstrap.css">
     <link rel="stylesheet" href="/js/iviewer/jquery.iviewer.css" />
+    <link rel="stylesheet" href="/js/cropperjs/cropper.css">
     <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="/js/ext-5.0.1/packages/sencha-charts/build/classic/resources/sencha-charts-all.css" />
     
@@ -15,7 +16,7 @@
     <!--
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
     -->
-   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZTYdq5n5j-iOv5xAZCCTyuGQwkFU3CMU&callback=initMap"type="text/javascript"></script>
+   <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZTYdq5n5j-iOv5xAZCCTyuGQwkFU3CMU&callback=initMap"type="text/javascript"></script>-->
 
     <!--<script type="text/javascript" src="/js/jquery-1.8.0.min.js" ></script>-->
     <script type="text/javascript" src="/js/ext-5.1.0/packages/sencha-charts/build/sencha-charts.js"></script>
@@ -38,6 +39,8 @@
     <link rel="stylesheet" href="/js/Gallery-2.16.0/css/blueimp-gallery.css">
     <link rel="stylesheet" href="/js/Gallery-2.16.0/css/blueimp-gallery-indicator.css">
     <link rel="stylesheet" href="/js/Gallery-2.16.0/css/demo.css">
+    <script src="/js/ocrad.js"></script>
+    <script src="/js/cropperjs/cropper.js"></script>
 
 
     <script type="text/javascript">
@@ -106,7 +109,12 @@
             'Ext.global.plugin.RegistroNovedades',
             'Ext.global.ueCarousel',
             'Ext.global.uePanelHtml',
-            'Ext.global.ueInputTextMask'
+            'Ext.global.ueInputTextMask',
+            'Ext.data.*',
+            'Ext.grid.*',
+            'Ext.tree.*',
+            'Ext.ux.CheckColumn',
+            'Ext.ProgressBar'
             //'Ext.ux.GMapPanel'
             
         ]);
@@ -137,7 +145,7 @@
                     run: function(){
                         inicio.status();
                     },
-                    interval: (1000 * 30)
+                    interval: (1000 * 120)
                 });
 
                 inicio.task.start();
@@ -718,12 +726,13 @@
                                 }
                             });
                         }
-                        var clss = (parseInt(res.novedad)==0)?'cls_nv':'cls_nv_altr';
+                        var novedad = 0;
+                        var clss = (parseInt(novedad)==0)?'cls_nv':'cls_nv_altr';
                             
-                        Ext.getCmp(inicio.id+'-btn-nv-').setText('<div id="sts_novedad" class="cls_nv_"><div class="'+clss+'">'+res.novedad+'</div><div/>');
-                        if(parseInt(res.novedad)!=0 && inicio.id_msn!=parseInt(res.msn_id)){
+                        Ext.getCmp(inicio.id+'-btn-nv-').setText('<div id="sts_novedad" class="cls_nv_"><div class="'+clss+'">'+novedad+'</div><div/>');
+                        if(parseInt(novedad)!=0 && inicio.id_msn!=parseInt(res.msn_id)){
                             inicio.id_msn=parseInt(res.msn_id);
-                            inicio.reload_novedad();
+                            //inicio.reload_novedad();
                         }
                     }
                 });
