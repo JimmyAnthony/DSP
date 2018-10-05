@@ -549,6 +549,7 @@
 										},
 										{
 											region:'south',
+											hidden:true,
 											height:220,
 											border:false,
 											items:[
@@ -852,6 +853,27 @@
 											],
 											items:[
 												{
+													region:'north',
+													bodyStyle: 'background: transparent',
+													border:false,
+													padding:'5px 5px 5px 5px',
+													height:40,
+													items:[
+														{
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Origen de archivos',
+		                                                    id:scanning.id+'-txt-origen',
+		                                                    labelWidth:120,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    //labelAlign:'right',
+		                                                    value:'C:/twain/',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+													]
+												},
+												{
 													region:'center',
 													border:false,
 													layout:'fit',
@@ -886,7 +908,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1
+									                                     width: 170
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1070,7 +1092,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1
+									                                    width: 170
 									                                },
 									                                {
 									                                    text: 'DLT',
@@ -1129,6 +1151,7 @@
 				                                                    	recordsToSend = Ext.encode(recordsToSend);
 
 				                                                    	Ext.getCmp(scanning.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
+				                                                    	var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 											                            Ext.Ajax.request({
 											                                url:scanning.url+'set_scanner_file_one_to_one/',
 											                                params:{
@@ -1137,7 +1160,7 @@
 														                    	vp_id_pag:0,
 														                    	vp_id_det:scanning.id_det,
 														                    	vp_id_lote:scanning.id_lote,
-														                    	path:'C:/twain/',
+														                    	path:destino,
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
@@ -1349,7 +1372,7 @@
 			getScannear:function(){
 
 				var resolucion=Ext.getCmp(scanning.id+'-cmb-resolucion').getValue();
-				var destino=Ext.getCmp(scanning.id+'-txt-destino').getValue();
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				var formato=Ext.getCmp(scanning.id+'-cmb-formato').getValue();
 
 				Ext.getCmp(scanning.id+'-form').el.mask('Escaneando…', 'x-mask-loading');
@@ -1558,6 +1581,7 @@
 			setRemoveEscaner:function(bool,file){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				global.Msg({
                     msg: msn,
                     icon: 3,
@@ -1569,7 +1593,7 @@
 	                        Ext.Ajax.request({
 			                    url: scanning.url+url,
 			                    params:{
-			                    	path:'C:/twain/',
+			                    	path:destino,
 			                    	file:file
 			                    },
 			                    timeout: 300000,
@@ -1618,8 +1642,9 @@
 			getScanningFile:function(){
 				scanning.getLoader(true);
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
-	                {params: {path:'C:/twain/'},
+	                {params: {path:destino},
 	                callback:function(){
 	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
 	                	scanning.getLoader(false);
@@ -1638,6 +1663,7 @@
 				if(parseInt(scanning.id_lote)==0){
 					return false;
 				}
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				console.log(scanning.shi_codigo+'-'+scanning.id_det+'-'+scanning.id_lote);
 
 				global.Msg({
@@ -1656,7 +1682,7 @@
 			                    	vp_id_pag:0,
 			                    	vp_id_det:scanning.id_det,
 			                    	vp_id_lote:scanning.id_lote,
-			                    	path:'C:/twain/',
+			                    	path:destino,
 			                    	vp_estado:'A'
 			                    },
 			                    timeout: 300000,

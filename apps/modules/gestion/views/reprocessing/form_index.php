@@ -557,6 +557,7 @@
 										},
 										{
 											region:'south',
+											hidden:false,
 											height:370,
 											border:false,
 											items:[
@@ -830,6 +831,27 @@
 											],
 											items:[
 												{
+													region:'north',
+													bodyStyle: 'background: transparent',
+													border:false,
+													padding:'5px 5px 5px 5px',
+													height:40,
+													items:[
+														{
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Origen de archivos',
+		                                                    id:reprocessing.id+'-txt-origen',
+		                                                    labelWidth:120,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    //labelAlign:'right',
+		                                                    value:'C:/twain/',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+													]
+												},
+												{
 													region:'center',
 													border:false,
 													layout:'fit',
@@ -864,7 +886,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1
+									                                    width: 170
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1048,7 +1070,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1
+									                                    width: 170
 									                                },
 									                                {
 									                                    text: 'OPT',
@@ -1111,6 +1133,7 @@
 				                                                    	recordsToSend = Ext.encode(recordsToSend);
 
 				                                                    	Ext.getCmp(reprocessing.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
+				                                                    	var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 											                            Ext.Ajax.request({
 											                                url:reprocessing.url+'set_scanner_file_one_to_one/',
 											                                params:{
@@ -1119,7 +1142,7 @@
 														                    	vp_id_pag:0,
 														                    	vp_id_det:reprocessing.id_det,
 														                    	vp_id_lote:reprocessing.id_lote,
-														                    	path:'C:/twain/',
+														                    	path:destino,
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
@@ -1639,6 +1662,7 @@
 			setRemoveEscaner:function(bool,file){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				global.Msg({
                     msg: msn,
                     icon: 3,
@@ -1650,7 +1674,7 @@
 	                        Ext.Ajax.request({
 			                    url: reprocessing.url+url,
 			                    params:{
-			                    	path:'C:/twain/',
+			                    	path:destino,
 			                    	file:file
 			                    },
 			                    timeout: 300000,
@@ -1698,9 +1722,10 @@
 
 			getreprocessingFile:function(){
 				reprocessing.getLoader(true);
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().removeAll();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().load(
-	                {params: {path:'C:/twain/'},
+	                {params: {path:destino},
 	                callback:function(){
 	                	//Ext.getCmp(reprocessing.id+'-form').el.unmask();
 	                	reprocessing.getLoader(false);
@@ -1720,6 +1745,7 @@
 					return false;
 				}
 				console.log(reprocessing.shi_codigo+'-'+reprocessing.id_det+'-'+reprocessing.id_lote);
+				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 
 				global.Msg({
                     msg: 'Seguro de Asignar todas las Páginas?',
@@ -1737,7 +1763,7 @@
 			                    	vp_id_pag:0,
 			                    	vp_id_det:reprocessing.id_det,
 			                    	vp_id_lote:reprocessing.id_lote,
-			                    	path:'C:/twain/',
+			                    	path:destino,
 			                    	vp_estado:'A'
 			                    },
 			                    timeout: 300000,
