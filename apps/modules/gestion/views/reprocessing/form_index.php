@@ -1133,7 +1133,7 @@
 				                                                    	recordsToSend = Ext.encode(recordsToSend);
 
 				                                                    	Ext.getCmp(reprocessing.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
-				                                                    	var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+				                                                    	var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
 											                            Ext.Ajax.request({
 											                                url:reprocessing.url+'set_scanner_file_one_to_one/',
 											                                params:{
@@ -1662,7 +1662,7 @@
 			setRemoveEscaner:function(bool,file){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
-				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
 				global.Msg({
                     msg: msn,
                     icon: 3,
@@ -1722,7 +1722,7 @@
 
 			getreprocessingFile:function(){
 				reprocessing.getLoader(true);
-				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().removeAll();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().load(
 	                {params: {path:destino},
@@ -1745,7 +1745,7 @@
 					return false;
 				}
 				console.log(reprocessing.shi_codigo+'-'+reprocessing.id_det+'-'+reprocessing.id_lote);
-				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
 
 				global.Msg({
                     msg: 'Seguro de Asignar todas las Páginas?',
