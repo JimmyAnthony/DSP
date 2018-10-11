@@ -554,4 +554,26 @@ class scanningController extends AppController {
         unlink($path);*/
     }
 
+<<<<<<< HEAD
+=======
+    public function getScannear($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(trim($p['vp_resolucion']) . '&' . trim($p['vp_destino']) . '&' . trim($p['vp_formato']));
+        $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
+        $output = array();
+        echo $comando;die();
+        try{
+            exec($comando, $output);
+
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
+
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 }

@@ -389,7 +389,11 @@ def main():
     server_config = 'server_main'
 
     Config = configparser.ConfigParser() 
+<<<<<<< HEAD
     Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
+=======
+    Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 
     #print(Config.sections())
 

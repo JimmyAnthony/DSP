@@ -557,6 +557,10 @@
 										},
 										{
 											region:'south',
+<<<<<<< HEAD
+=======
+											hidden:false,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											height:370,
 											border:false,
 											items:[
@@ -830,6 +834,30 @@
 											],
 											items:[
 												{
+<<<<<<< HEAD
+=======
+													region:'north',
+													bodyStyle: 'background: transparent',
+													border:false,
+													padding:'5px 5px 5px 5px',
+													height:40,
+													items:[
+														{
+		                                                    xtype: 'textfield',	
+		                                                    fieldLabel: 'Origen de archivos',
+		                                                    id:reprocessing.id+'-txt-origen',
+		                                                    labelWidth:120,
+		                                                    //maskRe: /[0-9]/,
+		                                                    //readOnly:true,
+		                                                    //labelAlign:'right',
+		                                                    value:'C:/twain/',
+		                                                    width:'100%',
+		                                                    anchor:'100%'
+		                                                }
+													]
+												},
+												{
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 													region:'center',
 													border:false,
 													layout:'fit',
@@ -864,7 +892,11 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
+<<<<<<< HEAD
 									                                    flex: 1
+=======
+									                                    width: 170
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1048,7 +1080,11 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
+<<<<<<< HEAD
 									                                    flex: 1
+=======
+									                                    width: 170
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 									                                },
 									                                {
 									                                    text: 'OPT',
@@ -1111,6 +1147,10 @@
 				                                                    	recordsToSend = Ext.encode(recordsToSend);
 
 				                                                    	Ext.getCmp(reprocessing.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
+<<<<<<< HEAD
+=======
+				                                                    	var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											                            Ext.Ajax.request({
 											                                url:reprocessing.url+'set_scanner_file_one_to_one/',
 											                                params:{
@@ -1119,7 +1159,11 @@
 														                    	vp_id_pag:0,
 														                    	vp_id_det:reprocessing.id_det,
 														                    	vp_id_lote:reprocessing.id_lote,
+<<<<<<< HEAD
 														                    	path:'C:/twain/',
+=======
+														                    	path:destino,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
@@ -1639,6 +1683,10 @@
 			setRemoveEscaner:function(bool,file){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
+<<<<<<< HEAD
+=======
+				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 				global.Msg({
                     msg: msn,
                     icon: 3,
@@ -1650,7 +1698,11 @@
 	                        Ext.Ajax.request({
 			                    url: reprocessing.url+url,
 			                    params:{
+<<<<<<< HEAD
 			                    	path:'C:/twain/',
+=======
+			                    	path:destino,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			                    	file:file
 			                    },
 			                    timeout: 300000,
@@ -1698,9 +1750,16 @@
 
 			getreprocessingFile:function(){
 				reprocessing.getLoader(true);
+<<<<<<< HEAD
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().removeAll();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().load(
 	                {params: {path:'C:/twain/'},
+=======
+				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
+				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().removeAll();
+				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().load(
+	                {params: {path:destino},
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 	                callback:function(){
 	                	//Ext.getCmp(reprocessing.id+'-form').el.unmask();
 	                	reprocessing.getLoader(false);
@@ -1720,6 +1779,10 @@
 					return false;
 				}
 				console.log(reprocessing.shi_codigo+'-'+reprocessing.id_det+'-'+reprocessing.id_lote);
+<<<<<<< HEAD
+=======
+				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 
 				global.Msg({
                     msg: 'Seguro de Asignar todas las Páginas?',
@@ -1737,7 +1800,11 @@
 			                    	vp_id_pag:0,
 			                    	vp_id_det:reprocessing.id_det,
 			                    	vp_id_lote:reprocessing.id_lote,
+<<<<<<< HEAD
 			                    	path:'C:/twain/',
+=======
+			                    	path:destino,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			                    	vp_estado:'A'
 			                    },
 			                    timeout: 300000,
