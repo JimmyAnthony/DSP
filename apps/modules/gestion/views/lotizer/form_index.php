@@ -152,6 +152,17 @@
 		        fields: ['code', 'name']
 		    });
 
+		    var myDataSelect = [
+				['P','Pendientes'],
+			    ['C','Código Lote']
+			];
+			var store_seleccionar_lote  = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'seleccionar',
+		        autoLoad: true,
+		        data: myDataSelect,
+		        fields: ['code', 'name']
+		    });
+
 				var panel = Ext.create('Ext.form.Panel',{
 					id:lotizer.id+'-form',
 					bodyStyle: 'background: transparent',
@@ -281,10 +292,54 @@
 		                                    bodyStyle: 'background: transparent',
 		                                    padding:'2px 5px 1px 5px',
 		                                    layout:'column',
-
 		                                    items: [
 		                                    	{
+			                                   		width: 150,border:false,
+			                                    	padding:'0px 2px 0px 0px',  
+			                                    	bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Selecionar',
+			                                                    id:lotizer.id+'-txt-select-filter',
+			                                                    store: store_seleccionar_lote,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 55,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            Ext.getCmp(lotizer.id+'-txt-select-filter').setValue('P');
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                        	var valor=Ext.getCmp(lotizer.id+'-txt-select-filter').getValue();
+			                                                			if(valor=='P'){
+			                                                				Ext.getCmp(lotizer.id+'-panel-lote').hide();
+			                                                				Ext.getCmp(lotizer.id+'-panel-nombre').hide();
+			                                                				Ext.getCmp(lotizer.id+'-panel-fecha').hide();
+			                                                			}else{
+			                                                				Ext.getCmp(lotizer.id+'-panel-lote').show();
+			                                                				Ext.getCmp(lotizer.id+'-panel-nombre').show();
+			                                                				Ext.getCmp(lotizer.id+'-panel-fecha').show();
+			                                                			}
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+
+		                                    	{
 		                                            width:100,border:false,
+		                                            id:lotizer.id+'-panel-lote',
+		                                            hidden:true,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -303,6 +358,8 @@
 		                                        },
 		                                        {
 		                                            width:300,border:false,
+		                                            id:lotizer.id+'-panel-nombre',
+		                                            hidden:true,
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -320,6 +377,8 @@
 		                                        },
 		                                        {
 			                                        width: 160,border:false,
+			                                        id:lotizer.id+'-panel-fecha',
+		                                            hidden:true,
 			                                        padding:'0px 2px 0px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                        items:[
@@ -996,13 +1055,14 @@
 			getReloadGridlotizer:function(){
 				lotizer.set_lotizer_clear();
 				//Ext.getCmp(lotizer.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var seleccionar=Ext.getCmp(lotizer.id+'-txt-select-filter').getValue();
 				var shi_codigo = Ext.getCmp(lotizer.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(lotizer.id+'-cbx-contrato').getValue();
 				var lote = Ext.getCmp(lotizer.id+'-txt-lote').getValue();
 				var name = Ext.getCmp(lotizer.id+'-txt-lotizer').getValue();
 				var estado = Ext.getCmp(lotizer.id+'-txt-estado-filter').getValue();
 				var fecha = Ext.getCmp(lotizer.id+'-txt-fecha-filtro').getRawValue();
-
+				var estado_lote='LT';
 				if(shi_codigo== null || shi_codigo==''){
 		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 		            return false;
@@ -1018,9 +1078,10 @@
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
+
 		        Ext.getCmp(lotizer.id + '-grid').getStore().removeAll();
 		        Ext.getCmp(lotizer.id + '-grid').getView().refresh();
-		        lotizer.paramsStore={vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'LT',vp_name:name,fecha:fecha,vp_estado:estado}
+		        lotizer.paramsStore={vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_seleccionar:seleccionar,vp_lote_estado:estado_lote,vp_name:name,fecha:fecha,vp_estado:estado}
 				Ext.getCmp(lotizer.id + '-grid').getStore().load(
 	                {params:lotizer.paramsStore,
 	                callback:function(){

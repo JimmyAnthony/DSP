@@ -557,7 +557,7 @@
 										},
 										{
 											region:'south',
-											hidden:false,
+											hidden:true,
 											height:370,
 											border:false,
 											items:[
