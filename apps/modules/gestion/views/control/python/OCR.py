@@ -389,11 +389,7 @@ def main():
     server_config = 'server_main'
 
     Config = configparser.ConfigParser() 
-<<<<<<< HEAD
-    Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
-=======
     Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 
     #print(Config.sections())
 
@@ -439,7 +435,7 @@ def main():
         cursor.callproc(dbname + ".get_list_page", args)
         conx.commit()
         for result in cursor.fetchall():
-            text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang=None)
+            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
             args_ = ['X',result[0],0,result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
             cursor.callproc(dbname + ".set_ocr_page", args_)
             conx.commit()
@@ -449,7 +445,7 @@ def main():
         result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
         conx.commit()
         for result in cursor.fetchall():
-            text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang=None)
+            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
             args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
             cursor.callproc(dbname + ".set_ocr_page", args____)
             conx.commit()

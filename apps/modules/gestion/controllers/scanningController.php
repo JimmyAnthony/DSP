@@ -74,11 +74,32 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function setProcessingOCR($p){
+
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']));
+        $comando = "python " . PATH . "apps/modules/gestion/views/control/python/OCR.py " . $params;
+        $output = array();
+        //echo $comando;die();
+        try{
+            exec($comando, $output);
+
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
     public function set_lotizer($p){
         //$this->valida_mobil($p);
-        
         $rs = $this->objDatos->set_lotizer($p);
         $rs = $rs[0];
+        if($rs['status']!='ER'){
+            $this->setProcessingOCR($p);
+        }
         $data = array(
             'success' => true,
             'error' => $rs['status'],
