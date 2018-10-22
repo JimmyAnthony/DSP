@@ -549,8 +549,12 @@
 										},
 										{
 											region:'south',
+<<<<<<< HEAD
+											height:370,
+=======
 											hidden:true,
 											height:220,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											border:false,
 											items:[
 												{
@@ -570,6 +574,11 @@
 										                    scale: 'large',
 										                    margin:'5px 5px 5px 5px',
 										                    //height:50
+<<<<<<< HEAD
+										                    text: 'Digitalizar',
+										                    //iconAlign: 'top'
+										                },
+=======
 										                    text: 'Escanear',
 										                    //iconAlign: 'top'
 										                    listeners:{
@@ -586,6 +595,7 @@
 									                            }
 									                        }
 										                }/*,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 										                {
 										                    xtype: 'button',
 										                    icon: '/images/icon/if_document-save-as_118915.png',
@@ -596,7 +606,11 @@
 										                    //height:50
 										                    text: 'Importar',
 										                    //iconAlign: 'top'
+<<<<<<< HEAD
+										                },
+=======
 										                },*/
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											        ]
 											    },
 											    {
@@ -609,7 +623,10 @@
 											        items: [
 											        	{
 											        		xtype:'panel',
+<<<<<<< HEAD
+=======
 											        		hidden:true,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											        		layout: 'hbox',
 											        		items:[
 											        			{
@@ -630,7 +647,11 @@
 													                }
 													            }
 											        		]
+<<<<<<< HEAD
+											        	},
+=======
 											        	},/*
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											            {
 												            xtype: 'combobox',
 												            margin:'5px 5px 5px 5px',
@@ -643,10 +664,16 @@
 												            minChars: 0,
 												            queryMode: 'local',
 												            typeAhead: true
+<<<<<<< HEAD
+												        },
+											            {
+												            xtype: 'combobox',
+=======
 												        },*/
 											            {
 												            xtype: 'combobox',
 												            id:scanning.id+'-cmb-resolucion',
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 												            margin:'5px 5px 5px 5px',
 												            reference: 'states',
 												            publishes: 'value',
@@ -660,7 +687,10 @@
 												        },
 												        {
 															xtype: 'sliderfield',
+<<<<<<< HEAD
+=======
 															hidden:true,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 															margin:'10px 5px 5px 5px',
 															fieldLabel: 'Brillo',
 															itemId: 'UpdatingSliderField',
@@ -677,7 +707,10 @@
 														},
 														{
 															xtype: 'sliderfield',
+<<<<<<< HEAD
+=======
 															hidden:true,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 															margin:'10px 5px 5px 5px',
 															fieldLabel: 'Contraste',
 															itemId: 'UpdatingSliderField2',
@@ -704,7 +737,11 @@
 											            anchor: '100%'
 											        },
 											        items: [
+<<<<<<< HEAD
+											    		{
+=======
 											    		/*{
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 												            xtype: 'filefield',
 												            emptyText: 'Directorio de Destino',
 												            fieldLabel: 'Destino',
@@ -713,6 +750,16 @@
 												            buttonConfig: {
 												                iconCls: 'upload-icon'
 												            }
+<<<<<<< HEAD
+												        },
+												        {
+												            xtype: 'textfield',
+												            fieldLabel: 'Nombre del Fichero'
+												        },
+												        {
+												            xtype: 'combobox',
+												            //margin:'5px 5px 5px 5px',
+=======
 												        },*/
 												        /*{
 												            xtype: 'textfield',
@@ -734,6 +781,7 @@
 												            xtype: 'combobox',
 												            //margin:'5px 5px 5px 5px',
 												            id:scanning.id+'-cmb-formato',
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 												            reference: 'states',
 												            publishes: 'value',
 												            fieldLabel: 'Select formato',
@@ -853,6 +901,8 @@
 											],
 											items:[
 												{
+<<<<<<< HEAD
+=======
 													region:'north',
 													bodyStyle: 'background: transparent',
 													border:false,
@@ -874,6 +924,7 @@
 													]
 												},
 												{
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 													region:'center',
 													border:false,
 													layout:'fit',
@@ -908,7 +959,11 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
+<<<<<<< HEAD
+									                                    flex: 1
+=======
 									                                     width: 170
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1092,7 +1147,11 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
+<<<<<<< HEAD
+									                                    flex: 1
+=======
 									                                    width: 170
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 									                                },
 									                                {
 									                                    text: 'DLT',
@@ -1151,7 +1210,10 @@
 				                                                    	recordsToSend = Ext.encode(recordsToSend);
 
 				                                                    	Ext.getCmp(scanning.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
+<<<<<<< HEAD
+=======
 				                                                    	var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											                            Ext.Ajax.request({
 											                                url:scanning.url+'set_scanner_file_one_to_one/',
 											                                params:{
@@ -1160,7 +1222,11 @@
 														                    	vp_id_pag:0,
 														                    	vp_id_det:scanning.id_det,
 														                    	vp_id_lote:scanning.id_lote,
+<<<<<<< HEAD
+														                    	path:'C:/twain/',
+=======
 														                    	path:destino,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
@@ -1369,6 +1435,8 @@
 
 				}).show();
 			},
+<<<<<<< HEAD
+=======
 			getScannear:function(){
 
 				var resolucion=Ext.getCmp(scanning.id+'-cmb-resolucion').getValue();
@@ -1414,6 +1482,7 @@
                     }
                 });
 			},
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			setCerrarEscaneado:function(shi_codigo,id_lote){
 				if(parseInt(shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
@@ -1581,7 +1650,10 @@
 			setRemoveEscaner:function(bool,file){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
+<<<<<<< HEAD
+=======
 				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 				global.Msg({
                     msg: msn,
                     icon: 3,
@@ -1593,7 +1665,11 @@
 	                        Ext.Ajax.request({
 			                    url: scanning.url+url,
 			                    params:{
+<<<<<<< HEAD
+			                    	path:'C:/twain/',
+=======
 			                    	path:destino,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			                    	file:file
 			                    },
 			                    timeout: 300000,
@@ -1642,9 +1718,14 @@
 			getScanningFile:function(){
 				scanning.getLoader(true);
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
+<<<<<<< HEAD
+				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
+	                {params: {path:'C:/twain/'},
+=======
 				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
 	                {params: {path:destino},
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 	                callback:function(){
 	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
 	                	scanning.getLoader(false);
@@ -1663,7 +1744,10 @@
 				if(parseInt(scanning.id_lote)==0){
 					return false;
 				}
+<<<<<<< HEAD
+=======
 				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 				console.log(scanning.shi_codigo+'-'+scanning.id_det+'-'+scanning.id_lote);
 
 				global.Msg({
@@ -1682,7 +1766,11 @@
 			                    	vp_id_pag:0,
 			                    	vp_id_det:scanning.id_det,
 			                    	vp_id_lote:scanning.id_lote,
+<<<<<<< HEAD
+			                    	path:'C:/twain/',
+=======
 			                    	path:destino,
+>>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			                    	vp_estado:'A'
 			                    },
 			                    timeout: 300000,
