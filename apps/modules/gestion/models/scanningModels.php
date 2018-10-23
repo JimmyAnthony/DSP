@@ -87,6 +87,7 @@ class scanningModels extends Adodb {
     public function get_list_lotizer($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_list_lotizer');
+        parent::SetParameterSP($p['vp_seleccionar'], 'varchar');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_fac_cliente'], 'int');
         parent::SetParameterSP($p['vp_lote'], 'int');

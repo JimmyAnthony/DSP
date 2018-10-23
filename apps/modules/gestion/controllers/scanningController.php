@@ -575,8 +575,7 @@ class scanningController extends AppController {
         unlink($path);*/
     }
 
-<<<<<<< HEAD
-=======
+
     public function getScannear($p){
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -595,6 +594,4 @@ class scanningController extends AppController {
         //header('Content-Type: application/json');
         return $data;
     }
-
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 }
