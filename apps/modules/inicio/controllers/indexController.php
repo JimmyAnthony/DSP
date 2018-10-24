@@ -6,7 +6,9 @@
  * @author  Jimmy Anthony B.S.
  * @version 1.0
  */
-
+error_reporting(NULL);
+set_time_limit(1000);
+ini_set("memory_limit", "-1");
 class indexController extends AppController {
 
     private $objDatos;

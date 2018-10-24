@@ -6,7 +6,7 @@
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/reorder/',
 			opcion:'I',
-			id_lote:0,
+			id_lote:'<?php echo $p["id_lote"];?>',
 			shi_codigo:0,
 			fac_cliente:0,
 			lote:0,

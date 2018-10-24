@@ -566,7 +566,8 @@
 							                                            type: 'link',
 							                                            id_menu: scanning.id_menu,
 							                                            icons:[
-							                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+id_lote+")"}
+							                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+id_lote+")"},
+							                                                {id_serv: 3, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "scanning.setChangeOrder("+id_lote+")"}
 							                                            ]
 							                                        });
 							                                    }else{
@@ -1089,6 +1090,7 @@
 														{
 									                        xtype:'button',
 									                        id:scanning.id+'-btn-reordenar',
+									                        hidden:true,
 									                        disabled:true,
 									                        scale: 'large',
 									                        //iconAlign: 'top',
@@ -1107,7 +1109,6 @@
 									                            },
 									                            click: function(obj, e){
 									                            	//scanning.work=!scanning.work;
-									                            	win.show({vurl: scanning.url_order + 'index/', id_menu: scanning.id_menu, class: ''});
 									                            }
 									                        }
 									                    },
@@ -1445,6 +1446,9 @@
 					}
 
 				}).show();
+			},
+			setChangeOrder:function(id_lote){
+				win.show({vurl: scanning.url_order + 'index/?id_lote='+id_lote, id_menu: scanning.id_menu, class: ''});
 			},
 			getScannear:function(){
 
