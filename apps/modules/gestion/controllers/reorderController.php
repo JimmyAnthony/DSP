@@ -31,22 +31,40 @@ class reorderController extends AppController {
         header('Content-type: application/json');
         $this->rs_ = $this->objDatos->get_list_lotizer($p);
         if(!empty($this->rs_)){
-            return '{"text": ".","children":['.$this->get_recursivo(1,0).']}';
+            return '{"text": ".","children":['.$this->get_recursivo(0,'',true).']}';
             
         }else{
-            return '';
+            return json_encode(
+                array(
+                    'text'=>'root',
+                    'children'=>array(
+                        'id_lote'=>0,
+                        'iconCls'=>'task',
+                        'tipdoc'=>'',
+                        'nombre'=>'',
+                        'fecha'=>'',
+                        'tot_folder'=>0,
+                        'tot_pag'=>0,
+                        'tot_errpag'=>0,
+                        'id_user'=>0,
+                        'estado'=>'',
+                        'leaf'=>'true'
+                        )
+                    )
+                );
         }
     }
 
-    public function get_recursivo($_nivel,$_hijo){
+    public function get_recursivo($_nivel,$_hijo,$bool){
         $coma = '';
+        //var_export($this->rs_);
         foreach ($this->rs_ as $key => $value){
-            $_hijo=((int)$_nivel==1)?$value['hijo']:$_hijo;
-            if($value['nivel'] == $_nivel && (int)$value['padre'] == (int)$_hijo){
+            if($bool)$_hijo=$value['hijo'];
+
+            if($value['nivel'] > $_nivel && (int)$value['padre'] == (int)$_hijo){
                 $json.=$coma."{";
                 $json.='"hijo":"'.$value['hijo'].'"';
                 $json.=',"padre":"'.$value['padre'].'"';
-                $json.=',"id_lote":"'.$value['id_lote'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
                 //$json.=',"read":true';
@@ -68,7 +86,7 @@ class reorderController extends AppController {
                 $json.=',"estado":"'.$value['estado'].'"';
                 $json.=',"nivel":"'.$value['nivel'].'"';
                 unset($this->rs_[$key]);
-                $js = $this->get_recursivo((int)$value['nivel']+1,$value['hijo']);
+                $js = $this->get_recursivo($value['nivel'],$value['hijo'],false);
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{

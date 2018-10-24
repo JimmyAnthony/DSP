@@ -1448,7 +1448,9 @@
 				}).show();
 			},
 			setChangeOrder:function(id_lote){
-				win.show({vurl: scanning.url_order + 'index/?id_lote='+id_lote, id_menu: scanning.id_menu, class: ''});
+				var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(scanning.id+'-cbx-contrato').getValue();
+				win.show({vurl: scanning.url_order + 'index/?id_lote='+id_lote+'&shi_codigo='+shi_codigo+'&fac_cliente='+fac_cliente, id_menu: scanning.id_menu, class: ''});
 			},
 			getScannear:function(){
 

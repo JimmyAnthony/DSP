@@ -16,7 +16,8 @@
 				Ext.define('Task', {
 				    extend: 'Ext.data.TreeModel',
 				    fields: [
-				        {name: 'id_lote', type: 'string'},
+				        {name: 'hijo', type: 'string'},
+				        {name: 'padre', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
@@ -24,6 +25,8 @@
 	                    {name: 'nombre', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
 	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'tot_folder', type: 'string'},
 	                    {name: 'tot_pag', type: 'string'},

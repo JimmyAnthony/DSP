@@ -7,28 +7,24 @@
 			url:'/gestion/reorder/',
 			opcion:'I',
 			id_lote:'<?php echo $p["id_lote"];?>',
-			shi_codigo:0,
-			fac_cliente:0,
-			lote:0,
+			shi_codigo:'<?php echo $p["shi_codigo"];?>',
+			fac_cliente:'<?php echo $p["fac_cliente"];?>',
 			paramsStore:{},
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
-				Ext.define('Task', {
+				Ext.define('TaskX', {
 				    extend: 'Ext.data.TreeModel',
 				    fields: [
-				        {name: 'hijo', type: 'string'},
-				        {name: 'padre', type: 'string'},
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'id_det', type: 'string'},
 				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
 	                    {name: 'descripcion', type: 'string'},
-	                    {name: 'path', type: 'string'},
-	                    {name: 'img', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
 	                    {name: 'tot_folder', type: 'string'},
 	                    {name: 'tot_pag', type: 'string'},
@@ -40,7 +36,7 @@
 				    ]
 				});
 				var storeTree = new Ext.data.TreeStore({
-	                model: 'Task',
+	                model: 'TaskX',
 				    autoLoad:false,
 	                proxy: {
 	                    type: 'ajax',
@@ -62,7 +58,7 @@
 					       });*/
 					    },
 	                    load: function(obj, records, successful, opts){
-	                 		Ext.getCmp(reorder.id + '-grid-reorder').doLayout();
+	                 	 	Ext.getCmp(reorder.id + '-grid-reorder').doLayout();
 	                 		//Ext.getCmp(lotizer.id + '-grid').getView().getRow(0).style.display = 'none';
 	                 		storeTree.removeAt(0);
 	                 		Ext.getCmp(reorder.id + '-grid-reorder').collapseAll();
@@ -75,207 +71,7 @@
 	                }
 	            });
 
-				var store_history = Ext.create('Ext.data.Store',{
-	                fields: [
-	                    {name: 'id_estado', type: 'string'},
-	                    {name: 'id_lote', type: 'string'},
-	                    {name: 'shi_codigo', type: 'string'},
-	                    {name: 'lot_estado', type: 'string'},                    
-	                    {name: 'usr_nombre', type: 'string'},
-	                    {name: 'fecact', type: 'string'}
-	                ],
-	                autoLoad:true,
-	                proxy:{
-	                    type: 'ajax',
-	                    url: reorder.url+'get_list_history/',
-	                    reader:{
-	                        type: 'json',
-	                        rootProperty: 'data'
-	                    }
-	                },
-	                listeners:{
-	                    load: function(obj, records, successful, opts){
-	                        
-	                    }
-	                }
-	            });
 				
-				var store_shipper = Ext.create('Ext.data.Store',{
-	                fields: [
-	                    {name: 'shi_codigo', type: 'string'},
-	                    {name: 'shi_nombre', type: 'string'},
-	                    {name: 'shi_logo', type: 'string'},
-	                    {name: 'fec_ingreso', type: 'string'},                    
-	                    {name: 'shi_estado', type: 'string'},
-	                    {name: 'id_user', type: 'string'},
-	                    {name: 'fecha_actual', type: 'string'}
-	                ],
-	                autoLoad:true,
-	                proxy:{
-	                    type: 'ajax',
-	                    url: reorder.url+'get_list_shipper/',
-	                    reader:{
-	                        type: 'json',
-	                        rootProperty: 'data'
-	                    }
-	                },
-	                listeners:{
-	                    load: function(obj, records, successful, opts){
-	                        
-	                    }
-	                }
-	            });
-	            var store_contratos = Ext.create('Ext.data.Store',{
-	                fields: [
-	                    {name: 'fac_cliente', type: 'string'},
-	                    {name: 'cod_contrato', type: 'string'},
-	                    {name: 'pro_descri', type: 'string'}
-	                ],
-	                autoLoad:false,
-	                proxy:{
-	                    type: 'ajax',
-	                    url: reorder.url+'get_list_contratos/',
-	                    reader:{
-	                        type: 'json',
-	                        rootProperty: 'data'
-	                    }
-	                },
-	                listeners:{
-	                    load: function(obj, records, successful, opts){
-	                        
-	                    }
-	                }
-	            });
-
-	            var store_plantillas = Ext.create('Ext.data.Store',{
-	                fields: [
-	                    {name: 'cod_plantilla', type: 'string'},
-				        {name: 'shi_codigo', type: 'string'},
-				        {name: 'fac_cliente', type: 'string'},
-				        {name: 'nombre', type: 'string'},
-	                    {name: 'cod_formato', type: 'string'},
-	                    {name: 'tot_trazos', type: 'string'},
-	                    {name: 'path', type: 'string'},
-	                    {name: 'img', type: 'string'},
-	                    {name: 'pathorigen', type: 'string'},
-	                    {name: 'imgorigen', type: 'string'},
-	                    {name: 'texto', type: 'string'},
-	                    {name: 'estado', type: 'string'},
-	                    {name: 'fecha', type: 'string'},
-	                    {name: 'usuario', type: 'string'},
-	                    {name: 'width', type: 'string'},
-	                    {name: 'height', type: 'string'},
-	                    {name: 'width_formato', type: 'string'},
-	                    {name: 'height_formato', type: 'string'},
-	                    {name: 'formato', type: 'string'}
-	                ],
-	                autoLoad:false,
-	                proxy:{
-	                    type: 'ajax',
-	                    url: reorder.url+'get_ocr_plantillas/',
-	                    reader:{
-	                        type: 'json',
-	                        rootProperty: 'data'
-	                    }
-	                },
-	                listeners:{
-	                    load: function(obj, records, successful, opts){
-	                        
-	                    }
-	                }
-	            });
-
-				var store_trazos = Ext.create('Ext.data.Store',{
-	                fields: [
-	                    {name: 'cod_trazo', type: 'string'},
-				        {name: 'cod_plantilla', type: 'string'},
-				        {name: 'nombre', type: 'string'},
-				        {name: 'tipo', type: 'string'},
-	                    {name: 'x', type: 'string'},
-	                    {name: 'y', type: 'string'},
-	                    {name: 'w', type: 'string'},
-	                    {name: 'h', type: 'string'},
-	                    {name: 'path', type: 'string'},
-	                    {name: 'img', type: 'string'},
-	                    {name: 'texto', type: 'string'},
-	                    {name: 'estado', type: 'string'},
-	                    {name: 'usuario', type: 'string'},
-	                    {name: 'fecha', type: 'string'}
-	                ],
-	                autoLoad:false,
-	                proxy:{
-	                    type: 'ajax',
-	                    url: reorder.url+'get_ocr_trazos/',
-	                    reader:{
-	                        type: 'json',
-	                        rootProperty: 'data'
-	                    }
-	                },
-	                listeners:{
-	                    load: function(obj, records, successful, opts){
-	                        
-	                    }
-	                }
-	            });
-
-				var myData = [
-				    ['databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color','databox_interno_color']
-				];
-				var store_estados = Ext.create('Ext.data.ArrayStore', {
-			        storeId: 'estado',
-			        autoLoad: false,
-			        data: myData,
-			        fields: ['clase_box1', 'clase_box2', 'clase_box3', 'clase_box4', 'clase_box5', 'clase_box6']
-			    });
-
-			    var myDataIMAGEN = [
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color'],
-				    ['databox_interno_color']
-				];
-				var store_imagen = Ext.create('Ext.data.ArrayStore', {
-			        storeId: 'imagen',
-			        autoLoad: false,
-			        data: myDataIMAGEN,
-			        fields: ['clase_box1']
-			    });
-
-			    var myDataLote = [
-					['A','Activo'],
-				    ['I','Inactivo']
-				];
-				var store_estado_lote = Ext.create('Ext.data.ArrayStore', {
-			        storeId: 'estado',
-			        autoLoad: true,
-			        data: myDataLote,
-			        fields: ['code', 'name']
-			    });
-				var myDataSearch = [
-					['L','N° Lote'],
-					['N','Nombre Lote'],
-				    ['A','Nombre Archivo'],
-				    ['G','Nombre Archivo Generado'],
-				    ['O','Full Text OCR'],
-				    ['T','Texto en Trazo OCR']
-				];
-				var store_search = Ext.create('Ext.data.ArrayStore', {
-			        storeId: 'search',
-			        autoLoad: true,
-			        data: myDataSearch,
-			        fields: ['code', 'name']
-			    });
 				var panel = Ext.create('Ext.form.Panel',{
 					id:reorder.id+'-form',
 					bodyStyle: 'background: transparent',
@@ -309,39 +105,12 @@
 			                        columnLines: true,
 			                        store: storeTree,
 						            columns: [
-							            /*{
-							                xtype: 'treecolumn', //this is so we know which column will show the tree
-							                text: 'Task',
-							                flex: 2,
-							                sortable: true,
-							                dataIndex: 'task'
-							            },*/
 							            {
 							            	xtype: 'treecolumn',
 		                                    text: 'Nombre',
 		                                    dataIndex: 'lote_nombre',
 		                                    sortable: true,
-		                                    flex:1
-		                                },
-		                                {
-		                                    text: 'Estado',
-		                                    dataIndex: 'estado',
-		                                    loocked : true,
-		                                    width: 50,
-		                                    align: 'center',
-		                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
-		                                        //console.log(record);
-		                                        metaData.style = "padding: 0px; margin: 0px";
-		                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
-		                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-		                                        return global.permisos({
-		                                            type: 'link',
-		                                            id_menu: reorder.id_menu,
-		                                            icons:[
-		                                                {id_serv: 8, img: estado, qtip: qtip, js: ""}
-		                                            ]
-		                                        });
-		                                    }
+		                                    flex: 1
 		                                }
 							        ],
 			                        /*viewConfig: {
@@ -355,23 +124,23 @@
 						                    containerScroll: true
 						                }
 						            },
-			                        hideItemsReadFalse: function () {
+			                        /*hideItemsReadFalse: function () {
 									    var me = this,items = me.getReferences().treelistRef.itemMap;
 									    for(var i in items){
 									        if(items[i].config.node.data.read == false){
 									            items[i].destroy();
 									        }
 									    }
-									},
+									},*/
 			                        trackMouseOver: false,
 			                        listeners:{
 			                            afterrender: function(obj){
 			                                //reorder.getImagen('default.png');
-			                                Ext.getCmp(reorder.id + '-grid-reorder').getStore().removeAll();
-											Ext.getCmp(reorder.id + '-grid-reorder').getView().refresh();
+			                                /*Ext.getCmp(reorder.id + '-grid-reorder').getStore().removeAll();
+											Ext.getCmp(reorder.id + '-grid-reorder').getView().refresh();*/
 			                            },
 										beforeselect:function(obj, record, index, eOpts ){
-											reorder.getStatusPanel(record.get('lot_estado'));
+											/*reorder.getStatusPanel(record.get('lot_estado'));
 											reorder.getHistory(record.get('id_lote'));
 
 											//document.getElementById('imagen-reorder').innerHTML='<img src="'+record.get('path')+record.get('img')+'" width="100%" height="100%" />'
@@ -384,7 +153,7 @@
 											    image.src = this.src;   
 											    Ext.getCmp(reorder.id + '-panel-imagen').doLayout();
 											};
-											downloadingImage.src = record.get('path')+record.get('img');
+											downloadingImage.src = record.get('path')+record.get('img');*/
 											
 
 										}
@@ -399,8 +168,8 @@
 				var win = Ext.create('Ext.window.Window',{
 					id:reorder.id+'-win',
 					title:'RE-ORDENAR',
-					height:600,
-					width:400,
+					height:500,
+					width:300,
 					resizable:false,
 					//closable:false,
 					//minimizable:true,
@@ -415,6 +184,48 @@
 					},
 					modal:true,
 					items:[panel],
+					bbar:[
+						{
+			                xtype:'button',
+			                flex:1,
+			                text: 'Buscar',
+			                icon: '/images/icon/save.png',
+			                listeners:{
+			                    beforerender: function(obj, opts){
+			                        /*global.permisos({
+			                            id: 15,
+			                            id_btn: obj.getId(), 
+			                            id_menu: gestion_devolucion.id_menu,
+			                            fn: ['panel_asignar_gestion.limpiar']
+			                        });*/
+			                    },
+			                    click: function(obj, e){
+			                    	//scanning.setLibera();
+							        //scanning.getReloadGridscanning();
+			                    }
+			                }
+			            },
+			            {
+			                xtype:'button',
+			                flex:1,
+			                text: 'Buscar',
+			                icon: '/images/icon/remove.png',
+			                listeners:{
+			                    beforerender: function(obj, opts){
+			                        /*global.permisos({
+			                            id: 15,
+			                            id_btn: obj.getId(), 
+			                            id_menu: gestion_devolucion.id_menu,
+			                            fn: ['panel_asignar_gestion.limpiar']
+			                        });*/
+			                    },
+			                    click: function(obj, e){
+			                    	//scanning.setLibera();
+							        //scanning.getReloadGridscanning();
+			                    }
+			                }
+			            }
+					],
 					listeners:{
 						show:function(window,eOpts){
 							//window.alignTo(Ext.get(gtransporte.id+'Mapsa'),'bl-bl');
@@ -425,67 +236,23 @@
 							window.alignTo(Ext.get(gtransporte.id+'Mapsa'), 'bl-bl');*/
 						},
 						beforerender:function(obj,opts){
-							//reorder.call_origen();
+							reorder.getReloadGridreorder();
 						}
 					}
 				}).show();
 			},
 			getReloadGridreorder:function(){
-				//Ext.getCmp(reorder.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				reorder.lote=0;
-				Ext.getCmp(reorder.id + '-grid-history').getStore().removeAll();
-				reorder.getStatusPanel('N');
-				var vp_op = Ext.getCmp(reorder.id+'-filter-por').getValue();
-				var shi_codigo = Ext.getCmp(reorder.id+'-cbx-cliente').getValue();
-				var fac_cliente = Ext.getCmp(reorder.id+'-cbx-contrato').getValue();
-
-				var lote = 0;//Ext.getCmp(reorder.id+'-txt-lote').getValue();
-
-				var vp_cod_trazo=Ext.getCmp(reorder.id+'-filter-trazos').getValue();
-				var name = Ext.getCmp(reorder.id+'-txt-reorder').getValue();
-
-
-
-				var estado = Ext.getCmp(reorder.id+'-txt-estado-filter').getValue();
-				var fecha = Ext.getCmp(reorder.id+'-txt-fecha-filtro').getRawValue();
-
-				if(shi_codigo== null || shi_codigo==''){
+				if(reorder.shi_codigo== null || reorder.shi_codigo==''){
 		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
-				if(fac_cliente== null || fac_cliente==''){
+				if(reorder.fac_cliente== null || reorder.fac_cliente==''){
 		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
 		            return false;
 		        }
-
-		        if(vp_op=='L'){
-					lote=name;
-					name='';
-				}
-
-		        if(lote== null || lote==''){
-		        	if(vp_op=='L'){
-		        		global.Msg({msg:"Ingrese un Lote.",icon:2,fn:function(){}});
-		            	return false;
-		        	}
-		        	lote=0;
-		        }
-		        if(vp_op=='T'){
-			        if(vp_cod_trazo== null || vp_cod_trazo==''){
-			            global.Msg({msg:"Seleccione un Trazo por favor.",icon:2,fn:function(){}});
-			            return false;
-			        }
-			    }else{
-			    	vp_cod_trazo=0;
-			    }
-				/*
-				if(fecha== null || fecha==''){
-		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
-		            return false;
-		        }*/
-		        Ext.getCmp(reorder.id + '-grid-reorder').getStore().removeAll();
-		        Ext.getCmp(reorder.id + '-grid-reorder').getView().refresh();
-		        reorder.paramsStore={vp_op:vp_op,vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_cod_trazo:vp_cod_trazo,vp_lote_estado:'',vp_name:name,fecha:fecha,vp_estado:estado};
+		        //Ext.getCmp(reorder.id + '-grid-reorder').getStore().removeAll();
+		        //Ext.getCmp(reorder.id + '-grid-reorder').getView().refresh();
+		        reorder.paramsStore={vp_shi_codigo:reorder.shi_codigo,vp_fac_cliente:reorder.fac_cliente,vp_lote:reorder.id_lote,vp_lote_estado:'',vp_estado:''};
 		        Ext.getCmp(reorder.id + '-grid-reorder').getStore().load(
 	                {params: reorder.paramsStore,
 	                callback:function(){
