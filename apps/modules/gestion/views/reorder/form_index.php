@@ -122,6 +122,72 @@
 						                plugins: {
 						                    ptype: 'treeviewdragdrop',
 						                    containerScroll: true
+						                },
+						                listeners: {
+						                	beforedrop: function ( node, data, overModel, dropPosition, dropHandlers,eOpts ){
+
+						                		console.log(node);
+						                		console.log(data);
+						                		console.log(overModel);
+						                		console.log(dropPosition);
+						                		console.log(dropHandlers);
+
+						                		var hijox=overModel.data.hijo;
+												var padrex=overModel.data.padre;
+
+												var bool = false;
+												for(var j=0;j<data.records.length;j++){
+													if(dropPosition=='before' && parseInt(data.records[j].data.nivel) ==3 && parseInt(overModel.data.nivel) <= 2){
+														bool= true;
+													}
+													if(dropPosition=='after' && parseInt(data.records[j].data.nivel) ==3 && parseInt(overModel.data.nivel) <= 2){
+														bool= true;
+													}
+													if(dropPosition=='append' && parseInt(data.records[j].data.nivel) ==3 && parseInt(overModel.data.nivel) < 2){
+														bool= true;
+													}
+
+
+													if(dropPosition=='append' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel) != 2){
+														bool= true;
+													}
+													if(dropPosition=='after' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel) != 2){
+														bool= true;
+													}
+													if(dropPosition=='before' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel)!= 2){
+														bool= true;
+													}
+
+													if(dropPosition=='after' && parseInt(overModel.data.nivel) == 1){
+														bool= true;
+													}
+													if(dropPosition=='before' && parseInt(overModel.data.nivel) == 1){
+														bool= true;
+													}
+													
+												}
+												console.log(bool);
+												if(bool){
+													eOpts.cancel = true;
+													return !bool;
+												}else{
+							                		for(var i=0;i<data.records.length;i++){
+														var hijo= data.records[i].data.hijo;
+														var padre= data.records[i].data.padre;
+
+														console.log(data.records[0].data);
+														console.log('padre',overModel.data);
+														
+														Ext.getCmp(reorder.id + '-grid-reorder').getStore().each(function(record, idx) {
+														    if(parseInt(record.get('hijo'))==parseInt(hijo) && parseInt(record.get('padre'))==parseInt(padre)){
+															    //record.set('hijo', hijox);
+															    record.set('padre', hijox);
+															    record.commit();
+														    }
+														});
+													}
+												}
+											}
 						                }
 						            },
 			                        /*hideItemsReadFalse: function () {
@@ -154,8 +220,6 @@
 											    Ext.getCmp(reorder.id + '-panel-imagen').doLayout();
 											};
 											downloadingImage.src = record.get('path')+record.get('img');*/
-											
-
 										}
 			                        }
 			                    }
@@ -259,8 +323,13 @@
 	                	//Ext.getCmp(reorder.id+'-form').el.unmask();
 	                }
 	            });
+			},
+			setReorder:function(){
+				Ext.getCmp(reorder.id + '-grid-reorder').getStore().each(function(record, idx) {
+					console.log(record.data);
+					console.log('padre',record.parentNode.data);
+				});
 			}
-
 		}
 		Ext.onReady(reorder.init,reorder);
 	}else{

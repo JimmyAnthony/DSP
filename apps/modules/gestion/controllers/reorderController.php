@@ -90,7 +90,11 @@ class reorderController extends AppController {
                 if(!empty($js)){
                     $json.=',"children":['.trim($js).']';
                 }else{
-                    $json.=',"leaf":"true"';
+                    if((int)$value['nivel']==2){
+                        $json.=',"children":[]';
+                    }else{
+                        $json.=',"leaf":"true"';
+                    }
                 }
                 $json.="}";
                 $coma = ",";
