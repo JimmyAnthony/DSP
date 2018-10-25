@@ -155,7 +155,7 @@
 														bool= true;
 													}
 
-													if(dropPosition=='append' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel) != 2){
+													if(dropPosition=='append' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel) != 1){
 														bool= true;
 													}
 													if(dropPosition=='after' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel) != 2){
@@ -169,6 +169,9 @@
 														bool= true;
 													}
 													if(dropPosition=='before' && parseInt(overModel.data.nivel) == 1){
+														bool= true;
+													}
+													if(dropPosition=='append' && parseInt(overModel.data.nivel) == 1){
 														bool= true;
 													}
 													
