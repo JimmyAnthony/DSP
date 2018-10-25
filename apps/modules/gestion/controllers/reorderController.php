@@ -136,12 +136,16 @@ class reorderController extends AppController {
         //$data =stripslashes($data);
         //echo $data;
         //$records = json_decode($data); //parse the string to PHP objects
-        $records = json_decode(stripslashes($p['vp_recordsToSend']), true); 
+        $records = json_decode(stripslashes($p['vp_recordsToSend']), true);
         //echo $records;
         //echo $data;
         //var_export($records);
         $bool=true;
         if(!empty($records)){
+            $pp['vp_op']='D';
+            $pp['vp_id_lote']=$p['vp_id_lote'];
+            $rs = $this->objDatos->set_reorder($pp);
+
             foreach($records as $record){
                 //$record=$record[$id];
                 //$record=$record[0];

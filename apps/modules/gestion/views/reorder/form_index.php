@@ -11,6 +11,8 @@
 			fac_cliente:'<?php echo $p["fac_cliente"];?>',
 			paramsStore:{},
 			init:function(){
+				Ext.Ajax.timeout = 180000;
+            	Ext.QuickTips.init();
 				Ext.tip.QuickTipManager.init();
 
 				Ext.define('TaskX', {
@@ -359,7 +361,7 @@
 								}else{
 									var nombre= record.get('img');
 								}
-								recordsToSend.push(Ext.apply({vp_id_lote:reorder.id_lote,vp_hijo:hijo,vp_padre:padre,vp_nivel:nivel,vp_nombre:nombre},hijo));
+								recordsToSend.push(Ext.apply({vp_id_lote:reorder.id_lote,vp_hijo:hijo,vp_padre:padre,vp_nivel:nivel,vp_nombre:nombre,vp_order:0},hijo));
 							});
 
 							var vp_recordsToSend = Ext.encode(recordsToSend);
@@ -371,6 +373,7 @@
 			                    	vp_id_lote:reorder.id_lote,
 			                    	vp_recordsToSend:vp_recordsToSend
 			                    },
+			                    timeout: 300000,
 			                    success: function(response, options){
 			                    	Ext.getCmp(reorder.id+'-win').el.unmask();
 			                    	//control.getLoader(false);
