@@ -132,8 +132,16 @@
 						                		console.log(dropPosition);
 						                		console.log(dropHandlers);
 
-						                		var hijox=overModel.data.hijo;
-												var padrex=overModel.data.padre;
+						                		var hijox=overModel.parentNode.data.hijo;
+												var padrex=overModel.parentNode.data.padre;
+
+												if(dropPosition=='append'){
+													hijox=overModel.data.hijo;
+													padrex=overModel.data.padre;
+												}
+
+
+												console.log(hijox,padrex);
 
 												var bool = false;
 												for(var j=0;j<data.records.length;j++){
@@ -146,7 +154,6 @@
 													if(dropPosition=='append' && parseInt(data.records[j].data.nivel) ==3 && parseInt(overModel.data.nivel) < 2){
 														bool= true;
 													}
-
 
 													if(dropPosition=='append' && parseInt(data.records[j].data.nivel) == 2 && parseInt(overModel.data.nivel) != 2){
 														bool= true;
@@ -166,7 +173,7 @@
 													}
 													
 												}
-												console.log(bool);
+												//console.log(bool);
 												if(bool){
 													eOpts.cancel = true;
 													return !bool;
@@ -325,10 +332,56 @@
 	            });
 			},
 			setReorder:function(){
+				var recordsToSend = [];
 				Ext.getCmp(reorder.id + '-grid-reorder').getStore().each(function(record, idx) {
-					console.log(record.data);
-					console.log('padre',record.parentNode.data);
+					//console.log(record.data);
+					//console.log('padre',record.parentNode.data);
+					var hijo= record.get('hijo');
+					var padre= record.get('padre');
+					var nombre= record.get('nombre');
+					var hijo= record.get('hijo');
+					recordsToSend.push(Ext.apply({hijo:hijo,padre:padre,nivel:nivel,nombre:nombre},hijo));
 				});
+
+				var vp_recordsToSend = Ext.encode(recordsToSend);
+				//console.log(recordsToSend);
+
+		    	Ext.Ajax.request({
+                    url: reorder.url + 'set_reorder/',
+                    params:{
+                    	vp_recordsToSend:vp_recordsToSend
+                    },
+                    success: function(response, options){
+                    	Ext.getCmp(control.id+'-form').el.unmask();
+                    	control.getLoader(false);
+                        var res = Ext.JSON.decode(response.responseText);
+                        if (res.error == 'OK'){
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 1,
+                                buttons: 1,
+                                fn: function(btn){
+                                	record.set('ocr', 'Y');
+								    //page = record.get('id_pag');
+								    record.commit();
+                                	control.getReloadPage();
+                                }
+                            });
+                        } else{
+                            global.Msg({
+                                msg: res.msn,
+                                icon: 0,
+                                buttons: 1,
+                                fn: function(btn){
+                                	record.set('ocr', 'N');
+								    //page = record.get('id_pag');
+								    record.commit();
+                                    control.getReloadPage();
+                                }
+                            });
+                        }
+                    }
+                });
 			}
 		}
 		Ext.onReady(reorder.init,reorder);

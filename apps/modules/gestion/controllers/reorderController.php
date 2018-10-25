@@ -102,4 +102,62 @@ class reorderController extends AppController {
         }
         return $json;
     }
+    public function strip_carriage_returns($string){
+        $badchar=array(
+            // control characters
+            chr(0), chr(1), chr(2), chr(3), chr(4), chr(5), chr(6), chr(7), chr(8), chr(9), chr(10),
+            chr(11), chr(12), chr(13), chr(14), chr(15), chr(16), chr(17), chr(18), chr(19), chr(20),
+            chr(21), chr(22), chr(23), chr(24), chr(25), chr(26), chr(27), chr(28), chr(29), chr(30),
+            chr(31),
+            // non-printing characters
+            chr(127)
+        );
+        $string = str_replace($badchar, '', $string);
+        $string = str_replace(array('\"'), "'", $string);
+        $string = str_replace(array("\\"), 't', $string);
+        $string = str_replace(array("`"), '', $string);
+        $string = str_replace(array("|"), ' ', $string);
+        return str_replace(array("\n\r", "\n", "\r","'","\\",'\"'), '', $string);
+    }
+    public function set_reorder($p){
+        header("Content-Type: text/html; charset=UTF-8");
+        //$p['vp_recordsToSend']=$this->cp1250_to_utf2($this->normalize($this->strip_carriage_returns(utf8_decode($p['vp_recordsToSend']))));
+        $data = $p['vp_recordsToSend'];
+        $data = str_replace(array('\"'), "", $data);
+        $data = str_replace(array("'"), "", $data);
+        $data =utf8_decode($data);
+        $data =$this->strip_carriage_returns($data);
+        //$data =$this->hyphenize($data);
+        //$data =$this->decode($data);
+        //$data =$this->cp1250_to_utf2($data);
+        //$data =$this->normalize($data);
+        //$data =stripslashes($data);
+        //echo $data;
+        $records = json_decode($data); //parse the string to PHP objects
+        //echo $records;
+        //echo $data;
+        //var_export($records);
+        if(!empty($records)){
+            foreach($records as $record){
+                $pp['vp_op']='R';
+                $pp['vp_id_lote']=$record->id_lote;
+                $pp['vp_nivel']=$record->nivel;
+                $pp['vp_hijo']=$record->hijo;
+                $pp['vp_padre']=$record->padre;
+                $pp['vp_nombre']=$record->nombre;
+                $pp['vp_order']=$record->order;
+                $rs = $this->objDatos->set_reorder($pp);
+                $rs = $rs[0];
+                $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+            }
+
+
+
+        }else{
+            $data = array('success' => true,'error' => 'ER','msn' => 'No existen textos a procesar');
+        }
+
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
 }
