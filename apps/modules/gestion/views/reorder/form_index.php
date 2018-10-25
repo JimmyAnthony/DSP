@@ -274,6 +274,7 @@
 			                        });*/
 			                    },
 			                    click: function(obj, e){
+			                    	reorder.setReorder();
 			                    	//scanning.setLibera();
 							        //scanning.getReloadGridscanning();
 			                    }
@@ -335,56 +336,69 @@
 	            });
 			},
 			setReorder:function(){
-				var recordsToSend = [];
-				Ext.getCmp(reorder.id + '-grid-reorder').getStore().each(function(record, idx) {
-					//console.log(record.data);
-					//console.log('padre',record.parentNode.data);
-					var hijo= record.get('hijo');
-					var padre= record.get('padre');
-					var nombre= record.get('nombre');
-					var hijo= record.get('hijo');
-					recordsToSend.push(Ext.apply({hijo:hijo,padre:padre,nivel:nivel,nombre:nombre},hijo));
-				});
+				global.Msg({
+                    msg: '¿Está seguro de actualizar los registros?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(reorder.id+'-win').el.mask('Actualizando Registros', 'x-mask-loading');
 
-				var vp_recordsToSend = Ext.encode(recordsToSend);
-				//console.log(recordsToSend);
+							var recordsToSend = [];
+							Ext.getCmp(reorder.id + '-grid-reorder').getStore().each(function(record, idx) {
+								//console.log(record.data);
+								//console.log('padre',record.parentNode.data);
+								var hijo= record.get('hijo');
+								var padre= record.get('padre');
+								//var nombre= record.get('nombre');
+								var hijo= record.get('hijo');
 
-		    	Ext.Ajax.request({
-                    url: reorder.url + 'set_reorder/',
-                    params:{
-                    	vp_recordsToSend:vp_recordsToSend
-                    },
-                    success: function(response, options){
-                    	Ext.getCmp(control.id+'-form').el.unmask();
-                    	control.getLoader(false);
-                        var res = Ext.JSON.decode(response.responseText);
-                        if (res.error == 'OK'){
-                            global.Msg({
-                                msg: res.msn,
-                                icon: 1,
-                                buttons: 1,
-                                fn: function(btn){
-                                	record.set('ocr', 'Y');
-								    //page = record.get('id_pag');
-								    record.commit();
-                                	control.getReloadPage();
-                                }
-                            });
-                        } else{
-                            global.Msg({
-                                msg: res.msn,
-                                icon: 0,
-                                buttons: 1,
-                                fn: function(btn){
-                                	record.set('ocr', 'N');
-								    //page = record.get('id_pag');
-								    record.commit();
-                                    control.getReloadPage();
-                                }
-                            });
-                        }
-                    }
-                });
+								var nivel= record.get('nivel');
+								if(nivel!=3){
+									var nombre= record.get('nombre');
+								}else{
+									var nombre= record.get('img');
+								}
+								recordsToSend.push(Ext.apply({vp_id_lote:reorder.id_lote,vp_hijo:hijo,vp_padre:padre,vp_nivel:nivel,vp_nombre:nombre},hijo));
+							});
+
+							var vp_recordsToSend = Ext.encode(recordsToSend);
+							//console.log(recordsToSend);
+
+					    	Ext.Ajax.request({
+			                    url: reorder.url + 'set_reorder/',
+			                    params:{
+			                    	vp_id_lote:reorder.id_lote,
+			                    	vp_recordsToSend:vp_recordsToSend
+			                    },
+			                    success: function(response, options){
+			                    	Ext.getCmp(reorder.id+'-win').el.unmask();
+			                    	//control.getLoader(false);
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	reorder.getReloadGridreorder();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+			            }
+			        }
+			    });
 			}
 		}
 		Ext.onReady(reorder.init,reorder);

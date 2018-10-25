@@ -6,7 +6,9 @@
  * @author  Jimmy Anthony Bazán Solis (https://twitter.com/jbazan)
  * @version 2.0
  */
-
+error_reporting(NULL);
+set_time_limit(1000);
+ini_set("memory_limit", "-1");
 class reorderController extends AppController {
 
     private $objDatos;
@@ -122,39 +124,53 @@ class reorderController extends AppController {
     public function set_reorder($p){
         header("Content-Type: text/html; charset=UTF-8");
         //$p['vp_recordsToSend']=$this->cp1250_to_utf2($this->normalize($this->strip_carriage_returns(utf8_decode($p['vp_recordsToSend']))));
-        $data = $p['vp_recordsToSend'];
-        $data = str_replace(array('\"'), "", $data);
-        $data = str_replace(array("'"), "", $data);
-        $data =utf8_decode($data);
-        $data =$this->strip_carriage_returns($data);
+        //$data = $p['vp_recordsToSend'];
+        //$data = str_replace(array('\"'), "", $data);
+        //$data = str_replace(array("'"), "", $data);
+        //$data =utf8_decode($data);
+        //$data =$this->strip_carriage_returns($data);
         //$data =$this->hyphenize($data);
         //$data =$this->decode($data);
         //$data =$this->cp1250_to_utf2($data);
         //$data =$this->normalize($data);
         //$data =stripslashes($data);
         //echo $data;
-        $records = json_decode($data); //parse the string to PHP objects
+        //$records = json_decode($data); //parse the string to PHP objects
+        $records = json_decode(stripslashes($p['vp_recordsToSend']), true); 
         //echo $records;
         //echo $data;
         //var_export($records);
+        $bool=true;
         if(!empty($records)){
             foreach($records as $record){
+                //$record=$record[$id];
+                //$record=$record[0];
+                //var_export($record);
                 $pp['vp_op']='R';
-                $pp['vp_id_lote']=$record->id_lote;
-                $pp['vp_nivel']=$record->nivel;
-                $pp['vp_hijo']=$record->hijo;
-                $pp['vp_padre']=$record->padre;
-                $pp['vp_nombre']=$record->nombre;
-                $pp['vp_order']=$record->order;
+                $pp['vp_id_lote']=$record['vp_id_lote'];
+                $pp['vp_nivel']=$record['vp_nivel'];
+                $pp['vp_hijo']=$record['vp_hijo'];
+                $pp['vp_padre']=$record['vp_padre'];
+                $pp['vp_nombre']=$record['vp_nombre'];
+                $pp['vp_order']=$record['vp_order'];
+                $rs = $this->objDatos->set_reorder($pp);
+                $rs = $rs[0];
+                if($rs['status']=='ER'){
+                    $bool=false;
+                }
+            }
+
+            if($bool){
+                $pp['vp_op']='C';
+                $pp['vp_id_lote']=$p['vp_id_lote'];
                 $rs = $this->objDatos->set_reorder($pp);
                 $rs = $rs[0];
                 $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+            }else{
+                $data = array('success' => true,'error' => 'ER','msn' => utf8_encode('Error al tratar de registrar el orden de los registros.'));
             }
-
-
-
         }else{
-            $data = array('success' => true,'error' => 'ER','msn' => 'No existen textos a procesar');
+            $data = array('success' => true,'error' => 'ER','msn' => 'No existen registros a procesar');
         }
 
         header('Content-Type: application/json');
