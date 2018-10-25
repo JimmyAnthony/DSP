@@ -156,7 +156,7 @@ class reorderController extends AppController {
                 $pp['vp_hijo']=$record['vp_hijo'];
                 $pp['vp_padre']=$record['vp_padre'];
                 $pp['vp_nombre']=$record['vp_nombre'];
-                $pp['vp_order']=$record['vp_order'];
+                $pp['vp_order']=0;
                 $rs = $this->objDatos->set_reorder($pp);
                 $rs = $rs[0];
                 if($rs['status']=='ER'){
