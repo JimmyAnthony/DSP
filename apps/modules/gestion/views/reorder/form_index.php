@@ -9,6 +9,7 @@
 			id_lote:'<?php echo $p["id_lote"];?>',
 			shi_codigo:'<?php echo $p["shi_codigo"];?>',
 			fac_cliente:'<?php echo $p["fac_cliente"];?>',
+			callback:'<?php echo $p["callback"];?>',
 			paramsStore:{},
 			init:function(){
 				Ext.Ajax.timeout = 180000;
@@ -384,6 +385,7 @@
 			                                buttons: 1,
 			                                fn: function(btn){
 			                                	reorder.getReloadGridreorder();
+			                                	eval(reorder.callback);
 			                                }
 			                            });
 			                        } else{
