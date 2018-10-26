@@ -285,7 +285,7 @@
 			            {
 			                xtype:'button',
 			                flex:1,
-			                text: 'Buscar',
+			                text: 'Salir',
 			                icon: '/images/icon/remove.png',
 			                listeners:{
 			                    beforerender: function(obj, opts){
@@ -297,8 +297,7 @@
 			                        });*/
 			                    },
 			                    click: function(obj, e){
-			                    	//scanning.setLibera();
-							        //scanning.getReloadGridscanning();
+			                    	Ext.getCmp(reorder.id+'-win').close();
 			                    }
 			                }
 			            }
