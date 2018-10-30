@@ -218,7 +218,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:60,
 			                                                labelAlign:'right',
-			                                                value:new Date(),
+			                                                value:'',//new Date(),
 			                                                format: 'Ymd',
 			                                                width: '100%',
 			                                                anchor:'100%'
@@ -584,6 +584,20 @@
 
 	                        tab.setActiveTab(obj);
 	                        global.state_item_menu_config(obj,client.id_menu);
+
+	                        var name = Ext.getCmp(client.id+'-txt-cliente').getValue();
+                        	var fecha = Ext.getCmp(client.id+'-txt-fecha-filtro').getValue();
+
+                        	if(fecha == ' ' || fecha == '' ) 
+                        
+                        	{
+                        				fecha = '';
+                        	} 
+                      
+                        	var estado = Ext.getCmp(client.id+'-txt-estado-filter').getValue();	
+
+
+					            client.getReloadGridlotizer(name,fecha,estado);
 	                    },
 	                    beforeclose:function(obj,opts){
 	                    	global.state_item_menu(client.id_menu, false);
@@ -976,6 +990,8 @@
 	                ],
 	                listeners:{
 	                    'afterrender':function(obj, e){ 
+
+
 
 	                    },
 	                    'close':function(){

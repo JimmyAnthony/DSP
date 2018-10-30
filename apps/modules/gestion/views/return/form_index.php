@@ -418,7 +418,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:60,
 			                                                labelAlign:'right',
-			                                                value:new Date(),
+			                                                value:'',//new Date(),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
 			                                                width: '100%',
@@ -1107,7 +1107,7 @@
 													        //padding:'5px 5px 5px 5px',
 													        name: 'date_dev',
 													        labelAlign:'right',
-													        value:new Date(),
+													        value:'',//new Date(),
 	                                                		format: 'Y-m-d',
 													        labelWidth: 115,
 													        width:210,
@@ -1124,6 +1124,10 @@
 		                               					            ireturn.getDevoluciones();
 									                            }
 									                        }
+									                    },
+									                    {
+									                    	xtype:'label',
+									                    	text:'100 Registros Máx. sin fitros.'
 									                    }
 													],
 													items:[
@@ -1390,6 +1394,15 @@
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
 
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+		        
 				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().removeAll();
 				Ext.getCmp(ireturn.id + '-grid-devueltos').getStore().loadPage(1,
 	                {params: {
@@ -1719,10 +1732,10 @@
 		        if(lote== null || lote==''){
 		        	lote=0;
 		        }
-				if(fecha== null || fecha==''){
+				/*if(fecha== null || fecha==''){
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
-		        }
+		        }*/
 		        Ext.getCmp(ireturn.id + '-grid').getStore().removeAll();
 				Ext.getCmp(ireturn.id + '-grid').getView().refresh();
 		        ireturn.paramsStore={vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'DI',vp_name:name,fecha:fecha,vp_estado:estado};
@@ -1737,6 +1750,16 @@
 				//Ext.getCmp(ireturn.id+'-tab').el.mask('Cargando…', 'x-mask-loading');
 				var shi_codigo = Ext.getCmp(ireturn.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(ireturn.id+'-cbx-contrato').getValue();
+
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+
 				Ext.getCmp(ireturn.id + '-grid-devoluciones').getStore().removeAll();
 				Ext.getCmp(ireturn.id + '-grid-devoluciones').getView().refresh();
 

@@ -375,7 +375,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:60,
 			                                                labelAlign:'right',
-			                                                value:new Date(),
+			                                                value:'',//new Date(),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
 			                                                width: '100%',
@@ -782,10 +782,10 @@
 		        if(lote== null || lote==''){
 		        	lote=0;
 		        }
-				if(fecha== null || fecha==''){
+				/*if(fecha== null || fecha==''){
 		            global.Msg({msg:"Ingrese una fecha de busqueda por favor.",icon:2,fn:function(){}});
 		            return false;
-		        }
+		        }*/
 		        //Ext.getCmp(closing.id + '-grid-closing').getStore().removeAll();
 		        Ext.getCmp(closing.id + '-grid-closing').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'DI',vp_name:name,fecha:fecha,vp_estado:estado},

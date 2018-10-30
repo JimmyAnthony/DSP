@@ -5,6 +5,7 @@
 			id:'reprocessing',
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/reprocessing/',
+			url_order:'/gestion/reorder/',
 			opcion:'I',
 			//runner: new Ext.util.TaskRunner(),
 			work:false,
@@ -236,6 +237,17 @@
 		        fields: ['code', 'name']
 		    });
 
+		    var myDataSelect = [
+				['P','Pendientes'],
+			    ['C','Otros Parametros']
+			];
+			var store_seleccionar_lote  = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'seleccionar',
+		        autoLoad: true,
+		        data: myDataSelect,
+		        fields: ['code', 'name']
+		    });
+
 				var panel = Ext.create('Ext.form.Panel',{
 					id:reprocessing.id+'-form',
 					bodyStyle: 'background: transparent',
@@ -264,7 +276,7 @@
 		                            title: 'Panel de Re - proceso',
 		                            legend: 'Seleccione el Lote Registrado',
 		                            width:385,
-		                            height:210,
+		                            height:250,
 		                            items:[
 		                                {
 		                                    xtype:'panel',
@@ -339,7 +351,51 @@
 			                                 		]
 			                                    },
 			                                    {
+			                                   		width: 350,border:false,
+			                                    	padding:'10px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Selecionar',
+			                                                    id:reprocessing.id+'-txt-select-filter',
+			                                                    store: store_seleccionar_lote,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 55,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            Ext.getCmp(reprocessing.id+'-txt-select-filter').setValue('P');
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                        	var valor=Ext.getCmp(reprocessing.id+'-txt-select-filter').getValue();
+			                                                			if(valor=='P'){
+			                                                				Ext.getCmp(reprocessing.id+'-panel-lote').setDisabled(true);
+			                                                				Ext.getCmp(reprocessing.id+'-panel-nombre').setDisabled(true);
+			                                                				Ext.getCmp(reprocessing.id+'-txt-fecha-filtro').setDisabled(true);
+			                                                			}else{
+			                                                				Ext.getCmp(reprocessing.id+'-panel-lote').setDisabled(false);
+			                                                				Ext.getCmp(reprocessing.id+'-panel-nombre').setDisabled(false);
+			                                                				Ext.getCmp(reprocessing.id+'-txt-fecha-filtro').setDisabled(false);
+			                                                			}
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
 		                                            width:350,border:false,
+		                                            disabled:true,
+		                                            id:reprocessing.id+'-panel-lote',
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -358,6 +414,8 @@
 		                                        },
 		                                        {
 		                                            width:350,border:false,
+		                                            disabled:true,
+		                                            id:reprocessing.id+'-panel-nombre',
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -375,6 +433,7 @@
 		                                        },
 		                                        {
 			                                        width: 350,border:false,
+			                                        id:reprocessing.id+'-panel-fecha',
 			                                        padding:'0px 2px 5px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                    	layout:'column',
@@ -382,6 +441,7 @@
 			                                            {
 			                                                xtype:'datefield',
 			                                                id:reprocessing.id+'-txt-fecha-filtro',
+			                                                disabled:true,
 			                                                padding:'0px 10px 0px 0px',  
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth: 50,
@@ -509,12 +569,14 @@
 						                                        if(parseInt(record.get('nivel')) == 1){
 							                                        metaData.style = "padding: 0px; margin: 0px";
 							                                        var shi_codigo=record.get('shi_codigo');
+							                                        var fac_cliente=record.get('fac_cliente');
 							                                        var id_lote=record.get('id_lote');
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: reprocessing.id_menu,
 							                                            icons:[
-							                                                {id_serv: 4, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "reprocessing.setCerrarEscaneado("+shi_codigo+","+id_lote+")"}
+							                                                {id_serv: 4, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "reprocessing.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+")"},
+							                                                {id_serv: 4, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "reprocessing.setChangeOrder("+shi_codigo+","+fac_cliente+","+id_lote+")"}
 							                                            ]
 							                                        });
 							                                    }else{
@@ -557,14 +619,7 @@
 										},
 										{
 											region:'south',
-<<<<<<< HEAD
 											hidden:true,
-=======
-<<<<<<< HEAD
-=======
-											hidden:false,
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
->>>>>>> c26c9e7d64fe066a96da7a7e7ad90a7b1c4760a8
 											height:370,
 											border:false,
 											items:[
@@ -838,9 +893,8 @@
 											],
 											items:[
 												{
-<<<<<<< HEAD
-=======
 													region:'north',
+													hidden:true,
 													bodyStyle: 'background: transparent',
 													border:false,
 													padding:'5px 5px 5px 5px',
@@ -861,7 +915,6 @@
 													]
 												},
 												{
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 													region:'center',
 													border:false,
 													layout:'fit',
@@ -896,11 +949,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-<<<<<<< HEAD
 									                                    flex: 1
-=======
-									                                    width: 170
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1007,6 +1056,7 @@
 									                        xtype:'button',
 									                        id:reprocessing.id+'-btn-reordenar',
 									                        disabled:true,
+									                        hidden:true,
 									                        scale: 'large',
 									                        //iconAlign: 'top',
 									                        //disabled:true,
@@ -1084,11 +1134,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-<<<<<<< HEAD
 									                                    flex: 1
-=======
-									                                    width: 170
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 									                                },
 									                                {
 									                                    text: 'OPT',
@@ -1149,12 +1195,8 @@
 				                                                    		recordsToSend.push(Ext.apply({file:record.data.file},record.data));
 				                                                    	});
 				                                                    	recordsToSend = Ext.encode(recordsToSend);
-
 				                                                    	Ext.getCmp(reprocessing.id+'-form').el.mask('Registrando Páginas…', 'x-mask-loading'); 
-<<<<<<< HEAD
-=======
 				                                                    	var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 											                            Ext.Ajax.request({
 											                                url:reprocessing.url+'set_scanner_file_one_to_one/',
 											                                params:{
@@ -1163,11 +1205,7 @@
 														                    	vp_id_pag:0,
 														                    	vp_id_det:reprocessing.id_det,
 														                    	vp_id_lote:reprocessing.id_lote,
-<<<<<<< HEAD
-														                    	path:'C:/twain/',
-=======
 														                    	path:destino,
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 														                    	vp_estado:'A',
 											                                    vp_recordsToSend:recordsToSend
 											                                },
@@ -1375,6 +1413,13 @@
 					}
 
 				}).show();
+			},
+			getCallback(){
+				reprocessing.setLibera();
+				reprocessing.getReloadGridreprocessing();
+			},
+			setChangeOrder:function(shi_codigo,fac_cliente,id_lote){
+				win.show({vurl: reprocessing.url_order + 'index/?id_lote='+id_lote+'&shi_codigo='+shi_codigo+'&fac_cliente='+fac_cliente+'&callback=reprocessing.getCallback();', id_menu: reprocessing.id_menu, class: ''});
 			},
 			setMSGREPRO:function(index){
 				var rec = Ext.getCmp(reprocessing.id + '-grid-paginas').getStore().getAt(index);
@@ -1687,10 +1732,7 @@
 			setRemoveEscaner:function(bool,file){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
-<<<<<<< HEAD
-=======
 				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 				global.Msg({
                     msg: msn,
                     icon: 3,
@@ -1702,11 +1744,7 @@
 	                        Ext.Ajax.request({
 			                    url: reprocessing.url+url,
 			                    params:{
-<<<<<<< HEAD
-			                    	path:'C:/twain/',
-=======
 			                    	path:destino,
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			                    	file:file
 			                    },
 			                    timeout: 300000,
@@ -1754,16 +1792,10 @@
 
 			getreprocessingFile:function(){
 				reprocessing.getLoader(true);
-<<<<<<< HEAD
-				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().removeAll();
-				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().load(
-	                {params: {path:'C:/twain/'},
-=======
 				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().removeAll();
 				Ext.getCmp(reprocessing.id + '-grid-paginas-tmp').getStore().load(
 	                {params: {path:destino},
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 	                callback:function(){
 	                	//Ext.getCmp(reprocessing.id+'-form').el.unmask();
 	                	reprocessing.getLoader(false);
@@ -1783,10 +1815,7 @@
 					return false;
 				}
 				console.log(reprocessing.shi_codigo+'-'+reprocessing.id_det+'-'+reprocessing.id_lote);
-<<<<<<< HEAD
-=======
 				var destino=Ext.getCmp(reprocessing.id+'-txt-origen').getValue();
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 
 				global.Msg({
                     msg: 'Seguro de Asignar todas las Páginas?',
@@ -1804,11 +1833,7 @@
 			                    	vp_id_pag:0,
 			                    	vp_id_det:reprocessing.id_det,
 			                    	vp_id_lote:reprocessing.id_lote,
-<<<<<<< HEAD
-			                    	path:'C:/twain/',
-=======
 			                    	path:destino,
->>>>>>> b7dc362f30827bd90f8309a842aabc85f825b1b6
 			                    	vp_estado:'A'
 			                    },
 			                    timeout: 300000,
@@ -1965,6 +1990,7 @@
 			getReloadGridreprocessing:function(){
 				//reprocessing.set_reprocessing_clear();
 				//Ext.getCmp(reprocessing.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var seleccionado = Ext.getCmp(reprocessing.id+'-txt-select-filter').getValue();
 				var shi_codigo = Ext.getCmp(reprocessing.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(reprocessing.id+'-cbx-contrato').getValue();
 				var lote = Ext.getCmp(reprocessing.id+'-txt-lote').getValue();
@@ -1988,7 +2014,7 @@
 		            return false;
 		        }
 				Ext.getCmp(reprocessing.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'RE',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'RE',vp_seleccionar:seleccionado,vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(reprocessing.id+'-form').el.unmask();
 	                }

@@ -181,4 +181,16 @@ class reorderController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function setChangeRecord($p){
+        //$this->valida_mobil($p);
+        $rs = $this->objDatos->set_reorder($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
 }

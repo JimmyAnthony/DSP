@@ -570,7 +570,7 @@
                     		Ext.getCmp(reorder.id+'-win').el.mask('Actualizando Registro', 'x-mask-loading');
 
 					    	Ext.Ajax.request({
-			                    url: reorder.url + 'set_reorder/',
+			                    url: reorder.url + 'setChangeRecord/',
 			                    params:{
 			                    	vp_op:op,
 			                    	vp_id_lote:reorder.id_lote,

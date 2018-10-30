@@ -261,7 +261,7 @@
 							region:'west',
 							id:scanning.id + '-panel-west-lote',
 							border:true,
-							width:350,
+							width:400,
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
@@ -273,7 +273,7 @@
 		                            logo: 'BE',
 		                            title: 'Panel de Escaneado',
 		                            legend: 'Seleccione el Lote Registrado',
-		                            width:350,
+		                            width:390,
 		                            height:250,
 		                            items:[
 		                                {
@@ -284,7 +284,7 @@
 		                                    layout:'column',
 		                                    items: [
 		                                    	{
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -317,7 +317,7 @@
 			                                 		]
 			                                    },
 			                                    {
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'10px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -349,7 +349,7 @@
 			                                 		]
 			                                    },
 			                                    {
-			                                   		width: 300,border:false,
+			                                   		width: 350,border:false,
 			                                    	padding:'10px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 			                                 		items:[
@@ -391,7 +391,7 @@
 			                                 		]
 			                                    },
 			                                    {
-		                                            width:300,border:false,
+		                                            width:350,border:false,
 		                                            id:scanning.id+'-panel-lote',
 		                                            disabled:true,
 		                                            padding:'0px 2px 0px 0px',  
@@ -411,7 +411,7 @@
 		                                            ]
 		                                        },
 		                                        {
-		                                            width:300,border:false,
+		                                            width:350,border:false,
 		                                            disabled:true,
 		                                            id:scanning.id+'-panel-nombre',
 		                                            padding:'0px 2px 0px 0px',  
@@ -430,7 +430,7 @@
 		                                            ]
 		                                        },
 		                                        {
-			                                        width: 300,border:false,
+			                                        width: 350,border:false,
 			                                        id:scanning.id+'-panel-fecha',
 			                                        padding:'0px 2px 5px 0px',  
 			                                    	bodyStyle: 'background: transparent',
@@ -551,7 +551,7 @@
 						                                    align: 'center'
 						                                },
 						                                {
-						                                    text: 'Cerrar',
+						                                    text: 'OP',
 						                                    dataIndex: 'estado',
 						                                    //loocked : true,
 						                                    width: 50,
@@ -561,13 +561,14 @@
 						                                        if(parseInt(record.get('nivel')) == 1){
 							                                        metaData.style = "padding: 0px; margin: 0px";
 							                                        var shi_codigo=record.get('shi_codigo');
+							                                        var fac_cliente=record.get('fac_cliente');
 							                                        var id_lote=record.get('id_lote');
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: scanning.id_menu,
 							                                            icons:[
-							                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+id_lote+")"},
-							                                                {id_serv: 3, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "scanning.setChangeOrder("+id_lote+")"}
+							                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+")"},
+							                                                {id_serv: 3, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "scanning.setChangeOrder("+shi_codigo+","+fac_cliente+","+id_lote+")"}
 							                                            ]
 							                                        });
 							                                    }else{
@@ -931,6 +932,7 @@
 													region:'north',
 													bodyStyle: 'background: transparent',
 													border:false,
+													hidden:true,
 													padding:'5px 5px 5px 5px',
 													height:40,
 													items:[
@@ -1451,9 +1453,7 @@
 				scanning.setLibera();
 		        scanning.getReloadGridscanning();
 			},
-			setChangeOrder:function(id_lote){
-				var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();
-				var fac_cliente = Ext.getCmp(scanning.id+'-cbx-contrato').getValue(); 
+			setChangeOrder:function(shi_codigo,fac_cliente,id_lote){
 				win.show({vurl: scanning.url_order + 'index/?id_lote='+id_lote+'&shi_codigo='+shi_codigo+'&fac_cliente='+fac_cliente+'&callback=scanning.getCallback();', id_menu: scanning.id_menu, class: ''});
 			},
 			getScannear:function(){
@@ -1501,7 +1501,7 @@
                     }
                 });
 			},
-			setCerrarEscaneado:function(shi_codigo,id_lote){
+			setCerrarEscaneado:function(shi_codigo,fac_cliente,id_lote){
 				if(parseInt(shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 					return false;
@@ -1524,6 +1524,7 @@
 			                    params:{
 			                    	vp_op:'S',
 			                    	vp_shi_codigo:shi_codigo,
+			                    	vp_fac_cliente:fac_cliente,
 			                    	vp_id_lote:id_lote
 			                    },
 			                    timeout: 300000,

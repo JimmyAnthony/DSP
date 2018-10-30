@@ -207,6 +207,10 @@ class scanningController extends AppController {
         return $this->response($data);
     }
     public function get_scanner($p){
+        $p['path'] = PATH.'public_html/contenedor/'.USR_ID.'/';
+        if (!file_exists($p['path'])) {
+            mkdir($p['path'], 0777, true);
+        }
         $array = array();
         if (!file_exists(PATH.'public_html/tmp/'.USR_ID.'/')) {
             mkdir(PATH.'public_html/tmp/'.USR_ID.'/', 0777, true);
