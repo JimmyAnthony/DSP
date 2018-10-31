@@ -5,6 +5,7 @@
 			id:'control',
 			id_menu:'<?php echo $p["id_menu"];?>',
 			url:'/gestion/control/',
+			url_order:'/gestion/reorder/',
 			opcion:'I',
 			id_pag:0,
 			shi_codigo:0,
@@ -207,6 +208,17 @@
 		        fields: ['code', 'name']
 		    });
 
+		    var myDataSelect = [
+				['P','Pendientes'],
+			    ['C','Otros Parametros']
+			];
+			var store_seleccionar_lote  = Ext.create('Ext.data.ArrayStore', {
+		        storeId: 'seleccionar',
+		        autoLoad: true,
+		        data: myDataSelect,
+		        fields: ['code', 'name']
+		    });
+
 				var panel = Ext.create('Ext.form.Panel',{
 					id:control.id+'-form',
 					bodyStyle: 'background: transparent',
@@ -234,7 +246,7 @@
 		                            title: 'Control de Lotes',
 		                            legend: 'Seleccione el Lote Registrado',
 		                            width:385,
-		                            height:210,
+		                            height:250,
 		                            items:[
 		                                {
 		                                    xtype:'panel',
@@ -309,7 +321,51 @@
 			                                 		]
 			                                    },
 			                                    {
+			                                   		width: 350,border:false,
+			                                    	padding:'10px 2px 0px 0px',  
+		                                            bodyStyle: 'background: transparent',
+			                                 		items:[
+			                                                {
+			                                                    xtype:'combo',
+			                                                    fieldLabel: 'Selecionar',
+			                                                    id:control.id+'-txt-select-filter',
+			                                                    store: store_seleccionar_lote,
+			                                                    queryMode: 'local',
+			                                                    triggerAction: 'all',
+			                                                    valueField: 'code',
+			                                                    displayField: 'name',
+			                                                    emptyText: '[Seleccione]',
+			                                                    labelAlign:'right',
+			                                                    //allowBlank: false,
+			                                                    labelWidth: 55,
+			                                                    width:'100%',
+			                                                    anchor:'100%',
+			                                                    //readOnly: true,
+			                                                    listeners:{
+			                                                        afterrender:function(obj, e){
+			                                                            // obj.getStore().load();
+			                                                            Ext.getCmp(control.id+'-txt-select-filter').setValue('P');
+			                                                        },
+			                                                        select:function(obj, records, eOpts){
+			                                                        	var valor=Ext.getCmp(control.id+'-txt-select-filter').getValue();
+			                                                			if(valor=='P'){
+			                                                				Ext.getCmp(control.id+'-panel-lote').setDisabled(true);
+			                                                				Ext.getCmp(control.id+'-panel-nombre').setDisabled(true);
+			                                                				Ext.getCmp(control.id+'-txt-fecha-filtro').setDisabled(true);
+			                                                			}else{
+			                                                				Ext.getCmp(control.id+'-panel-lote').setDisabled(false);
+			                                                				Ext.getCmp(control.id+'-panel-nombre').setDisabled(false);
+			                                                				Ext.getCmp(control.id+'-txt-fecha-filtro').setDisabled(false);
+			                                                			}
+			                                                        }
+			                                                    }
+			                                                }
+			                                 		]
+			                                    },
+			                                    {
 		                                            width:350,border:false,
+		                                            disabled:true,
+		                                            id:control.id+'-panel-lote',
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -328,6 +384,8 @@
 		                                        },
 		                                        {
 		                                            width:350,border:false,
+		                                            disabled:true,
+		                                            id:control.id+'-panel-nombre',
 		                                            padding:'0px 2px 0px 0px',  
 		                                            bodyStyle: 'background: transparent',
 		                                            items:[
@@ -345,12 +403,14 @@
 		                                        },
 		                                        {
 			                                        width: 350,border:false,
+			                                        id:control.id+'-panel-fecha',
 			                                        padding:'0px 2px 5px 0px',  
 			                                    	bodyStyle: 'background: transparent',
 			                                    	layout:'column',
 			                                        items:[
 			                                            {
 			                                                xtype:'datefield',
+			                                                disabled:true,
 			                                                id:control.id+'-txt-fecha-filtro',
 			                                                padding:'0px 10px 0px 0px',  
 			                                                fieldLabel:'Fecha',
@@ -463,23 +523,25 @@
 				                                    align: 'center'
 				                                },
 				                                {
-				                                    text: 'Cerrar',
+				                                    text: 'OP',
 				                                    dataIndex: 'estado',
 				                                    //loocked : true,
-				                                    width: 50,
+				                                    width: 60,
 				                                    align: 'center',
 				                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 				                                        //console.log(record);
 				                                        if(parseInt(record.get('nivel')) == 1){
 					                                        metaData.style = "padding: 0px; margin: 0px";
 					                                        var shi_codigo=record.get('shi_codigo');
+					                                        var fac_cliente=record.get('fac_cliente');
 					                                        var id_lote=record.get('id_lote');
 					                                        return global.permisos({
 					                                            type: 'link',
 					                                            id_menu: control.id_menu,
 					                                            icons:[
 					                                                {id_serv: 2, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Control.', js: "control.setCerrarEscaneado('X',"+shi_codigo+","+id_lote+")"},
-					                                                {id_serv: 2, img: 'menu-16.png', qtip: 'Reprocesar.', js: "control.setCerrarEscaneado('R',"+shi_codigo+","+id_lote+")"}
+					                                                {id_serv: 2, img: 'menu-16.png', qtip: 'Reprocesar.', js: "control.setCerrarEscaneado('R',"+shi_codigo+","+id_lote+")"},
+					                                                {id_serv: 2, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "control.setChangeOrder("+shi_codigo+","+fac_cliente+","+id_lote+")"}
 					                                            ]
 					                                        });
 					                                    }else{
@@ -801,7 +863,7 @@
 						{
 							region:'west',
 							border:true,
-							width:300,
+							width:370,
 							layout:'border',
 							border:true,
 							padding:'5px 5px 5px 5px',
@@ -863,8 +925,9 @@
 					                        scale: 'large',
 					                        //iconAlign: 'top',
 					                        //disabled:true,
-					                        width:'99%',
-                                            anchor:'99%',
+					                        //width:'99%',
+                                            //anchor:'99%',
+                                            flex:1,
 					                        text: 'Procesar todo con OCR',
 					                        icon: '/images/icon/if_SVG_LINE_TECHNOLOGY-01_2897334.png',
 					                        listeners:{
@@ -881,7 +944,27 @@
 					                            	control.setProcessingOCR();
 					                            }
 					                        }
-					                    }
+					                    },
+					                    {
+						                    xtype: 'button',
+						                    icon: '/images/icon/if_edit-delete_118920.png',
+						                    flex:1,
+						                    //glyph: 72,
+						                    scale: 'large',
+						                    margin:'5px 5px 5px 5px',
+						                    //height:50
+						                    text: 'Eliminar Todo',
+						                    style : {'font-weight' : 'bold'},
+						                    listeners:{
+						                    	afterrender:function(obj){
+						                    		obj.setStyle({'font-weight' : 'bold'});
+						                    	},
+						                    	click: function(obj, e){
+					                            	control.setRemoveFile(0,true);
+					                            }
+						                    }
+						                    //iconAlign: 'top'
+						                }
 									],
 									items:[
 										{
@@ -972,7 +1055,7 @@
 							                                            type: 'link',
 							                                            id_menu: control.id_menu,
 							                                            icons:[
-							                                                {id_serv: 2, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setRemoveFile("+rowIndex+")"},
+							                                                {id_serv: 2, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "control.setRemoveFile("+rowIndex+",false)"},
 							                                                {id_serv: 2, img: ico, qtip: msn, js: "control.setMSGREPRO("+rowIndex+")"}
 							                                            ]
 							                                        });
@@ -1062,6 +1145,12 @@
 					}
 
 				}).show();
+			},
+			getCallback(){
+				 control.getReloadGridcontrol();
+			},
+			setChangeOrder:function(shi_codigo,fac_cliente,id_lote){
+				win.show({vurl: control.url_order + 'index/?id_lote='+id_lote+'&shi_codigo='+shi_codigo+'&fac_cliente='+fac_cliente+'&callback=control.getCallback();', id_menu: control.id_menu, class: ''});
 			},
 			setMSGREPRO:function(index){
 				var rec = Ext.getCmp(control.id + '-grid-paginas').getStore().getAt(index);
@@ -1995,6 +2084,7 @@
 				Ext.getCmp(control.id + '-grid-paginas').getStore().removeAll();
 				//control.set_control_clear();
 				//Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
+				var seleccionado = Ext.getCmp(scanning.id+'-txt-select-filter').getValue();
 				var shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(control.id+'-cbx-contrato').getValue();
 				var lote = Ext.getCmp(control.id+'-txt-lote').getValue();
@@ -2020,7 +2110,7 @@
 		        control.id_pag=0;
 		        control.setResetBtn(true);
 				Ext.getCmp(control.id + '-grid').getStore().load(
-	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_lote:lote,vp_lote_estado:'CO',vp_name:name,fecha:fecha,vp_estado:estado},
+	                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_seleccionar:seleccionado,vp_lote:lote,vp_lote_estado:'CO',vp_name:name,fecha:fecha,vp_estado:estado},
 	                callback:function(){
 	                	//Ext.getCmp(control.id+'-form').el.unmask();
 	                }
@@ -2079,12 +2169,14 @@
 		        panel.removeAll();        
 		        panel.doLayout();*/
 		    },
-		    setRemoveFile:function(index){
-		    	var rec = Ext.getCmp(control.id + '-grid-paginas').getStore().getAt(index);
-				control.id_pag=rec.data.id_pag;
+		    setRemoveFile:function(index,bool){
+		    	if(!bool){
+			    	var rec = Ext.getCmp(control.id + '-grid-paginas').getStore().getAt(index);
+					control.id_pag=rec.data.id_pag;
 
-                control.id_det=rec.data.id_det; 
-                control.id_lote=rec.data.id_lote; 
+	                control.id_det=rec.data.id_det; 
+	                control.id_lote=rec.data.id_lote;
+	            }
 
 		    	control.shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
 				control.fac_cliente = Ext.getCmp(control.id+'-cbx-contrato').getValue();
@@ -2101,9 +2193,11 @@
 					global.Msg({msg:"No tiene ningun folder seleccionado.",icon:2,fn:function(){}});
 					return false;
 				}
-				if(parseInt(control.id_pag)==0){
-					global.Msg({msg:"Seleccione una página.",icon:2,fn:function(){}});
-					return false;
+				if(!bool){
+					if(parseInt(control.id_pag)==0){
+						global.Msg({msg:"Seleccione una página.",icon:2,fn:function(){}});
+						return false;
+					}
 				}
 
 				
@@ -2120,7 +2214,7 @@
 			                    params:{
 			                    	vp_op:'D',
 			                    	vp_shi_codigo:control.shi_codigo,
-			                    	vp_id_pag:control.id_pag,
+			                    	vp_id_pag:(bool)?0:control.id_pag,
 			                    	vp_id_det:control.id_det,
 			                    	vp_id_lote:control.id_lote
 			                    },

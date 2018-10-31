@@ -772,4 +772,35 @@ class controlController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function set_remove_file($p){
+        
+        $rs = $this->objDatos->get_list_page_delete($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+                $p['vp_op'] = 'D';
+                $p['vp_id_pag'] = intval($value['id_pag']);
+
+                $rs = $this->objDatos->set_page($p);
+                $rs = $rs[0];
+                $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+                if($rs['status']=='OK'){
+                    if (file_exists(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])))){
+                        try{
+                            unlink(PATH.'public_html/'.utf8_encode(trim($value['path'])).utf8_encode(trim($value['img'])));
+                        } catch (Exception $e) {
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
+                        try{
+                            unlink(PATH.'public_html/tumblr/'.utf8_encode(trim($value['img'])));
+                        } catch (Exception $e) {
+                            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                        }
+                    }
+                }
+        }
+        
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
 }
