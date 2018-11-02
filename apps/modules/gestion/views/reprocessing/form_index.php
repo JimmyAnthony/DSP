@@ -1565,7 +1565,7 @@
 					}
 				});
 			},
-			setCerrarEscaneado:function(shi_codigo,id_lote){
+			setCerrarEscaneado:function(shi_codigo,fac_cliente,id_lote){
 				if(parseInt(shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 					return false;
