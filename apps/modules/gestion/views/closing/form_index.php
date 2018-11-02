@@ -581,14 +581,15 @@
 						                                        metaData.style = "padding: 0px; margin: 0px";
 						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
 						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
-
+						                                        var x = 5;
+						                                        x = (parseInt(record.get('tot_pag'))!=0)?5:0;
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: closing.id_menu,
 						                                            icons:[
 						                                            	{id_serv: 5, img: estado, qtip: qtip, js: ""},
-						                                                {id_serv: 5, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"},
-						                                                {id_serv: 5, img: 'download_.png', qtip: 'Descargar Zip', js: "closing.getZip("+rowIndex+")"}
+						                                                {id_serv: x, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"},
+						                                                {id_serv: x, img: 'download_.png', qtip: 'Descargar Zip', js: "closing.getZip("+rowIndex+")"}
 						                                            ]
 						                                        });
 						                                    }

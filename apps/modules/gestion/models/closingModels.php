@@ -57,7 +57,7 @@ class closingModels extends Adodb {
     }
     public function get_load_page($p){
         parent::ReiniciarSQL();
-        parent::ConnectionOpen($this->dsn, 'get_list_page');
+        parent::ConnectionOpen($this->dsn, 'get_list_download_page');
         parent::SetParameterSP($p['vp_id_pag'], 'int');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_id_det'], 'int');

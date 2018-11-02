@@ -219,12 +219,26 @@ class closingController extends AppController {
         $RD=date("dmY His", $time);
         $zipname = 'DSP-FILE-'.$RD.'.zip';
 
+        $path_lote = "";
+        $nombre_lote = "";
+
         $zip = new ZipArchive;
         $zip->open($zipname, ZipArchive::CREATE|ZipArchive::OVERWRITE);
+
         $rs = $this->objDatos->get_load_page($p);
         foreach ($rs as $index => $value){
-            $zip->addFile(PATH.'public_html'.trim($value['path']).trim($value['img']),trim($value['img']));
+            $path_lote = PATH.'public_html/download/'.trim($value['nombre']).'/';
+            $nombre_lote = trim($value['nombre']);
+            if (!file_exists(PATH.'public_html/download/'.trim($value['nombre']).'/'.trim($value['expediente']).'/')) {
+                mkdir(PATH.'public_html/download/'.trim($value['nombre']).'/'.trim($value['expediente']).'/', 0777, true);
+            }
+            $path_parts = pathinfo(PATH.'public_html'.trim($value['path']).trim($value['img']));
+            $ext=$path_parts['extension'];
+            $to=PATH.'public_html/download/'.trim($value['nombre']).'/'.trim($value['expediente']).'/'.trim($value['orden']).'.'.$ext;
+            copy(PATH.'public_html'.trim($value['path']).trim($value['img']), $to);
+            $zip->addFile($to,trim($value['nombre']).'/'.trim($value['expediente']).'/'.trim($value['orden']).'.'.$ext);
         }
+        
         $zip->close();
 
         ///Then download the zipped file.
@@ -233,5 +247,18 @@ class closingController extends AppController {
         header('Content-Length: ' . filesize($zipname));
         readfile($zipname);
         unlink($zipname);
+        $this->rrmdir($path_lote);
     }
+    public function rrmdir($dir) { 
+       if (is_dir($dir)) { 
+         $objects = scandir($dir); 
+         foreach ($objects as $object) { 
+           if ($object != "." && $object != "..") { 
+             if (filetype($dir."/".$object) == "dir") $this->rrmdir($dir."/".$object); else unlink($dir."/".$object); 
+           } 
+         } 
+         reset($objects); 
+         rmdir($dir); 
+       } 
+    } 
 }
