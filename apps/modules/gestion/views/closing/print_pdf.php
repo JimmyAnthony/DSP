@@ -101,42 +101,23 @@ class MYPDF extends TCPDF {
     }
 }
 
-$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('DSP');
-$pdf->SetTitle('DOCUMENT SCAN PRO');
-$pdf->SetSubject('FILE SCAN');
-$pdf->SetKeywords('PDF,DSP');
 
-$pdf->LOTE=$p['vp_id_lote'];
+//$rs = $this->objDatos->get_load_page($p);
+$rs = $this->objDatos->get_lotizer_detalle($p);
+$path_lote = PATH.'public_html/download/'.$p['vp_id_lote'].'-LOTE-PDF/';
+if (!file_exists($path_lote)) {
+    mkdir($path_lote, 0777, true);
+}
 
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$time = time();
+$RD=date("dmY His", $time);
+$zipname = 'DSP-PDF-FILE-'.$RD.'.zip';
+$zip = new ZipArchive;
+$zip->open($zipname, ZipArchive::CREATE|ZipArchive::OVERWRITE);
 
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-$pdf->SetHeaderMargin(0);
-$pdf->SetFooterMargin(0);
-
-$pdf->setPrintFooter(false);
-
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-$pdf->setLanguageArray($l);
-
-$pdf->SetFont('times', '', 48);
-
-
-$pdf->AddPage();
-
-$pdf->setPrintHeader(false);
-
-$rs = $this->objDatos->get_load_page($p);
-foreach ($rs as $index => $value){
+foreach ($rs as $index => $valuex){
         /*$value_['id_pag'] = intval($value['id_pag']);
         $value_['id_det'] = intval($value['id_det']);
         $value_['id_lote'] = intval($value['id_lote']);
@@ -148,32 +129,82 @@ foreach ($rs as $index => $value){
         $value_['estado'] = utf8_encode(trim($value['estado']));
         $value_['include'] ='Y';*/
         //INIT
+        $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+
+		$pdf->SetCreator(PDF_CREATOR);
+		$pdf->SetAuthor('DSP');
+		$pdf->SetTitle('DOCUMENT SCAN PRO');
+		$pdf->SetSubject('FILE SCAN');
+		$pdf->SetKeywords('PDF,DSP');
+
+		$pdf->LOTE=$p['vp_id_lote'];
+
+		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+
+		$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+		$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$pdf->SetHeaderMargin(0);
+		$pdf->SetFooterMargin(0);
+
+		$pdf->setPrintFooter(false);
+
+		$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+		$pdf->setLanguageArray($l);
+
+		$pdf->SetFont('times', '', 48);
+
+
 		$pdf->AddPage();
 
+		$pdf->setPrintHeader(false);
+		//OUT
+		$p['vp_id_det']=$valuex['id_det'];
+		$rsx = $this->objDatos->get_load_page($p);
+		foreach ($rsx as $index => $value){
+			$pdf->AddPage();
 
-		$bMargin = $pdf->getBreakMargin();
 
-		$auto_page_break = $pdf->getAutoPageBreak();
+			$bMargin = $pdf->getBreakMargin();
 
-		$pdf->SetAutoPageBreak(false, 0);
-		$pdf->Image(substr(trim($value['path']).trim($value['img']), 1), 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+			$auto_page_break = $pdf->getAutoPageBreak();
 
-		$pdf->SetAutoPageBreak($auto_page_break, $bMargin);
-		$pdf->setPageMark();
+			$pdf->SetAutoPageBreak(false, 0);
+			$pdf->Image(substr(trim($value['path']).trim($value['img']), 1), 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 
+			$pdf->SetAutoPageBreak($auto_page_break, $bMargin);
+			$pdf->setPageMark();
+		}
+
+		//OUT
+
+		$pdf->Output($path_lote.$valuex['id_det'].'-PDF.pdf', 'F');
+		$zip->addFile($path_lote.$valuex['id_det'].'-PDF.pdf',$p['vp_id_lote'].'-LOTE-PDF/'.$valuex['id_det'].'-PDF.pdf');
 		//END
 }
 
 
+$zip->close();
 
-
-
+///Then download the zipped file.
+header('Content-Type: application/zip');
+header('Content-disposition: attachment; filename='.$zipname);
+header('Content-Length: ' . filesize($zipname));
+readfile($zipname);
+unlink($zipname);
+$this->rrmdir($path_lote);
 
 // ---------------------------------------------------------
 
 //Close and output PDF document
-$pdf->Output('PDF.pdf', 'I');
+//$pdf->Output('PDF.pdf', 'I');
+
 
 //============================================================+
 // END OF FILE
 //============================================================+
+

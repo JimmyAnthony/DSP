@@ -588,7 +588,7 @@
 						                                            id_menu: closing.id_menu,
 						                                            icons:[
 						                                            	{id_serv: 5, img: estado, qtip: qtip, js: ""},
-						                                                {id_serv: x, img: 'print.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"},
+						                                                {id_serv: x, img: 'pdf.png', qtip: 'Imprimir', js: "closing.getPrint("+rowIndex+")"},
 						                                                {id_serv: x, img: 'download_.png', qtip: 'Descargar Zip', js: "closing.getZip("+rowIndex+")"}
 						                                            ]
 						                                        });
