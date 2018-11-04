@@ -979,7 +979,7 @@
 									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 									                                        //console.log(record);
 									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + record.get('file') + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + scanning.getAddMagicRefresh(record.get('file')) + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
 									                                    }
 									                                },
 									                                {
@@ -1165,14 +1165,14 @@
 									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 									                                        //console.log(record);
 									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + record.get('file') + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + scanning.getAddMagicRefresh(record.get('file')) + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
 									                                    }
 									                                },
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1,
-									                                    width: 170
+									                                    //flex: 1,
+									                                    width: 160
 									                                },
 									                                {
 									                                    text: 'DLT',

@@ -943,7 +943,7 @@
 									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 									                                        //console.log(record);
 									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + record.get('file') + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + reprocessing.getAddMagicRefresh(record.get('file')) + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
 									                                    }
 									                                },
 									                                {
@@ -1128,13 +1128,13 @@
 									                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 									                                        //console.log(record);
 									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + record.get('file') + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+									                                        return '<div class="gk-column-icon"><img src="/tumblr/' + reprocessing.getAddMagicRefresh(record.get('file')) + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
 									                                    }
 									                                },
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1
+									                                    width: 150
 									                                },
 									                                {
 									                                    text: 'OPT',
