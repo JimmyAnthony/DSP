@@ -583,7 +583,8 @@
 			                                            type: 'link',
 			                                            id_menu: user.id_menu,
 			                                            icons:[
-			                                                {id_serv: 10, img: 'edit.png', qtip: 'Editar.', js: "user.getEdit("+rowIndex+")"}
+			                                                {id_serv: 10, img: 'edit.png', qtip: 'Editar.', js: "user.getEdit("+rowIndex+")"},
+			                                                {id_serv: 10, img: 'reprogramadas.png', qtip: 'Editar.', js: "user.getPermisoMenu("+rowIndex+")"}
 
 			                                            ]
 			                                        });
@@ -627,6 +628,64 @@
 			getEdit:function(index){
 				var rec = Ext.getCmp(user.id + '-grid-user').getStore().getAt(index);
 				user.setForm('U',rec.data);
+			},
+			getPermisoMenu:function(index){
+				var rec = Ext.getCmp(user.id + '-grid-user').getStore().getAt(index);
+				Ext.create('Ext.window.Window',{
+	                id:user.id+'-win-form-menu',
+	                plain: true,
+	                title:'Mantenimiento Permisos Menu',
+	                icon: '/images/icon/default-avatar_man.png',
+	                height: 300,
+	                width: 400,
+	                resizable:false,
+	                modal: true,
+	                border:false,
+	                closable:true,
+	                padding:20,
+	                //layout:'fit',
+	                items:[
+	                	
+	                ],
+	                bbar:[       
+	                    '->',
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Grabar',
+	                        icon: '/images/icon/save.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+								},
+	                            click: function(obj, e){
+	                            	user.setSaveUser(op);
+	                            }
+	                        }
+	                    },
+	                    '-',
+	                    {
+	                        xtype:'button',
+	                        text: 'Salir',
+	                        icon: '/images/icon/get_back.png',
+	                        listeners:{
+	                            beforerender: function(obj, opts){
+	                            },
+	                            click: function(obj, e){
+	                                Ext.getCmp(user.id+'-win-form').close();
+	                            }
+	                        }
+	                    },
+	                    '-'
+	                ],
+	                listeners:{
+	                    'afterrender':function(obj, e){ 
+
+	                    },
+	                    'close':function(){
+
+	                    }
+	                }
+	            }).show().center();
 			},
 			getNew:function(){
 				user.setForm('I',{id_user:0,usr_codigo:'',usr_nombre:'',usr_perfil:1,usr_estado:1});
