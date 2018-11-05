@@ -2084,7 +2084,7 @@
 				Ext.getCmp(control.id + '-grid-paginas').getStore().removeAll();
 				//control.set_control_clear();
 				//Ext.getCmp(control.id+'-form').el.mask('Cargando…', 'x-mask-loading');
-				var seleccionado = Ext.getCmp(scanning.id+'-txt-select-filter').getValue();
+				var seleccionado = Ext.getCmp(control.id+'-txt-select-filter').getValue();
 				var shi_codigo = Ext.getCmp(control.id+'-cbx-cliente').getValue();
 				var fac_cliente = Ext.getCmp(control.id+'-cbx-contrato').getValue();
 				var lote = Ext.getCmp(control.id+'-txt-lote').getValue();
@@ -2208,7 +2208,7 @@
                     fn: function(btn){
                     	if (btn == 'yes'){
                     		Ext.getCmp(control.id+'-tab').el.mask('Elinando Páginas…', 'x-mask-loading');
-	                        scanning.getLoader(true);
+	                        control.getLoader(true);
 			                Ext.Ajax.request({
 			                    url:control.url+'set_remove_file/',
 			                    params:{
