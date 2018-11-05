@@ -543,7 +543,7 @@
 						                                {
 						                                    text: 'Fecha y Hora',
 						                                    dataIndex: 'fecha',
-						                                    width: 180,
+						                                    width: 100,
 						                                    align: 'center'
 						                                },
 						                                {
@@ -574,7 +574,7 @@
 						                                    text: 'Estado',
 						                                    dataIndex: 'estado',
 						                                    loocked : true,
-						                                    width: 70,
+						                                    width: 90,
 						                                    align: 'center',
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
