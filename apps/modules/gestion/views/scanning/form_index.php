@@ -16,6 +16,7 @@
 			group1:'',
 			group2:'',
 			trabajando:1,
+			auto:false,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 				Ext.Ajax.timeout = 300000;
@@ -837,7 +838,7 @@
 							items:[
 								{
 									region:'west',
-									width:360,
+									width:480,
 									layout:'border',
 									border:true,
 									padding:'5px 5px 5px 5px',
@@ -850,6 +851,32 @@
 											bodyStyle: 'background: transparent',
 											layout: 'hbox',
 											items:[
+												{
+							                        xtype:'button',
+							                        id:scanning.id+'-btn-auto-lote',
+							                        //disabled:true,
+							                        scale: 'large',
+							                        margin:'5px 5px 5px 5px',
+							                        //iconAlign: 'top',
+							                        //disabled:true,
+							                        flex:1,
+							                        text: 'Auto Lote',
+							                        icon: '/images/icon/if_icon-105-folder-add_314682.png',
+							                        listeners:{
+							                            beforerender: function(obj, opts){
+							                                /*global.permisos({
+							                                    id: 15,
+							                                    id_btn: obj.getId(), 
+							                                    id_menu: gestion_devolucion.id_menu,
+							                                    fn: ['panel_asignar_gestion.limpiar']
+							                                });*/
+							                            },
+							                            click: function(obj, e){
+							                            	//scanning.work=!scanning.work;
+							                            	scanning.setAutoLote();
+							                            }
+							                        }
+							                    },
 												{
 								                    xtype: 'button',
 								                    icon: '/images/icon/if_edit-delete_118920.png',
@@ -985,8 +1012,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    flex: 1,
-									                                     width: 170
+									                                    width: 290
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1172,7 +1198,7 @@
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
 									                                    //flex: 1,
-									                                    width: 160
+									                                    width: 280
 									                                },
 									                                {
 									                                    text: 'DLT',
@@ -1448,6 +1474,23 @@
 					}
 
 				}).show();
+			},
+			setAutoLote:function(){
+				var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();
+				var fac_cliente = Ext.getCmp(scanning.id+'-cbx-contrato').getValue();
+				if(shi_codigo== null || shi_codigo==''){
+		            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				if(fac_cliente== null || fac_cliente==''){
+		            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+		            return false;
+		        }
+				scanning.auto=!scanning.auto;
+				Ext.getCmp(scanning.id+'-btn-auto-lote').setIcon(scanning.auto?'/images/icon/if_ark2_3294.png':'/images/icon/if_icon-105-folder-add_314682.png');
+				Ext.getCmp(scanning.id+'-btn-auto-lote').setText(scanning.auto?'Detectando...':'Auto Lote');
+				scanning.setLibera();
+		        scanning.getReloadGridscanning();
 			},
 			getCallback(){
 				scanning.setLibera();
