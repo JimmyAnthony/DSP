@@ -862,6 +862,7 @@
 							                        flex:1,
 							                        text: 'Auto Lote',
 							                        icon: '/images/icon/if_icon-105-folder-add_314682.png',
+							                        hidden:true,
 							                        listeners:{
 							                            beforerender: function(obj, opts){
 							                                /*global.permisos({
@@ -873,7 +874,7 @@
 							                            },
 							                            click: function(obj, e){
 							                            	//scanning.work=!scanning.work;
-							                            	scanning.setAutoLote();
+							                            	//scanning.setAutoLote();
 							                            }
 							                        }
 							                    },
@@ -981,9 +982,31 @@
 													region:'center',
 													border:false,
 													layout:'fit',
+													xtype: 'tabpanel',
+													activeItem: 0,
+													tabPosition: 'left',
+													listeners: {
+											            'tabchange': function (tabPanel, tab) {
+											            	console.log(tabPanel);
+											            	console.log(tab);
+											                console.log(tabPanel.id + ' ' + tab.id);
+
+											                /*var activeTab = tabPanel.getActiveTab();
+											                console.log(activeTab);
+                    										alert("The active tab in the panel is " + activeTab.title);*/
+                    										var activeTab = tabPanel.getActiveTab();
+															var activeTabIndex = tabPanel.items.findIndex('id', activeTab.id);
+															if(activeTabIndex==1){
+																Ext.getCmp(scanning.id+'-panel-paginas').setVisible(false);
+															}else{
+																Ext.getCmp(scanning.id+'-panel-paginas').setVisible(true);
+															}
+											            }
+											        },
 													items:[
 														{
 									                        xtype: 'grid',
+									                        title:'Scanner',
 									                        itemId: 'grid1',
 									                        id: scanning.id + '-grid-paginas-tmp',
 									                        store: store_tmp,
@@ -1012,7 +1035,7 @@
 									                                {
 									                                    text: 'Descripción',
 									                                    dataIndex: 'file',
-									                                    width: 290
+									                                    width: 260
 									                                },/*
 									                                {
 									                                    text: 'Lado',
@@ -1075,6 +1098,100 @@
 									                            beforeselect:function(obj, record, index, eOpts ){
 									                            	scanning.setImageFile(record.get('path'),record.get('file'));
 									                            }
+									                        }
+									                    },
+									                    {
+									                        xtype: 'treepanel',
+									                        title:'Lote Scanner',
+									                        //collapsible: true,
+													        useArrows: true,
+													        rootVisible: true,
+													        multiSelect: true,
+													        //root:'Task',
+									                        id: scanning.id + '-grid-scanner',
+									                        //height: 370,
+									                        //reserveScrollbar: true,
+									                        //rootVisible: false,
+									                        //store: store,
+									                        //layout:'fit',
+									                        columnLines: true,
+									                        store: storeTree,
+												            columns: [
+													            {
+													            	xtype: 'treecolumn',
+								                                    text: 'Nombre',
+								                                    dataIndex: 'lote_nombre',
+								                                    renderer: scanning.renderTip,
+								                                    sortable: true,
+								                                    flex: 1
+								                                },
+								                                {
+								                                    text: 'Folders',
+								                                    dataIndex: 'tot_folder',
+								                                    width: 45,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'Páginas',
+								                                    dataIndex: 'tot_pag',
+								                                    width: 50,
+								                                    align: 'center'
+								                                },
+								                                {
+								                                    text: 'OP',
+								                                    dataIndex: 'estado',
+								                                    //loocked : true,
+								                                    width: 50,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        //console.log(record);
+								                                        if(parseInt(record.get('nivel')) == 1){
+									                                        metaData.style = "padding: 0px; margin: 0px";
+									                                        var shi_codigo=record.get('shi_codigo');
+									                                        var fac_cliente=record.get('fac_cliente');
+									                                        var id_lote=record.get('id_lote');
+									                                        return global.permisos({
+									                                            type: 'link',
+									                                            id_menu: scanning.id_menu,
+									                                            icons:[
+									                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+")"},
+									                                                {id_serv: 3, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "scanning.setChangeOrder("+shi_codigo+","+fac_cliente+","+id_lote+")"}
+									                                            ]
+									                                        });
+									                                    }else{
+								                                        	return '';
+								                                        }
+								                                    }
+								                                }
+													        ],
+									                        /*viewConfig: {
+									                            stripeRows: true,
+									                            enableTextSelection: false,
+									                            markDirty: false
+									                        },*/
+									                        hideItemsReadFalse: function () {
+															    var me = this,
+															        items = me.getReferences().treelistRef.itemMap;
+
+
+															    for(var i in items){
+															        if(items[i].config.node.data.read == false){
+															            items[i].destroy();
+															        }
+															    }
+															},
+									                        trackMouseOver: false,
+									                        listeners:{
+									                            afterrender: function(obj){
+									                                //scanning.getImagen('default.png');
+									                                
+									                            },
+																beforeselect:function(obj, record, index, eOpts ){
+																	scanning.shi_codigo=record.get('shi_codigo');
+																	scanning.id_det=record.get('id_det');
+																	scanning.id_lote=record.get('id_lote');
+																	scanning.getLiberaPanel();
+																}
 									                        }
 									                    }
 													]

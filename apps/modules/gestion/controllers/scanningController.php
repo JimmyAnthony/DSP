@@ -212,6 +212,7 @@ class scanningController extends AppController {
             mkdir($p['path'], 0777, true);
         }
         $array = array();
+        $this->set_lotizer($p);
         /*if (!file_exists(PATH.'public_html/tmp/'.USR_ID.'/')) {
             mkdir(PATH.'public_html/tmp/'.USR_ID.'/', 0777, true);
         }
