@@ -207,12 +207,16 @@ class scanningController extends AppController {
         return $this->response($data);
     }
     public function get_scanner($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
         $p['path'] = PATH.'public_html/contenedor/'.USR_ID.'/';
         if (!file_exists($p['path'])) {
             mkdir($p['path'], 0777, true);
         }
         $array = array();
-        $this->set_lotizer($p);
+
+        
         /*if (!file_exists(PATH.'public_html/tmp/'.USR_ID.'/')) {
             mkdir(PATH.'public_html/tmp/'.USR_ID.'/', 0777, true);
         }
@@ -240,41 +244,71 @@ class scanningController extends AppController {
             //echo 'Caught exception: ',  $e->getMessage(), "\n";
         }*/
 
-        try {
-            if (is_dir(PATH.'public_html/contenedor/'.USR_ID.'/')){
-                  if ($dh = opendir(PATH.'public_html/contenedor/'.USR_ID.'/')){
-                    /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
-                        mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
-                    }*/
+        if(intval($p['index'])==0){
+            try {
+                if (is_dir(PATH.'public_html/contenedor/'.USR_ID.'/')){
+                      if ($dh = opendir(PATH.'public_html/contenedor/'.USR_ID.'/')){
+                        /*if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'])) {
+                            mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$p['vp_id_lote'], 0777, true);
+                        }*/
 
-                    while (false !== ($file = readdir($dh))) {
-                        if(trim($file)!=".." ){
-                            if(trim($file)!="." ){
-                                try {
-                                    if($this->getValidFormat(utf8_encode(trim($file)))){
-                                        $value_['id_pag'] = 0;
-                                        $value_['id_det'] = 0;
-                                        $value_['id_lote'] = 0;
-                                        $value_['path'] = '/contenedor/'.USR_ID.'/';
-                                        $value_['file'] = utf8_encode(trim($file));
-                                        $value_['imgorigen'] = utf8_encode(trim($file));
-                                        $value_['lado'] = 'A';
-                                        $value_['estado'] = 'A';
-                                        $value_['include'] ='N';
-                                        $array[]=$value_;
-                                        $this->setResizeImage(utf8_encode(trim($file)));
+                        while (false !== ($file = readdir($dh))) {
+                            if(trim($file)!=".." ){
+                                if(trim($file)!="." ){
+                                    try {
+                                        if($this->getValidFormat(utf8_encode(trim($file)))){
+                                            $value_['id_pag'] = 0;
+                                            $value_['id_det'] = 0;
+                                            $value_['id_lote'] = $id_lote;
+                                            $value_['path'] = '/contenedor/'.USR_ID.'/';
+                                            $value_['file'] = utf8_encode(trim($file));
+                                            $value_['imgorigen'] = utf8_encode(trim($file));
+                                            $value_['lado'] = 'A';
+                                            $value_['estado'] = 'A';
+                                            $value_['include'] ='N';
+                                            $array[]=$value_;
+                                            $this->setResizeImage(utf8_encode(trim($file)));
+                                        }
+                                    } catch (Exception $e) {
+                                        //echo 'Caught exception: ',  $e->getMessage(), "\n";
                                     }
-                                } catch (Exception $e) {
-                                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
                                 }
                             }
                         }
+                        closedir($dh);
                     }
-                    closedir($dh);
                 }
+            } catch (Exception $e) {
+                //echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
-        } catch (Exception $e) {
-            //echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }else{
+
+            $id_lote = 0;
+            $p['vp_op']='Y';
+            $p['vp_id_lote']=0;
+            $p['vp_shi_codigo']=0;
+            $p['vp_fac_cliente']=0;
+            $p['vp_nombre']='Lote Automático';
+            $p['vp_descripcion']='';
+            $p['vp_tipdoc']='L';
+            $p['vp_lote_fecha']='';
+            $p['vp_ctdad'=0;
+            $p['vp_estado']='A';
+
+            $rs = $this->objDatos->set_lotizer($p);
+            $rs = $rs[0];
+            $id_lote = $rs['id_lote'];
+            #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+            $params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
+            $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
+            $output = array();
+            //echo $comando;die();
+            try{
+                exec($comando, $output);
+            }catch (Exception $e) {
+                echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            }
+            $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
         }
 
         $data = array(

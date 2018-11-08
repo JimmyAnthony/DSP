@@ -89,6 +89,64 @@
 	                    }
 	                }
 	            });
+
+				Ext.define('Scanner', {
+				    extend: 'Ext.data.TreeModel',
+				    fields: [
+				        {name: 'id_lote', type: 'string'},
+				        {name: 'shi_codigo', type: 'string'},
+				        {name: 'fac_cliente', type: 'string'},
+				        {name: 'id_det', type: 'string'},
+				        {name: 'lot_estado', type: 'string'},
+	                    {name: 'tipdoc', type: 'string'},
+	                    {name: 'nombre', type: 'string'},
+	                    {name: 'lote_nombre', type: 'string'},
+	                    {name: 'descripcion', type: 'string'},
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'tot_folder', type: 'string'},
+	                    {name: 'tot_pag', type: 'string'},
+	                    {name: 'tot_errpag', type: 'string'},
+	                    {name: 'id_user', type: 'string'},
+	                    {name: 'usr_update', type: 'string'},
+	                    {name: 'fec_update', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+				    ]
+				});
+				var storeTreeScanner = new Ext.data.TreeStore({
+	                model: 'Scanner',
+				    autoLoad:false,
+	                proxy: {
+	                    type: 'ajax',
+	                    url: scanning.url+'get_scanner/'//,
+	                    //reader:{
+	                    //    type: 'json'//,
+	                    //    //rootProperty: 'data'
+	                    //}
+	                },
+	                folderSort: true,
+	                listeners:{
+	                	beforeload: function (store, operation, opts) {
+					        /*Ext.apply(operation, {
+					            params: {
+					                to: 'test1',
+		    						from: 'test2'
+					            }
+					       });*/
+					    },
+	                    load: function(obj, records, successful, opts){
+	                 		Ext.getCmp(scanning.id + '-grid-scanner').doLayout();
+	                 		//Ext.getCmp(scanning.id + '-grid').getView().getRow(0).style.display = 'none';
+	                 		storeTree.removeAt(0);
+	                 		Ext.getCmp(scanning.id + '-grid-scanner').collapseAll();
+		                    Ext.getCmp(scanning.id + '-grid-scanner').getRootNode().cascadeBy(function (node) {
+		                          if (node.getDepth() < 1) { node.expand(); }
+		                          if (node.getDepth() == 0) { return false; }
+		                     });
+		                    Ext.getCmp(scanning.id + '-grid-scanner').expandAll();
+	                    }
+	                }
+	            });
+
 				this.msgTpl = new Ext.Template(
 		            'Sounds Effects: <b>{fx}%</b><br />',
 		            'Ambient Sounds: <b>{ambient}%</b><br />',
@@ -980,6 +1038,7 @@
 												},
 												{
 													region:'center',
+													id:scanning.id+'-panel-tab-scanner',
 													border:false,
 													layout:'fit',
 													xtype: 'tabpanel',
@@ -1001,6 +1060,7 @@
 															}else{
 																Ext.getCmp(scanning.id+'-panel-paginas').setVisible(true);
 															}
+															scanning.getScanningFile();
 											            }
 											        },
 													items:[
@@ -1115,7 +1175,7 @@
 									                        //store: store,
 									                        //layout:'fit',
 									                        columnLines: true,
-									                        store: storeTree,
+									                        store: storeTreeScanner,
 												            columns: [
 													            {
 													            	xtype: 'treecolumn',
@@ -1888,18 +1948,32 @@
 			},
 
 			getScanningFile:function(){
+
+				var activeTab = Ext.getCmp(scanning.id+'-panel-tab-scanner').getActiveTab();
+				var activeTabIndex = tabPanel.items.findIndex('id', activeTab.id);
+
 				scanning.getLoader(true);
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
-				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
-				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
-	                {params: {path:destino},
-	                callback:function(){
-	                	//Ext.getCmp(scanning.id+'-form').el.unmask();
-	                	scanning.getLoader(false);
-	                	var count = Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().getCount();
-	                	Ext.getCmp(scanning.id + '-btn-total').setText('Total('+count+')');
-	                }
-		        });
+
+				if(parseInt(activeTabIndex)==0){
+					var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
+					Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
+		                {params: {path:destino,index:activeTabIndex},
+		                callback:function(){
+		                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+		                	scanning.getLoader(false);
+		                	var count = Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().getCount();
+		                	Ext.getCmp(scanning.id + '-btn-total').setText('Total('+count+')');
+		                }
+			        });
+			    }else{
+			    	Ext.getCmp(scanning.id + '-grid-scanner').getStore().load(
+		                {params: {vp_shi_codigo:0,vp_fac_cliente:0,vp_lote:0,vp_lote_estado:'AU',vp_name:'',fecha:'',vp_estado:'A',index:activeTabIndex},
+		                callback:function(){
+		                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+		                }
+		            });
+			    }
 			},
 			getScanning:function(){
 				if(parseInt(scanning.shi_codigo)==0){ 
