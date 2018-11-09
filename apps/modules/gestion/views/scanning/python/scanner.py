@@ -444,8 +444,7 @@ def main():
                 for f in files:
                     FFILE = os.path.join(str(params[0]),str(f))
                     if os.path.exists(FFILE):
-                    	
-                        try:
+                    	try:
                             
 					        for result_args in cursor.fetchall():
 					            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
