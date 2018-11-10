@@ -100,6 +100,8 @@
 				        {name: 'lot_estado', type: 'string'},
 	                    {name: 'tipdoc', type: 'string'},
 	                    {name: 'nombre', type: 'string'},
+	                    {name: 'path', type: 'string'},
+	                    {name: 'img', type: 'string'},
 	                    {name: 'lote_nombre', type: 'string'},
 	                    {name: 'descripcion', type: 'string'},
 	                    {name: 'fecha', type: 'string'},
@@ -136,7 +138,7 @@
 	                    load: function(obj, records, successful, opts){
 	                 		Ext.getCmp(scanning.id + '-grid-scanner').doLayout();
 	                 		//Ext.getCmp(scanning.id + '-grid').getView().getRow(0).style.display = 'none';
-	                 		storeTree.removeAt(0);
+	                 		storeTreeScanner.removeAt(0);
 	                 		Ext.getCmp(scanning.id + '-grid-scanner').collapseAll();
 		                    Ext.getCmp(scanning.id + '-grid-scanner').getRootNode().cascadeBy(function (node) {
 		                          if (node.getDepth() < 1) { node.expand(); }
@@ -1186,6 +1188,18 @@
 								                                    flex: 1
 								                                },
 								                                {
+								                                    text: 'IMG',
+								                                    dataIndex: 'file',
+								                                    //loocked : true,
+								                                    width: 80,
+								                                    align: 'center',
+								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+								                                        //console.log(record);
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        return '<div class="gk-column-icon"><img src="/tumblr/' + scanning.getAddMagicRefresh(record.get('img')) + '" class="link" data-qtip="Vista Previa" onclick=""/></div>';
+								                                    }
+								                                },
+								                                {
 								                                    text: 'Folders',
 								                                    dataIndex: 'tot_folder',
 								                                    width: 45,
@@ -1205,22 +1219,17 @@
 								                                    align: 'center',
 								                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 								                                        //console.log(record);
-								                                        if(parseInt(record.get('nivel')) == 1){
-									                                        metaData.style = "padding: 0px; margin: 0px";
-									                                        var shi_codigo=record.get('shi_codigo');
-									                                        var fac_cliente=record.get('fac_cliente');
-									                                        var id_lote=record.get('id_lote');
-									                                        return global.permisos({
-									                                            type: 'link',
-									                                            id_menu: scanning.id_menu,
-									                                            icons:[
-									                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+")"},
-									                                                {id_serv: 3, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "scanning.setChangeOrder("+shi_codigo+","+fac_cliente+","+id_lote+")"}
-									                                            ]
-									                                        });
-									                                    }else{
-								                                        	return '';
-								                                        }
+								                                        metaData.style = "padding: 0px; margin: 0px";
+								                                        var nivel=record.get('nivel');
+
+								                                        return global.permisos({
+								                                            type: 'link',
+								                                            id_menu: scanning.id_menu,
+								                                            icons:[
+								                                                {id_serv: parseInt(nivel), img: 'recicle_nov.ico', qtip: 'Click Eliminar Página.', js: "scanning.setRemoveFile("+rowIndex+",false,true)"}
+
+								                                            ]
+								                                        });
 								                                    }
 								                                }
 													        ],
@@ -1247,11 +1256,15 @@
 									                                
 									                            },
 																beforeselect:function(obj, record, index, eOpts ){
-																	scanning.shi_codigo=record.get('shi_codigo');
+																	/*scanning.shi_codigo=record.get('shi_codigo');
 																	scanning.id_det=record.get('id_det');
 																	scanning.id_lote=record.get('id_lote');
-																	scanning.getLiberaPanel();
-																}
+																	scanning.getLiberaPanel();*/
+																},
+																beforeselect:function(obj, record, index, eOpts ){
+									                            	scanning.id_pag=record.get('id_pag');
+									                            	scanning.setImageFile(record.get('path'),record.get('img'));
+									                            }
 									                        }
 									                    }
 													]
@@ -1332,7 +1345,7 @@
 										                    		obj.setStyle({'font-weight' : 'bold'});
 										                    	},
 										                    	click: function(obj, e){
-									                            	scanning.setRemoveFile(0,true);
+									                            	scanning.setRemoveFile(0,true,false);
 									                            }
 										                    }
 										                    //iconAlign: 'top'
@@ -1390,7 +1403,7 @@
 									                                            type: 'link',
 									                                            id_menu: scanning.id_menu,
 									                                            icons:[
-									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveFile("+rowIndex+",false)"}
+									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click Eliminar Página.', js: "scanning.setRemoveFile("+rowIndex+",false,false)"}
 
 									                                            ]
 									                                        });
@@ -1791,12 +1804,19 @@
 				    }
 				});
 			},
-			setRemoveFile:function(index,bool){
+			setRemoveFile:function(index,bool,boo){
 				if(!bool){
-					var rec = Ext.getCmp(scanning.id + '-grid-paginas').getStore().getAt(index);
-					scanning.id_pag=rec.data.id_pag; 
-	                scanning.id_det=rec.data.id_det; 
-	                scanning.id_lote=rec.data.id_lote; 
+					if(boo){
+						var rec = Ext.getCmp(scanning.id + '-grid-scanner').getStore().getAt(index);
+						scanning.id_pag=rec.data.id_pag; 
+		                scanning.id_det=rec.data.id_det; 
+		                scanning.id_lote=rec.data.id_lote; 
+					}else{
+						var rec = Ext.getCmp(scanning.id + '-grid-paginas').getStore().getAt(index);
+						scanning.id_pag=rec.data.id_pag; 
+		                scanning.id_det=rec.data.id_det; 
+		                scanning.id_lote=rec.data.id_lote; 
+	            	}
 				}
 
 				if(parseInt(scanning.shi_codigo)==0){ 
@@ -1950,7 +1970,7 @@
 			getScanningFile:function(){
 
 				var activeTab = Ext.getCmp(scanning.id+'-panel-tab-scanner').getActiveTab();
-				var activeTabIndex = tabPanel.items.findIndex('id', activeTab.id);
+				var activeTabIndex = Ext.getCmp(scanning.id+'-panel-tab-scanner').items.findIndex('id', activeTab.id);
 
 				scanning.getLoader(true);
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
@@ -1967,10 +1987,24 @@
 		                }
 			        });
 			    }else{
+			    	var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();
+					var fac_cliente = Ext.getCmp(scanning.id+'-cbx-contrato').getValue();
+					
+					if(shi_codigo== null || shi_codigo==''){
+			            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+					if(fac_cliente== null || fac_cliente==''){
+			            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
 			    	Ext.getCmp(scanning.id + '-grid-scanner').getStore().load(
-		                {params: {vp_shi_codigo:0,vp_fac_cliente:0,vp_lote:0,vp_lote_estado:'AU',vp_name:'',fecha:'',vp_estado:'A',index:activeTabIndex},
+		                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_lote:0,vp_lote_estado:'AU',vp_name:'',fecha:'',vp_estado:'A',index:activeTabIndex},
 		                callback:function(){
 		                	//Ext.getCmp(scanning.id+'-form').el.unmask();
+		                	scanning.getLoader(false);
+		                	var count = Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().getCount();
+		                	Ext.getCmp(scanning.id + '-btn-total').setText('Total('+count+')');
 		                }
 		            });
 			    }

@@ -281,43 +281,126 @@ class scanningController extends AppController {
             } catch (Exception $e) {
                 //echo 'Caught exception: ',  $e->getMessage(), "\n";
             }
+
+            $data = array(
+                'success' => true,
+                'error'=>0,
+                'total' => count($array),
+                'data' => $array
+            );
+            header('Content-Type: application/json');
+            return $this->response($data);
+
         }else{
 
             $id_lote = 0;
             $p['vp_op']='Y';
-            $p['vp_id_lote']=0;
-            $p['vp_shi_codigo']=0;
-            $p['vp_fac_cliente']=0;
+            $p['vp_id_lote']='0';
             $p['vp_nombre']='Lote Automático';
             $p['vp_descripcion']='';
             $p['vp_tipdoc']='L';
             $p['vp_lote_fecha']='';
-            $p['vp_ctdad'=0;
+            $p['vp_ctdad']=1;
             $p['vp_estado']='A';
             $rs = $this->objDatos->set_lotizer($p);
             $rs = $rs[0];
-            $id_lote = $rs['id_lote'];
-            #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-            $params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
-            $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
-            $output = array();
-            //echo $comando;die();
-            try{
-                exec($comando, $output);
-            }catch (Exception $e) {
-                echo 'Excepción capturada: ',  $e->getMessage(), "\n";
-            }
-            $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
-        }
 
-        $data = array(
-            'success' => true,
-            'error'=>0,
-            'total' => count($array),
-            'data' => $array
-        );
-        header('Content-Type: application/json');
-        return $this->response($data);
+            if($rs['status']!='ER'){
+                $id_lote = $rs['id_lote'];
+                $id_det = $rs['id_det'];
+                $p['vp_lote']=$id_lote;
+                $p['vp_id_lote']=$id_lote;
+
+
+                try {
+                    if (is_dir(PATH.'public_html/contenedor/'.USR_ID.'/')){
+                          if ($dh = opendir(PATH.'public_html/contenedor/'.USR_ID.'/')){
+                            if (!file_exists(PATH.'public_html/auto/'.$p['vp_shi_codigo'].'/'.$id_lote)) {
+                                mkdir(PATH.'public_html/auto/'.$p['vp_shi_codigo'].'/'.$id_lote, 0777, true);
+                            }
+                            while (false !== ($file = readdir($dh))) {
+                                //echo $file.'xx';
+                            #while (($file = readdir($dh)) !== false){ 
+                              if(trim($file)!=".." ){
+                                    if(trim($file)!="." ){
+                                        if (file_exists(PATH.'public_html/contenedor/'.USR_ID.'/'.$file)){
+                                            //move_uploaded_file($p['path'].$file, PATH.'public_html/scanning/'.$file);
+                                            try {
+                                                $path_parts = pathinfo(PATH.'public_html/contenedor/'.USR_ID.'/'.$file);
+                                                $ext=$path_parts['extension'];
+                                                $p['vp_op']='I';
+                                                $p['vp_id_det']=$id_det;
+                                                $p['vp_img']='-page.'.$ext;
+                                                $p['vp_imgorigen']=$file;
+                                                $p['vp_path']='/auto/'.$p['vp_shi_codigo'].'/'.$id_lote.'/';
+                                                $p['vp_lado']='A';
+                                                list($width, $height) = getimagesize(PATH.'public_html/contenedor/'.USR_ID.'/'.$file);
+                                                $p['vp_w']=$width;
+                                                $p['vp_h']=$height;
+                                                $rs = $this->objDatos->set_page($p);
+                                                $this->setResizeImage(utf8_encode(trim($file)));
+                                                $rs = $rs[0];
+                                                $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
+
+                                                if($rs['status']=='OK'){
+                                                    try{
+                                                        rename(PATH.'public_html/contenedor/'.USR_ID.'/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
+                                                    } catch (Exception $e) {
+                                                        //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                                    }
+                                                    try{
+                                                        rename(PATH.'public_html/tumblr/'.$file, PATH.'public_html/tumblr/'.$rs['id_pag'].$p['vp_img']);
+                                                    } catch (Exception $e) {
+                                                        //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                                                    }
+                                                }
+
+                                            } catch (Exception $e) {
+                                                //echo 'Caught exception: ',  $e->getMessage(), "\n";k
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            closedir($dh);
+                        }
+                    }
+                } catch (Exception $e) {
+                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
+                    //$data = array('success' => true,'error' => 'ER','msn' => $e->getMessage());
+                }
+
+                $p['vp_seleccionar']='P';
+                //$p['vp_shi_codigo']=
+                //$p['vp_fac_cliente']=
+                $p['vp_lote_estado']='AU';
+                $p['vp_name']='';
+                $p['fecha']='';
+                $p['vp_estado']='A';
+
+                #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+                /*$params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
+                $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
+                $output = array();
+                //echo $comando;die();
+                try{
+                    exec($comando, $output);
+                }catch (Exception $e) {
+                    echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+                }*/
+                //$data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+                return $this->get_list_lotizer_page($p);
+            }else{
+                $data = array(
+                    'success' => true,
+                    'error' => $rs['status'],
+                    'msn' => utf8_encode(trim($rs['response']))
+                );
+                header('Content-Type: application/json');
+                return $this->response($data);
+            }
+
+        }
     }
     public function set_list_page_trazos($p){
         set_time_limit(0);
@@ -625,6 +708,79 @@ class scanningController extends AppController {
         );
         header('Content-Type: application/json');
         return $this->response($data);
+    }
+    
+    public function get_list_lotizer_page($p){
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json');
+        $this->rs_ = $this->objDatos->get_list_lotizer_page($p);
+        if(!empty($this->rs_)){
+            return '{"text": ".","children":['.$this->get_recursivo_page(0,'',true).']}';
+            
+        }else{
+            return json_encode(
+                array(
+                    'text'=>'root',
+                    'children'=>array(
+                        'id_lote'=>0,
+                        'iconCls'=>'task',
+                        'tipdoc'=>'',
+                        'nombre'=>'',
+                        'fecha'=>'',
+                        'tot_folder'=>0,
+                        'tot_pag'=>0,
+                        'tot_errpag'=>0,
+                        'id_user'=>0,
+                        'estado'=>'',
+                        'leaf'=>'true'
+                        )
+                    )
+                );
+        }
+    }
+    public function get_recursivo_page($_nivel,$_hijo,$bool){
+        $coma = '';
+        //var_export($this->rs_);
+        foreach ($this->rs_ as $key => $value){
+            if($bool)$_hijo=$value['hijo'];
+
+            if($value['nivel'] > $_nivel && (int)$value['padre'] == (int)$_hijo){
+                $json.=$coma."{";
+                $json.='"hijo":"'.$value['hijo'].'"';
+                $json.=',"padre":"'.$value['padre'].'"';
+                $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
+                $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                //$json.=',"read":true';
+                //$json.=',"expanded":true'; 
+                $json.=',"iconCls":"task"';
+                $json.=',"lot_estado":"'.$value['lot_estado'].'"';
+                $json.=',"tipdoc":"'.$value['tipdoc'].'"';
+                $json.=',"nombre":"'.utf8_encode(trim($value['nombre'])).'"';
+                $json.=',"lote_nombre":"'.utf8_encode(trim($value['lote_nombre'])).'"';
+                $json.=',"descripcion":"'.utf8_encode(trim($value['descripcion'])).'"';
+                $json.=',"path":"'.utf8_encode(trim($value['path'])).'"';
+                $json.=',"img":"'.utf8_encode(trim($value['img'])).'"';
+                $json.=',"fecha":"'.$value['fecha'].'"';
+                $json.=',"tot_folder":"'.$value['tot_folder'].'"';
+                $json.=',"tot_pag":"'.$value['tot_pag'].'"';
+                $json.=',"tot_errpag":"'.$value['tot_errpag'].'"';
+                $json.=',"usr_update":"'.$value['usr_update'].'"';
+                $json.=',"id_user":"'.$value['id_user'].'"';
+                $json.=',"estado":"'.$value['estado'].'"';
+                $json.=',"nivel":"'.$value['nivel'].'"';
+                unset($this->rs_[$key]);
+                $js = $this->get_recursivo_page($value['nivel'],$value['hijo'],false);
+                if(!empty($js)){
+                    $json.=',"children":['.trim($js).']';
+                }else{
+                    $json.=',"leaf":"true"';
+                }
+                $json.="}";
+                $coma = ",";
+            }
+        }
+        return $json;
     }
     public function get_list_lotizer($p){
         header('Cache-Control: no-cache, must-revalidate');
