@@ -398,7 +398,7 @@ class scanningController extends AppController {
 
                     $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
                     $output = array();
-                    echo $comando;die();
+                    //echo $comando;die();
                     try{
                         exec($comando, $output);
                     }catch (Exception $e) {
