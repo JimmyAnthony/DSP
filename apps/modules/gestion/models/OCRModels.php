@@ -85,6 +85,16 @@ class OCRModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function setChangeExpediente($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_ocr_trazos_expediente');
+        parent::SetParameterSP($p['vp_cod_trazo'], 'int');
+        parent::SetParameterSP($p['vp_cod_plantilla'], 'int');
+        //parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
    public function get_ocr_trazos($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_ocr_trazos');

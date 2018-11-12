@@ -431,46 +431,24 @@ def main():
         #parent::SetParameterSP($p['vp_id_lote'], 'int');
 
         #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-
-        
-
-        try:
-            #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT,IN vp_ocr char(1)
-	        args__ = [params[2],params[3]]
-	        result_args = cursor.callproc(dbname + ".get_ocr_trazos_scanner", args__)
-	        conx.commit()
-	        
-            for path, dirs, files in os.walk(params[0]):
-                for f in files:
-                    FFILE = os.path.join(str(params[0]),str(f))
-                    if os.path.exists(FFILE):
-                    	try:
-                            
-					        for result_args in cursor.fetchall():
-					            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
-					            args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
-					            cursor.callproc(dbname + ".set_ocr_page", args____)
-					            conx.commit()
-
-                        except Exception as e:
-                            logger.error(str(e))
-
-        except Exception as e:
-            logger.error(str(e))
-
-
-
         args = [params[1],params[2],params[3],params[4]]
         cursor.callproc(dbname + ".get_list_page", args)
         conx.commit()
-
         for result in cursor.fetchall():
             text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
             args_ = ['X',result[0],0,result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
             cursor.callproc(dbname + ".set_ocr_page", args_)
             conx.commit()
 
-        
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT,IN vp_ocr char(1)
+        args__ = [params[1],params[2],params[3],params[4],'N']
+        result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
+        conx.commit()
+        for result in cursor.fetchall():
+            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+            args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
+            cursor.callproc(dbname + ".set_ocr_page", args____)
+            conx.commit()
 
         print('OK')
         print('PROCESADO CORRECTAMENTE')

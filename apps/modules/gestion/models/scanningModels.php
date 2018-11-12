@@ -45,6 +45,16 @@ class scanningModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function get_list_page_delete_auto($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page_delete_auto');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_fac_cliente'], 'int');
+        parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
     public function set_page($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'set_page');

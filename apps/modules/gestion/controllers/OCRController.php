@@ -67,6 +67,17 @@ class OCRController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+    public function setChangeExpediente($p){
+        $rs = $this->objDatos->setChangeExpediente($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
    public function get_ocr_plantillas($p){
         $rs = $this->objDatos->get_ocr_plantillas($p);
         //var_export($rs);
@@ -122,6 +133,7 @@ class OCRController extends AppController {
                 $value_['estado'] = utf8_encode(trim($value['estado']));
                 $value_['fecha'] = trim($value['fecha']) ;
                 $value_['usuario'] = utf8_encode(trim($value['usuario']));
+                $value_['expediente'] = trim($value['expediente']) ;
                 $array[]=$value_;
         }
         $data = array(

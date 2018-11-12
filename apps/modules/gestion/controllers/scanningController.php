@@ -7,7 +7,7 @@
  * @version 2.0
  */
 error_reporting(NULL);
-set_time_limit(1000);
+set_time_limit(0);
 ini_set("memory_limit", "-1");
 class scanningController extends AppController {
 
@@ -132,12 +132,16 @@ class scanningController extends AppController {
         return $this->response($data);
     }
     public function set_remove_file($p){
+        if($p['vp_op']!='Z'){
+            $rs = $this->objDatos->get_list_page_delete($p);
+        }else{
+            $rs = $this->objDatos->get_list_page_delete_auto($p);
+        }
 
-        $rs = $this->objDatos->get_list_page_delete($p);
         //var_export($rs);
         $array = array();
         foreach ($rs as $index => $value){
-                $p['vp_op'] = 'D';
+                //$p['vp_op'] = 'D';
                 $p['vp_id_pag'] = intval($value['id_pag']);
 
                 $rs = $this->objDatos->set_page($p);
@@ -304,6 +308,7 @@ class scanningController extends AppController {
             $p['vp_estado']='A';
             $rs = $this->objDatos->set_lotizer($p);
             $rs = $rs[0];
+            $existe=false;
 
             if($rs['status']!='ER'){
                 $id_lote = $rs['id_lote'];
@@ -343,6 +348,7 @@ class scanningController extends AppController {
                                                 $data = array('success' => true,'error' => $rs['status'],'msn' => utf8_encode(trim($rs['response'])));
 
                                                 if($rs['status']=='OK'){
+                                                    $existe=true;
                                                     try{
                                                         rename(PATH.'public_html/contenedor/'.USR_ID.'/'.$file, PATH.'public_html'.$p['vp_path'].$rs['id_pag'].$p['vp_img']);
                                                     } catch (Exception $e) {
@@ -371,6 +377,9 @@ class scanningController extends AppController {
                 }
 
                 $p['vp_seleccionar']='P';
+                $p['vp_id_pag'] ='0';
+                $p['vp_id_det']='0';
+                $p['vp_ocr']='N';
                 //$p['vp_shi_codigo']=
                 //$p['vp_fac_cliente']=
                 $p['vp_lote_estado']='AU';
@@ -378,17 +387,26 @@ class scanningController extends AppController {
                 $p['fecha']='';
                 $p['vp_estado']='A';
 
-                #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-                /*$params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
-                $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
-                $output = array();
-                //echo $comando;die();
-                try{
-                    exec($comando, $output);
-                }catch (Exception $e) {
-                    echo 'Excepción capturada: ',  $e->getMessage(), "\n";
-                }*/
-                //$data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+                if($existe){
+                    
+                    $this->set_list_page_trazos($p);
+
+                    #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+                    //$params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
+
+                    $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']));
+
+                    $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
+                    $output = array();
+                    echo $comando;die();
+                    try{
+                        exec($comando, $output);
+                    }catch (Exception $e) {
+                        echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+                    }
+                    //$data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+                }
+
                 return $this->get_list_lotizer_page($p);
             }else{
                 $data = array(
@@ -440,7 +458,7 @@ class scanningController extends AppController {
         //header('Content-Type: application/json');
         //return $this->response($data);
         $p['vp_id_pag']=$page;
-        $data=$this->setProcessingOCR($p);
+        $data=$this->getScannearTrazos($p);
         header('Content-Type: application/json');
         return $this->response($data);
     }
@@ -751,6 +769,7 @@ class scanningController extends AppController {
                 $json.=',"padre":"'.$value['padre'].'"';
                 $json.=',"shi_codigo":"'.$value['shi_codigo'].'"';
                 $json.=',"fac_cliente":"'.$value['fac_cliente'].'"';
+                $json.=',"id_lote":"'.$value['id_lote'].'"';
                 //$json.=',"read":true';
                 //$json.=',"expanded":true'; 
                 $json.=',"iconCls":"task"';
@@ -887,19 +906,16 @@ class scanningController extends AppController {
         /*$path = REALPATHAPP.'apps/public/imagenes/'.trim($p['img']).'.jpg';
         unlink($path);*/
     }
-
-
-    public function getScannear($p){
+    public function getScannearTrazos($p){
         set_time_limit(0);
         ini_set('memory_limit', '-1');
         #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-        $params = base64_encode(trim($p['vp_resolucion']) . '&' . trim($p['vp_destino']) . '&' . trim($p['vp_formato']));
+        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']));
         $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
         $output = array();
-        echo $comando;die();
+        //echo $comando;die();
         try{
             exec($comando, $output);
-
         }catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
         }

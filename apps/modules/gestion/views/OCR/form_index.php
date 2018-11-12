@@ -142,7 +142,8 @@
 	                    {name: 'texto', type: 'string'},
 	                    {name: 'estado', type: 'string'},
 	                    {name: 'usuario', type: 'string'},
-	                    {name: 'fecha', type: 'string'}
+	                    {name: 'fecha', type: 'string'},
+	                    {name: 'expediente', type: 'string'}
 	                ],
 	                autoLoad:false,
 	                proxy:{
@@ -1078,6 +1079,26 @@
 					                                    width: 50
 					                                },
 					                                {
+					                                    text: 'Exp.',
+					                                    dataIndex: 'expediente',
+					                                    loocked : true,
+					                                    width: 50,
+					                                    align: 'center',
+					                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+					                                        //console.log(record);
+					                                        metaData.style = "padding: 0px; margin: 0px";
+					                                        var img = (record.get('expediente')=='N')?'check-circle-black-16.png':'check-circle-green-16.png';
+					                                        var qtip = (record.get('expediente')=='N')?'Es un Expediente':'No es un Expediente';
+					                                        return global.permisos({
+					                                            type: 'link',
+					                                            id_menu: OCR.id_menu,
+					                                            icons:[
+					                                                {id_serv: 6, img: img, qtip: qtip, js: "OCR.setChangeExpediente("+record.get('cod_trazo')+","+record.get('cod_plantilla')+");"}
+					                                            ]
+					                                        });
+					                                    }
+					                                },
+					                                {
 					                                    text: 'Estado',
 					                                    dataIndex: 'estado',
 					                                    loocked : true,
@@ -1148,6 +1169,53 @@
 					}
 
 				}).show();
+			},
+			setChangeExpediente:function(cod_trazo,cod_plantilla){
+				OCR.cod_trazo=cod_trazo;
+				OCR.cod_plantilla=cod_plantilla;
+				var msg_='¿Está seguro de hacer el cambio?';
+				var ico = 3;
+				global.Msg({
+                    msg: msg_,
+                    icon: ico,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+	                        Ext.getCmp(OCR.id+'-panel-trazos-form').el.mask('Cargando…', 'x-mask-loading');
+	                        Ext.Ajax.request({
+			                    url: OCR.url + 'setChangeExpediente/',
+			                    params:{
+							        vp_cod_trazo:cod_trazo,
+							        vp_cod_plantilla:cod_plantilla
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                    	Ext.getCmp(OCR.id+'-panel-trazos-form').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    OCR.getReloadGridOCRTRAZOS(OCR.cod_plantilla);
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                    
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+		            }
+                });
 			},
 			renderTip:function(val, meta, rec, rowIndex, colIndex, store) {
 			    // meta.tdCls = 'cell-icon'; // icon

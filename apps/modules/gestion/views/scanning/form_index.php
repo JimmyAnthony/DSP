@@ -19,7 +19,7 @@
 			auto:false,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
-				Ext.Ajax.timeout = 300000;
+				Ext.Ajax.timeout = 9000000000;
 				/*
 				scanning.task = scanning.runner.newTask({
                     run: function(){
@@ -66,6 +66,7 @@
 	                    //    //rootProperty: 'data'
 	                    //}
 	                },
+	                timeout: 600000,
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
@@ -93,6 +94,8 @@
 				Ext.define('Scanner', {
 				    extend: 'Ext.data.TreeModel',
 				    fields: [
+				    	{name: 'hijo', type: 'string'},
+				        {name: 'padre', type: 'string'},
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
@@ -125,9 +128,11 @@
 	                    //    //rootProperty: 'data'
 	                    //}
 	                },
+	                timeout: 9000000000,
 	                folderSort: true,
 	                listeners:{
 	                	beforeload: function (store, operation, opts) {
+	                		store.proxy.setTimeout(9000000000);
 					        /*Ext.apply(operation, {
 					            params: {
 					                to: 'test1',
@@ -953,7 +958,14 @@
 								                    		obj.setStyle({'font-weight' : 'bold'});
 								                    	},
 								                    	click: function(obj, e){
-							                            	scanning.setRemoveEscaner(true,'');
+								                    		var activeTab = Ext.getCmp(scanning.id+'-panel-tab-scanner').getActiveTab();
+															var activeTabIndex = Ext.getCmp(scanning.id+'-panel-tab-scanner').items.findIndex('id', activeTab.id);
+
+															if(parseInt(activeTabIndex)==0){
+							                            		scanning.setRemoveEscaner(true,'',false);
+							                            	}else{
+							                            		scanning.setRemoveEscaner(true,'',true);
+							                            	}
 							                            }
 								                    }
 								                    //iconAlign: 'top'
@@ -1117,7 +1129,7 @@
 									                                            type: 'link',
 									                                            id_menu: scanning.id_menu,
 									                                            icons:[
-									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveEscaner(false,'"+record.get('file')+"')"}
+									                                                {id_serv: 3, img: 'recicle_nov.ico', qtip: 'Click para Desactivar Lote.', js: "scanning.setRemoveEscaner(false,'"+record.get('file')+"',false)"}
 
 									                                            ]
 									                                        });
@@ -1808,8 +1820,11 @@
 				if(!bool){
 					if(boo){
 						var rec = Ext.getCmp(scanning.id + '-grid-scanner').getStore().getAt(index);
-						scanning.id_pag=rec.data.id_pag; 
-		                scanning.id_det=rec.data.id_det; 
+						console.log(index);
+						console.log(rec);
+						scanning.shi_codigo=rec.data.shi_codigo; 
+						scanning.id_pag=rec.data.hijo; 
+		                scanning.id_det=rec.data.padre; 
 		                scanning.id_lote=rec.data.id_lote; 
 					}else{
 						var rec = Ext.getCmp(scanning.id + '-grid-paginas').getStore().getAt(index);
@@ -1867,9 +1882,13 @@
 			                                icon: 1,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                	scanning.getReloadGridscanning();
-			                                	scanning.getReloadPage();
-			                                	//scanning.getScanningFile();
+			                                	if(boo){
+			                                		scanning.getScanningFile();
+			                                	}else{
+				                                	scanning.getReloadGridscanning();
+				                                	scanning.getReloadPage();
+				                                	//scanning.getScanningFile();
+			                                	}
 			                                }
 			                            });
 			                        } else{
@@ -1878,8 +1897,8 @@
 			                                icon: 0,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                	scanning.getReloadGridscanning();
-			                                	scanning.getReloadPage();
+			                                	//scanning.getReloadGridscanning();
+			                                	//scanning.getReloadPage();
 			                                    //scanning.getScanningFile();
 			                                }
 			                            });
@@ -1889,6 +1908,7 @@
 						}
 					}
 				});
+				
 			},
 			getReloadPage:function(){
 				scanning.id_pag=0;
@@ -1906,47 +1926,108 @@
 	                }
 	            });
 			},
-			setRemoveEscaner:function(bool,file){
+			setRemoveEscaner:function(bool,file,boo){
 				var url =(bool)?'/set_remove_scanner_file/':'/set_remove_scanner_file_one/';
 				var msn =(bool)?'¿Seguro de Eliminar las hojas escaneadas?':'¿Seguro de Eliminar la hoja escaneada?';
 				var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
-				global.Msg({
-                    msg: msn,
-                    icon: 3,
-                    buttons: 3,
-                    fn: function(btn){
-                    	if (btn == 'yes'){
-	                        scanning.getLoader(true);
 
-	                        Ext.Ajax.request({
-			                    url: scanning.url+url,
-			                    params:{
-			                    	path:destino,
-			                    	file:file
-			                    },
-			                    timeout: 300000,
-			                    success: function(response, options){
-			                    	scanning.getScanningFile();
-
-			                        //var res = Ext.JSON.decode(response.responseText);
-			                        //scanning.work=!scanning.work;
-			                        console.log(response);
-			                        /*if (parseInt(res.time) == 0 ){
-			                            scanning.task.stop();
-			                            global.Msg({
-			                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
-			                                icon: 1,
-			                                buttons: 1,
-			                                fn: function(btn){
-			                                    window.location = '/inicio/index/'
-			                                }
-			                            });
-			                        }*/
-			                    }
-			                });
+				if(boo){ 
+					var fac_cliente = Ext.getCmp(scanning.id+'-cbx-contrato').getValue();
+					var shi_codigo = Ext.getCmp(scanning.id+'-cbx-cliente').getValue();
+					if(shi_codigo== null || shi_codigo==''){
+			            global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+					if(fac_cliente== null || fac_cliente==''){
+			            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
+			            return false;
+			        }
+					global.Msg({
+	                    msg: '¿Seguro de eliminar página(s)?',
+	                    icon: 3,
+	                    buttons: 3,
+	                    fn: function(btn){
+	                    	if (btn == 'yes'){
+	                    		Ext.getCmp(scanning.id+'-form').el.mask('Elinando Páginas…', 'x-mask-loading');
+		                        scanning.getLoader(true);
+				                Ext.Ajax.request({
+				                    url:scanning.url+'set_remove_file/',
+				                    params:{
+				                    	vp_op:'Z',
+				                    	vp_shi_codigo:shi_codigo,
+				                    	vp_fac_cliente:fac_cliente
+				                    },
+				                    timeout: 300000,
+				                    success: function(response, options){
+				                        Ext.getCmp(scanning.id+'-form').el.unmask();
+				                        var res = Ext.JSON.decode(response.responseText);
+				                        scanning.getLoader(false);
+				                        if (res.error == 'OK'){
+				                            global.Msg({
+				                                msg: res.msn,
+				                                icon: 1,
+				                                buttons: 1,
+				                                fn: function(btn){
+				                                	scanning.getScanningFile();
+				                                }
+				                            });
+				                        } else{
+				                            global.Msg({
+				                                msg: res.msn,
+				                                icon: 0,
+				                                buttons: 1,
+				                                fn: function(btn){
+				                                	//scanning.getReloadGridscanning();
+				                                	//scanning.getReloadPage();
+				                                    //scanning.getScanningFile();
+				                                }
+				                            });
+				                        }
+				                    }
+				                });
+							}
 						}
-		            }
-                });
+					});
+				}else{
+
+					global.Msg({
+	                    msg: msn,
+	                    icon: 3,
+	                    buttons: 3,
+	                    fn: function(btn){
+	                    	if (btn == 'yes'){
+		                        scanning.getLoader(true);
+
+		                        Ext.Ajax.request({
+				                    url: scanning.url+url,
+				                    params:{
+				                    	path:destino,
+				                    	file:file
+				                    },
+				                    timeout: 300000,
+				                    success: function(response, options){
+				                    	scanning.getScanningFile();
+
+				                        //var res = Ext.JSON.decode(response.responseText);
+				                        //scanning.work=!scanning.work;
+				                        console.log(response);
+				                        /*if (parseInt(res.time) == 0 ){
+				                            scanning.task.stop();
+				                            global.Msg({
+				                                msg: 'Su sesión de usuario ha caducado, volver a ingresar al sistema.',
+				                                icon: 1,
+				                                buttons: 1,
+				                                fn: function(btn){
+				                                    window.location = '/inicio/index/'
+				                                }
+				                            });
+				                        }*/
+				                    }
+				                });
+							}
+			            }
+	                });
+                }
 			},
 			getLoader:function(bool){
 				if(bool){
@@ -1972,10 +2053,11 @@
 				var activeTab = Ext.getCmp(scanning.id+'-panel-tab-scanner').getActiveTab();
 				var activeTabIndex = Ext.getCmp(scanning.id+'-panel-tab-scanner').items.findIndex('id', activeTab.id);
 
-				scanning.getLoader(true);
+				
 				Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().removeAll();
 
 				if(parseInt(activeTabIndex)==0){
+					scanning.getLoader(true);
 					var destino=Ext.getCmp(scanning.id+'-txt-origen').getValue();
 					Ext.getCmp(scanning.id + '-grid-paginas-tmp').getStore().load(
 		                {params: {path:destino,index:activeTabIndex},
@@ -1998,6 +2080,7 @@
 			            global.Msg({msg:"Seleccione un Contrato por favor.",icon:2,fn:function(){}});
 			            return false;
 			        }
+			        scanning.getLoader(true);
 			    	Ext.getCmp(scanning.id + '-grid-scanner').getStore().load(
 		                {params: {vp_shi_codigo:shi_codigo,vp_fac_cliente:fac_cliente,vp_id_lote:0,vp_lote_estado:'AU',vp_name:'',fecha:'',vp_estado:'A',index:activeTabIndex},
 		                callback:function(){
