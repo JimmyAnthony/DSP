@@ -367,108 +367,134 @@ def image_to_osd(image,
 
 
 def main():
-    param = base64.b64decode(sys.argv[1])
-    params = str(param).split('&')
-    
-    '''
-    if len(sys.argv) == 2:
-        filename, lang = sys.argv[1], None
-    elif len(sys.argv) == 4 and sys.argv[1] == '-l':
-        filename, lang = sys.argv[3], sys.argv[2]
-    else:
-        sys.stderr.write('Usage: python pytesseract.py [-l lang] input_file\n')
-        exit(2)
-    '''
-    path = params[0]
-    
-    path= path.replace('\\','/')
-    path= path.replace('//','/')
-    
-    BASE_DIR = path+'config/config.ini'
-    #print(BASE_DIR)
-    server_config = 'server_main'
+	param = base64.b64decode(sys.argv[1])
+	params = str(param).split('&')
 
-    Config = configparser.ConfigParser() 
-    Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
+	'''
+	if len(sys.argv) == 2:
+	    filename, lang = sys.argv[1], None
+	elif len(sys.argv) == 4 and sys.argv[1] == '-l':
+	    filename, lang = sys.argv[3], sys.argv[2]
+	else:
+	    sys.stderr.write('Usage: python pytesseract.py [-l lang] input_file\n')
+	    exit(2)
+	'''
+	path = params[0]
 
-    #print(Config.sections())
+	path= path.replace('\\','/')
+	path= path.replace('//','/')
 
-    dbuser = str(Config[server_config]['dbuser']).replace('"','',2)
-    dbpass = str(Config[server_config]['dbpass']).replace('"','',2)
-    dbserver = str(Config[server_config]['dbhost']).replace('"','',2)
-    dbname = str(Config[server_config]['dbname']).replace('"','',2)
+	BASE_DIR = path+'config/config.ini'
+	#print(BASE_DIR)
+	server_config = 'server_main'
 
-    try:
-        conx = pymysql.connect(host=dbserver, user=dbuser, passwd=dbpass, db=dbname)
-        cursor = conx.cursor()
-    except pymysql.InternalError as error:
-        print('ER')
-        print(error)
-        sys.exit()
+	Config = configparser.ConfigParser() 
+	Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
 
-    try:
-        
+	#print(Config.sections())
 
-        #parent::SetParameterSP($p['vp_id_pag'], 'int');
-        #parent::SetParameterSP($p['vp_shi_codigo'], 'int');
-        #parent::SetParameterSP($p['vp_id_det'], 'int');
-        #parent::SetParameterSP($p['vp_id_lote'], 'int');
-        #parent::SetParameterSP($p['vp_ocr'], 'varchar');
+	dbuser = str(Config[server_config]['dbuser']).replace('"','',2)
+	dbpass = str(Config[server_config]['dbpass']).replace('"','',2)
+	dbserver = str(Config[server_config]['dbhost']).replace('"','',2)
+	dbname = str(Config[server_config]['dbname']).replace('"','',2)
 
-        #parent::SetParameterSP($p['vp_op'], 'varchar');
-        #parent::SetParameterSP($p['vp_id_pag'], 'int');
-        #parent::SetParameterSP($p['vp_cod_trazo'], 'int');
-        #parent::SetParameterSP($p['vp_id_det'], 'int');
-        #parent::SetParameterSP($p['vp_id_lote'], 'int');
-        #parent::SetParameterSP($p['vp_text'], 'varchar');
-        #parent::SetParameterSP(USR_ID, 'int');
+	try:
+	    conx = pymysql.connect(host=dbserver, user=dbuser, passwd=dbpass, db=dbname)
+	    cursor = conx.cursor()
+	except pymysql.InternalError as error:
+	    print('ER')
+	    print(error)
+	    sys.exit()
+
+	try:
 
 
-        #parent::ConnectionOpen($this->dsn, 'get_list_page');
-        #parent::SetParameterSP($p['vp_id_pag'], 'int');
-        #parent::SetParameterSP($p['vp_shi_codigo'], 'int');
-        #parent::SetParameterSP($p['vp_id_det'], 'int');
-        #parent::SetParameterSP($p['vp_id_lote'], 'int');
+		#parent::SetParameterSP($p['vp_id_pag'], 'int');
+		#parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+		#parent::SetParameterSP($p['vp_id_det'], 'int');
+		#parent::SetParameterSP($p['vp_id_lote'], 'int');
+		#parent::SetParameterSP($p['vp_ocr'], 'varchar');
 
-        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-        args = [params[1],params[2],params[3],params[4]]
-        cursor.callproc(dbname + ".get_list_page", args)
-        conx.commit()
-        for result in cursor.fetchall():
-            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
-            args_ = ['X',result[0],0,result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
-            cursor.callproc(dbname + ".set_ocr_page", args_)
-            conx.commit()
+		#parent::SetParameterSP($p['vp_op'], 'varchar');
+		#parent::SetParameterSP($p['vp_id_pag'], 'int');
+		#parent::SetParameterSP($p['vp_cod_trazo'], 'int');
+		#parent::SetParameterSP($p['vp_id_det'], 'int');
+		#parent::SetParameterSP($p['vp_id_lote'], 'int');
+		#parent::SetParameterSP($p['vp_text'], 'varchar');
+		#parent::SetParameterSP(USR_ID, 'int');
 
-        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT,IN vp_ocr char(1)
-        args__ = [params[1],params[2],params[3],params[4],'N']
-        result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
-        conx.commit()
-        for result in cursor.fetchall():
-            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
-            args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
-            cursor.callproc(dbname + ".set_ocr_page", args____)
-            conx.commit()
 
-        print('OK')
-        print('PROCESADO CORRECTAMENTE')
-    except Exception as error:
-        print('ER')
-        print(str(error))
+		#parent::ConnectionOpen($this->dsn, 'get_list_page');
+		#parent::SetParameterSP($p['vp_id_pag'], 'int');
+		#parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+		#parent::SetParameterSP($p['vp_id_det'], 'int');
+		#parent::SetParameterSP($p['vp_id_lote'], 'int');
 
-    finally:
-        cursor.close()
-        conx.close()
-        sys.exit()
-    '''
-    try:
+		#IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+		args = [params[1],params[2],params[3],params[4]]
+		cursor.callproc(dbname + ".get_list_page", args)
+		conx.commit()
+		for result in cursor.fetchall():
+			text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
+			try:
+				TEXTO_=text.encode('utf-8').decode('latin-1')
+			except Exception as e:
+				TEXTO_= e
 
-        print(image_to_string(Image.open(filename), lang=lang))
+			try:
+			    TEXTO_ = TEXTO_.strip()
+			    TEXTO_ = TEXTO_.rstrip()
+			except Exception as e:
+				TEXTO_=''
 
-    except IOError:
-        sys.stderr.write('ERROR: Could not open file "%s"\n' % filename)
-        exit(1)
-    '''
+			if(TEXTO_!='' or TEXTO_ != None):
+			    args_ = ['X',result[0],0,result[1],result[2],TEXTO_,1]
+			    cursor.callproc(dbname + ".set_ocr_page", args_)
+			    conx.commit()
+
+		#IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT,IN vp_ocr char(1)
+		args__ = [params[1],params[2],params[3],params[4],'N']
+		result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
+		conx.commit()
+		ID_DET = 0
+		for result in cursor.fetchall():
+		    text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+		    try:
+		    	TEXTO=text.encode('utf-8').decode('latin-1')
+		    except Exception as e:
+		    	TEXTO_=e
+		    try:
+		        TEXTO = TEXTO.strip()
+		        TEXTO = TEXTO.rstrip()
+		    except Exception as e:
+		        TEXTO=''
+
+		    if(TEXTO!='' or TEXTO != None):
+		        args____ = ['A',result[0],result[10],ID_DET,result[1],result[2],TEXTO,1]
+		        cursor.callproc(dbname + ".set_ocr_page_auto", args____)
+		        conx.commit()
+		        for result_next in cursor.fetchall():
+		        	ID_DET=result[3]
+
+		print('OK')
+		print('PROCESADO CORRECTAMENTE')
+	except Exception as error:
+	    print('ER')
+	    print(str(error))
+
+	finally:
+	    cursor.close()
+	    conx.close()
+	    sys.exit()
+	'''
+	try:
+
+	    print(image_to_string(Image.open(filename), lang=lang))
+
+	except IOError:
+	    sys.stderr.write('ERROR: Could not open file "%s"\n' % filename)
+	    exit(1)
+	'''
 
 if __name__ == '__main__':
     main()
