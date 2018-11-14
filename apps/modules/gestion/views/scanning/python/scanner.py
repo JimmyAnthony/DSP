@@ -458,23 +458,24 @@ def main():
 		conx.commit()
 		ID_DET = 0
 		for result in cursor.fetchall():
-		    text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
-		    try:
-		    	TEXTO=text.encode('utf-8').decode('latin-1')
-		    except Exception as e:
-		    	TEXTO_=e
-		    try:
-		        TEXTO = TEXTO.strip()
-		        TEXTO = TEXTO.rstrip()
-		    except Exception as e:
-		        TEXTO=''
+			#print('ID_DET:'+str(ID_DET))
+			text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+			try:
+				TEXTO=text.encode('utf-8').decode('latin-1')
+			except Exception as e:
+				TEXTO_=e
+			try:
+			    TEXTO = TEXTO.strip()
+			    TEXTO = TEXTO.rstrip()
+			except Exception as e:
+			    TEXTO=''
 
-		    if(TEXTO!='' or TEXTO != None):
-		        args____ = ['A',result[0],result[10],ID_DET,result[1],result[2],TEXTO,1]
-		        cursor.callproc(dbname + ".set_ocr_page_auto", args____)
-		        conx.commit()
-		        for result_next in cursor.fetchall():
-		        	ID_DET=result[3]
+			if(TEXTO!='' or TEXTO != None):
+			    args____ = ['A',result[0],result[10],ID_DET,result[1],result[2],TEXTO,1]
+			    cursor.callproc(dbname + ".set_ocr_page_auto", args____)
+			    conx.commit()
+			    for result_next in cursor.fetchall():
+			    	ID_DET=result_next[3]
 
 		print('OK')
 		print('PROCESADO CORRECTAMENTE')

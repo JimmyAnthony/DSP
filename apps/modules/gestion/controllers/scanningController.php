@@ -389,7 +389,7 @@ class scanningController extends AppController {
 
                 if($existe){
                     
-                    $this->set_list_page_trazos($p);
+                    $this->set_list_page_trazos_auto($p);
 
                     #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
                     //$params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
@@ -420,6 +420,49 @@ class scanningController extends AppController {
 
         }
     }
+    public function set_list_page_trazos_auto($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        $rs = $this->objDatos->get_list_page_trazos($p);
+        //var_export($rs);
+        $array = array();
+        $page=$p['vp_id_pag'];
+        foreach ($rs as $index => $value){
+                $p['vp_id_pag'] = intval($value['id_pag']);
+                $p['vp_path'] = utf8_encode(trim($value['path']));
+                $p['vp_img'] = utf8_encode(trim($value['img']));
+                $p['vp_cod_trazo'] = intval($value['cod_trazo']);
+                $p['vp_x'] = floatval(trim($value['x']));
+                $p['vp_y'] = floatval(trim($value['y']));
+                $p['vp_w'] = floatval(trim($value['w']));
+                $p['vp_h'] = floatval(trim($value['h']));
+
+                $p['vp_wo'] = floatval(trim($value['wo']));
+                $p['vp_ho'] = floatval(trim($value['wo']));
+
+                $path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
+                $p['extension']=$path_parts['extension'];
+                $status=$this->setDropImg($p);
+
+                $value_['id_det'] =intval($value['id_det']);
+                $value_['id_lote'] =intval($value['id_lote']);
+                $value_['id_pag'] =intval($value['id_pag']);
+                $value_['cod_trazo'] =intval($value['cod_trazo']);
+                $value_['extension'] =$p['extension'];
+                $value_['tipo'] =utf8_encode(trim($value['tipo']));
+                if($status){
+                    $array[]=$value_;
+                }
+                $data = array('success' => true,'error' => $status?'OK':'ER','msn' => $status=='OK'?'Procesado correctamente':'Ocurrio un error al generar el trazo','data'=>$array);
+        }
+        //header('Content-Type: application/json');
+        //return $this->response($data);
+        $p['vp_id_pag']=$page;
+        #$data=$this->getScannearTrazos($p);
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
     public function set_list_page_trazos($p){
         set_time_limit(0);
         ini_set('memory_limit', '-1');
