@@ -389,7 +389,7 @@ def main():
 	server_config = 'server_main'
 
 	Config = configparser.ConfigParser() 
-	Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
+	Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
 
 	#print(Config.sections())
 
@@ -435,7 +435,7 @@ def main():
 		cursor.callproc(dbname + ".get_list_page", args)
 		conx.commit()
 		for result in cursor.fetchall():
-			text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
+			text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
 			try:
 				TEXTO_=text.encode('utf-8').decode('latin-1')
 			except Exception as e:
@@ -459,7 +459,7 @@ def main():
 		ID_DET = 0
 		for result in cursor.fetchall():
 			#print('ID_DET:'+str(ID_DET))
-			text=image_to_string(Image.open('D:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+			text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
 			try:
 				TEXTO=text.encode('utf-8').decode('latin-1')
 			except Exception as e:
