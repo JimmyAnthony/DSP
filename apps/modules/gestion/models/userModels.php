@@ -24,6 +24,14 @@ class userModels extends Adodb {
         $array = parent::ExecuteSPArray();
         return $array;
     }
+    public function get_list_menu_user($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_menu_user');
+        parent::SetParameterSP($p['vp_id_user'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
     public function set_save($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'set_user');
@@ -34,6 +42,16 @@ class userModels extends Adodb {
         parent::SetParameterSP($p['vp_usr_nombre'], 'varchar');
         parent::SetParameterSP($p['vp_usr_perfil'], 'varchar');
         parent::SetParameterSP($p['vp_usr_estado'], 'varchar');
+        parent::SetParameterSP(USR_ID, 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+    public function set_change_menu_user($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_user_menu_access');
+        parent::SetParameterSP($p['vp_id_menu'], 'int');
+        parent::SetParameterSP($p['vp_id_user'], 'int');
         parent::SetParameterSP(USR_ID, 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();

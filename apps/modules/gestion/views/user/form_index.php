@@ -11,6 +11,7 @@
 			fac_cliente:0,
 			lote:0,
 			paramsStore:{},
+			id_user:0,
 			init:function(){
 				Ext.tip.QuickTipManager.init();
 
@@ -104,6 +105,32 @@
 	                    }
 	                }
 	            });
+
+	            user.store_menu = Ext.create('Ext.data.Store',{
+	                fields: [
+	                    {name: 'menu_orden', type: 'string'},
+	                    {name: 'menu_nombre', type: 'string'},
+	                    {name: 'menu_url', type: 'string'},
+	                    {name: 'menu_icono', type: 'string'},                    
+	                    {name: 'menu_id', type: 'string'},
+	                    {name: 'menu_class', type: 'string'},
+	                    {name: 'estado', type: 'string'}
+	                ],
+	                autoLoad:false,
+	                proxy:{
+	                    type: 'ajax',
+	                    url: user.url+'get_list_menu_user/',
+	                    reader:{
+	                        type: 'json',
+	                        rootProperty: 'data'
+	                    }
+	                },
+	                listeners:{
+	                    load: function(obj, records, successful, opts){
+	                        
+	                    }
+	                }
+	            });
 				
 				var store_shipper = Ext.create('Ext.data.Store',{
 	                fields: [
@@ -115,7 +142,7 @@
 	                    {name: 'id_user', type: 'string'},
 	                    {name: 'fecha_actual', type: 'string'}
 	                ],
-	                autoLoad:true,
+	                autoLoad:false,
 	                proxy:{
 	                    type: 'ajax',
 	                    url: user.url+'get_list_shipper/',
@@ -631,6 +658,7 @@
 			},
 			getPermisoMenu:function(index){
 				var rec = Ext.getCmp(user.id + '-grid-user').getStore().getAt(index);
+				user.id_user=rec.data.id_user;
 				Ext.create('Ext.window.Window',{
 	                id:user.id+'-win-form-menu',
 	                plain: true,
@@ -643,9 +671,64 @@
 	                border:false,
 	                closable:true,
 	                padding:20,
-	                //layout:'fit',
+	                layout:'fit',
 	                items:[
-	                	
+	                	{
+	                        xtype: 'grid',
+	                        id: user.id + '-grid-user-menu',
+	                        store: user.store_menu, 
+	                        columnLines: true,
+	                        columns:{
+	                            items:[
+	                            	{
+	                            		text: 'N°',
+									    xtype: 'rownumberer',
+									    width: 40,
+									    sortable: false,
+									    locked: true
+									},
+	                                {
+	                                    text: 'Menu',
+	                                    dataIndex: 'menu_nombre',
+	                                    flex:1
+	                                },
+	                                {
+	                                    text: 'EDT',
+	                                    dataIndex: 'usr_estado',
+	                                    //loocked : true,
+	                                    width: 40,
+	                                    align: 'center',
+	                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+	                                        //console.log(record);
+	                                        metaData.style = "padding: 0px; margin: 0px";
+
+	                                        var estado = record.get('estado');
+	                                        return global.permisos({
+	                                            type: 'link',
+	                                            id_menu: user.id_menu,
+	                                            icons:[
+	                                                {id_serv: 10, img: estado=='Y'?'check-circle-green-16.png':'check-circle-black-16.png', qtip: 'Click Para cambiar estado.', js: "user.setChangeAccess("+rowIndex+")"},
+
+	                                            ]
+	                                        });
+	                                    }
+	                                }
+	                            ],
+	                            defaults:{
+	                                menuDisabled: true
+	                            }
+	                        },
+	                        multiSelect: true,
+	                        trackMouseOver: false,
+	                        listeners:{
+	                            afterrender: function(obj){
+	                                user.getListMenu();
+	                            },
+	                            beforeselect:function(obj, record, index, eOpts ){
+	                            	//scanning.setImageFile(record.get('path'),record.get('file'));
+	                            }
+	                        }
+	                    }	
 	                ],
 	                bbar:[       
 	                    '->',
@@ -671,7 +754,7 @@
 	                            beforerender: function(obj, opts){
 	                            },
 	                            click: function(obj, e){
-	                                Ext.getCmp(user.id+'-win-form').close();
+	                                Ext.getCmp(user.id+'-win-form-menu').close();
 	                            }
 	                        }
 	                    },
@@ -934,9 +1017,9 @@
                     fn: function(btn){
                     	if (btn == 'yes'){
                     		Ext.getCmp(user.id+'-tab').el.mask('Elinando Páginas…', 'x-mask-loading');
-	                        scanning.getLoader(true);
+	                        //scanning.getLoader(true);
 			                Ext.Ajax.request({
-			                    url:control.url+'set_save/',
+			                    url:user.url+'set_save/',
 			                    params:{
 			                    	vp_op:op,
 			                    	vp_id_user:codigo,
@@ -950,7 +1033,7 @@
 			                    success: function(response, options){
 			                        Ext.getCmp(user.id+'-tab').el.unmask();
 			                        var res = Ext.JSON.decode(response.responseText);
-			                        control.getLoader(false);
+			                        //control.getLoader(false);
 			                        if (res.error == 'OK'){
 			                            global.Msg({
 			                                msg: res.msn,
@@ -997,6 +1080,68 @@
 				Ext.getCmp(user.id+'-cbx-contrato').getStore().removeAll();
 				Ext.getCmp(user.id+'-cbx-contrato').getStore().load(
 	                {params: {vp_shi_codigo:shi_codigo},
+	                callback:function(){
+	                	//Ext.getCmp(user.id+'-form').el.unmask();
+	                }
+	            });
+			},
+			setChangeAccess:function(index){
+				var rec = Ext.getCmp(user.id + '-grid-user-menu').getStore().getAt(index);
+				var vp_id_menu=rec.data.menu_id;
+				if(vp_id_menu==''){ 
+					global.Msg({msg:"Seleccione un registro.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				
+				global.Msg({
+                    msg: '¿Seguro de cambiar el estado?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(user.id+'-tab').el.mask('Cambiando estado…', 'x-mask-loading');
+	                        //user.getLoader(true);
+			                Ext.Ajax.request({
+			                    url:user.url+'set_change_menu_user/',
+			                    params:{
+			                    	vp_id_menu:vp_id_menu,
+			                    	vp_id_user:user.id_user
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                        Ext.getCmp(user.id+'-tab').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        //control.getLoader(false);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	user.getListMenu();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	 
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
+			},
+			getListMenu:function(){
+				Ext.getCmp(user.id + '-grid-user-menu').getStore().removeAll();
+				Ext.getCmp(user.id + '-grid-user-menu').getStore().load(
+	                {params: {vp_id_user:user.id_user},
 	                callback:function(){
 	                	//Ext.getCmp(user.id+'-form').el.unmask();
 	                }

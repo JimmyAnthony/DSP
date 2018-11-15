@@ -50,8 +50,46 @@ class userController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
+
+    public function get_list_menu_user($p){
+        $rs = $this->objDatos->get_list_menu_user($p);
+        //var_export($rs);
+        $array = array();
+        foreach ($rs as $index => $value){
+            $value_['menu_orden'] = intval($value['menu_orden']);
+            $value_['menu_nombre'] = utf8_encode($value['menu_nombre']);
+            $value_['menu_url'] = utf8_encode($value['menu_url']);
+            $value_['menu_icono'] = utf8_encode(trim($value['menu_icono']));
+            $value_['usr_perfil'] = utf8_encode(trim($value['usr_perfil']));
+            $value_['menu_class'] = trim($value['menu_class']);
+            $value_['menu_id'] = trim($value['menu_id']);
+            $value_['estado'] = trim($value['estado']);
+            $array[]=$value_;
+        }
+
+        $data = array(
+            'success' => true,
+            'error'=>0,
+            'total' => count($array),
+            'data' => $array
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
     public function set_save($p){
         $rs = $this->objDatos->set_save($p);
+        $rs = $rs[0];
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+    public function set_change_menu_user($p){
+        $rs = $this->objDatos->set_change_menu_user($p);
         $rs = $rs[0];
         $data = array(
             'success' => true,
