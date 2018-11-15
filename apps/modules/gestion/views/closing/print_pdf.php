@@ -88,7 +88,7 @@ class MYPDF extends TCPDF {
         $H=40;
         $X=($this->width_page/2)-($W/2);
 		$Y=($this->height_page/2)-($H/2);
-
+		
         $this->SetFont('calibrib', '', 16);
 		$this->SetXY($X-($W+14), $Y-4);
 		$this->MultiCell(0, 3, 'LOTE ', 0, 'C');
@@ -106,7 +106,7 @@ class MYPDF extends TCPDF {
 
 //$rs = $this->objDatos->get_load_page($p);
 $rs = $this->objDatos->get_lotizer_detalle($p);
-$path_lote = PATH.'public_html/download/'.$p['vp_id_lote'].'-LOTE-PDF/';
+$path_lote = PATH.'public_html/download/'.$p['vp_nombre'].'-LOTE-PDF/';
 if (!file_exists($path_lote)) {
     mkdir($path_lote, 0777, true);
 }
@@ -182,8 +182,8 @@ foreach ($rs as $index => $valuex){
 
 		//OUT
 
-		$pdf->Output($path_lote.$valuex['id_det'].'-PDF.pdf', 'F');
-		$zip->addFile($path_lote.$valuex['id_det'].'-PDF.pdf',$p['vp_id_lote'].'-LOTE-PDF/'.$valuex['id_det'].'-PDF.pdf');
+		$pdf->Output($path_lote.$valuex['nombre'].'-PDF.pdf', 'F');
+		$zip->addFile($path_lote.$valuex['nombre'].'-PDF.pdf',$p['vp_nombre'].'-LOTE-PDF/'.$valuex['nombre'].'-PDF.pdf');
 		//END
 }
 

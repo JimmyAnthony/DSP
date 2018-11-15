@@ -594,7 +594,7 @@
 			                                                fieldLabel:'Fecha',
 			                                                labelWidth:50,
 			                                                labelAlign:'right',
-			                                                value:new Date(),
+			                                                value:'',//new Date(),
 			                                                format: 'Ymd',
 			                                                //readOnly:true,
 			                                                width: '100%',

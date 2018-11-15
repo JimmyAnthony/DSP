@@ -688,6 +688,7 @@
 			    var lote =record.data.id_lote;
 			    var nivel=record.data.nivel;
 			    var shi_codigo=record.data.shi_codigo;
+			    var nombre=record.data.nombre;
 
 			    var id_pag=0;
 			    var id_det=0;
@@ -701,7 +702,7 @@
 			    	}
 			    }
 
-				window.open(closing.url+'get_print/?vp_shi_codigo='+shi_codigo+'&vp_id_lote='+lote+'&vp_id_det='+id_det+'&vp_id_pag='+id_pag, '_blank');
+				window.open(closing.url+'get_print/?vp_shi_codigo='+shi_codigo+'&vp_id_lote='+lote+'&vp_id_det='+id_det+'&vp_id_pag='+id_pag+'&vp_nombre='+nombre, '_blank');
 			},
 			getZip:function(index){
 				var record=Ext.getCmp(closing.id + '-grid-closing').getStore().getAt(index);

@@ -320,8 +320,8 @@ class scanningController extends AppController {
                 try {
                     if (is_dir(PATH.'public_html/contenedor/'.USR_ID.'/')){
                           if ($dh = opendir(PATH.'public_html/contenedor/'.USR_ID.'/')){
-                            if (!file_exists(PATH.'public_html/auto/'.$p['vp_shi_codigo'].'/'.$id_lote)) {
-                                mkdir(PATH.'public_html/auto/'.$p['vp_shi_codigo'].'/'.$id_lote, 0777, true);
+                            if (!file_exists(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$id_lote)) {
+                                mkdir(PATH.'public_html/scanning/'.$p['vp_shi_codigo'].'/'.$id_lote, 0777, true);
                             }
                             while (false !== ($file = readdir($dh))) {
                                 //echo $file.'xx';
@@ -337,7 +337,7 @@ class scanningController extends AppController {
                                                 $p['vp_id_det']=$id_det;
                                                 $p['vp_img']='-page.'.$ext;
                                                 $p['vp_imgorigen']=$file;
-                                                $p['vp_path']='/auto/'.$p['vp_shi_codigo'].'/'.$id_lote.'/';
+                                                $p['vp_path']='/scanning/'.$p['vp_shi_codigo'].'/'.$id_lote.'/';
                                                 $p['vp_lado']='A';
                                                 list($width, $height) = getimagesize(PATH.'public_html/contenedor/'.USR_ID.'/'.$file);
                                                 $p['vp_w']=$width;

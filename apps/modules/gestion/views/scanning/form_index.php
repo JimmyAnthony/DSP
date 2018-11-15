@@ -96,6 +96,7 @@
 				    fields: [
 				    	{name: 'hijo', type: 'string'},
 				        {name: 'padre', type: 'string'},
+				        {name: 'nivel', type: 'string'},
 				        {name: 'id_lote', type: 'string'},
 				        {name: 'shi_codigo', type: 'string'},
 				        {name: 'fac_cliente', type: 'string'},
@@ -629,11 +630,13 @@
 							                                        var shi_codigo=record.get('shi_codigo');
 							                                        var fac_cliente=record.get('fac_cliente');
 							                                        var id_lote=record.get('id_lote');
+							                                        var nivel=parseInt(record.get('nivel'));
+
 							                                        return global.permisos({
 							                                            type: 'link',
 							                                            id_menu: scanning.id_menu,
 							                                            icons:[
-							                                                {id_serv: 3, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+")"},
+							                                                {id_serv: nivel==1?3:1, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+",'S')"},
 							                                                {id_serv: 3, img: '1348695561_stock_mail-send-receive.png', qtip: 'RE-ORDENAR.', js: "scanning.setChangeOrder("+shi_codigo+","+fac_cliente+","+id_lote+")"}
 							                                            ]
 							                                        });
@@ -1233,13 +1236,16 @@
 								                                        //console.log(record);
 								                                        metaData.style = "padding: 0px; margin: 0px";
 								                                        var nivel=record.get('nivel');
-
+								                                        var shi_codigo=record.get('shi_codigo');
+								                                        var fac_cliente=record.get('fac_cliente');
+								                                        var id_lote=record.get('id_lote');
+								                                        var nivel=parseInt(record.get('nivel'));
 								                                        return global.permisos({
 								                                            type: 'link',
 								                                            id_menu: scanning.id_menu,
 								                                            icons:[
-								                                                {id_serv: parseInt(nivel), img: 'recicle_nov.ico', qtip: 'Click Eliminar Página.', js: "scanning.setRemoveFile("+rowIndex+",false,true)"}
-
+								                                                {id_serv: parseInt(nivel), img: 'recicle_nov.ico', qtip: 'Click Eliminar Página.', js: "scanning.setRemoveFile("+rowIndex+",false,true)"},
+								                                                {id_serv: nivel==1?3:1, img: '1315404769_gear_wheel.png', qtip: 'Cerrar Escaneado.', js: "scanning.setCerrarEscaneado("+shi_codigo+","+fac_cliente+","+id_lote+",'A')"}
 								                                            ]
 								                                        });
 								                                    }
@@ -1746,7 +1752,7 @@
                     }
                 });
 			},
-			setCerrarEscaneado:function(shi_codigo,fac_cliente,id_lote){
+			setCerrarEscaneado:function(shi_codigo,fac_cliente,id_lote,prc){
 				if(parseInt(shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
 					return false;
@@ -1767,7 +1773,7 @@
 			                Ext.Ajax.request({
 			                    url:scanning.url+'set_lotizer/',
 			                    params:{
-			                    	vp_op:'S',
+			                    	vp_op:prc,
 			                    	vp_shi_codigo:shi_codigo,
 			                    	vp_fac_cliente:fac_cliente,
 			                    	vp_id_lote:id_lote
@@ -1784,7 +1790,9 @@
 			                                icon: 1,
 			                                buttons: 1,
 			                                fn: function(btn){
-			                                	scanning.getReloadGridscanning();
+			                                	scanning.getScanningFile();
+			                                	scanning.setLibera();
+		                               			scanning.getReloadGridscanning();
 			                                	//scanning.getScanningFile();
 			                                }
 			                            });
