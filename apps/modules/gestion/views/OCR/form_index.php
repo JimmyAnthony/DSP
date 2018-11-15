@@ -122,7 +122,7 @@
 	                    }
 	                },
 	                listeners:{
-	                    load: function(obj, records, successful, opts){
+	                    load: function(obj, records, successful, opts){ 
 	                        
 	                    }
 	                }
