@@ -95,11 +95,13 @@ class scanningController extends AppController {
     }
     public function set_lotizer($p){
         //$this->valida_mobil($p);
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
         $rs = $this->objDatos->set_lotizer($p);
         $rs = $rs[0];
-        if($rs['status']!='ER'){
+        /*if($rs['status']!='ER'){
             $this->setProcessingOCR($p);
-        }
+        }*/
         $data = array(
             'success' => true,
             'error' => $rs['status'],
