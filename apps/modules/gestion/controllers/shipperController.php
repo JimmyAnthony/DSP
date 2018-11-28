@@ -1,10 +1,7 @@
 <?php
 
 /**
- * Geekode php (http://geekode.net/)
- * @link    https://github.com/remicioluis/geekcode_php
- * @author  Luis Remicio @remicioluis (https://twitter.com/remicioluis)
- * @version 2.0
+
  */
 
 class shipperController extends AppController {

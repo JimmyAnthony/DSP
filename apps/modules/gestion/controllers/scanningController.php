@@ -74,42 +74,8 @@ class scanningController extends AppController {
         header('Content-Type: application/json');
         return $this->response($data);
     }
-    public function setProcessingOCR($p){
-
-        set_time_limit(0);
-        ini_set('memory_limit', '-1');
-        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']));
-        $comando = "python " . PATH . "apps/modules/gestion/views/control/python/OCR.py " . $params;
-        $output = array();
-        //echo $comando;die();
-        try{
-            exec($comando, $output);
-
-        }catch (Exception $e) {
-            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
-        }
-        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
-        //header('Content-Type: application/json');
-        return $data;
-    }
-    public function set_lotizer($p){
-        //$this->valida_mobil($p);
-        set_time_limit(0);
-        ini_set('memory_limit', '-1');
-        $rs = $this->objDatos->set_lotizer($p);
-        $rs = $rs[0];
-        /*if($rs['status']!='ER'){
-            $this->setProcessingOCR($p);
-        }*/
-        $data = array(
-            'success' => true,
-            'error' => $rs['status'],
-            'msn' => utf8_encode(trim($rs['response']))
-        );
-        header('Content-Type: application/json');
-        return $this->response($data);
-    }
+    
+    
     public function set_remove_scanner_file_one($p){
         $array = array();
         if (file_exists(PATH.'public_html/contenedor/'.USR_ID.'/'.$p['file'])){
@@ -391,7 +357,7 @@ class scanningController extends AppController {
 
                 if($existe){
                     
-                    $this->set_list_page_trazos_auto($p);
+                    //$this->set_list_page_trazos_auto($p);
 
                     #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
                     //$params = base64_encode(PATH . '&'.trim($id_lote).'&' . trim($p['vp_shi_codigo']) . '&0');
@@ -402,7 +368,7 @@ class scanningController extends AppController {
                     $output = array();
                     //echo $comando;die();
                     try{
-                        exec($comando, $output);
+                        //exec($comando, $output);
                     }catch (Exception $e) {
                         echo 'Excepción capturada: ',  $e->getMessage(), "\n";
                     }
@@ -422,44 +388,128 @@ class scanningController extends AppController {
 
         }
     }
+    public function set_lotizer($p){
+        //$this->valida_mobil($p);
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        $op = $p['vp_op'];
+
+        $p['vp_op']=$p['vp_op']=='S'?'J':$p['vp_op'];
+
+        $rs = $this->objDatos->set_lotizer($p);
+
+        //$p['vp_op']=$op=='A'?'S':$p['vp_op'];
+
+        $rs = $rs[0];
+        if($rs['status']!='ER'){
+
+            $p['vp_seleccionar']='P';
+            /*$p['vp_id_pag'] ='0';
+            $p['vp_id_det']='0';*/
+            $p['vp_ocr']='N';
+            //$p['vp_shi_codigo']=
+            //$p['vp_fac_cliente']=
+            $p['vp_lote_estado']='AU';
+            $p['vp_name']='';
+            $p['fecha']='';
+            $p['vp_estado']='A';
+            
+            $thread = new ChildThread($op,$p);
+            $thread->start();
+
+            
+        }
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+
+
+    public function setProcessingOCR($p){
+
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']).'&H&'.USR_ID);
+        $comando = "python " . PATH . "apps/modules/gestion/views/control/python/OCR.py " . $params;
+        $output = array();
+        //echo $comando;die();
+        try{
+            exec($comando, $output);
+
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
+    public function setProcessingOCRAUTO($p){
+
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']).'&B&'.USR_ID);
+        $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
+        $output = array();
+        //echo $comando;die();
+        try{
+            exec($comando, $output);
+
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
     public function set_list_page_trazos_auto($p){
         set_time_limit(0);
         ini_set('memory_limit', '-1');
-        $rs = $this->objDatos->get_list_page_trazos($p);
+        $rs = $this->objDatos->get_list_page_trazos_pending($p);
         //var_export($rs);
         $array = array();
-        $page=$p['vp_id_pag'];
+        //$page=$p['vp_id_pag'];
         foreach ($rs as $index => $value){
-                $p['vp_id_pag'] = intval($value['id_pag']);
-                $p['vp_path'] = utf8_encode(trim($value['path']));
-                $p['vp_img'] = utf8_encode(trim($value['img']));
-                $p['vp_cod_trazo'] = intval($value['cod_trazo']);
-                $p['vp_x'] = floatval(trim($value['x']));
-                $p['vp_y'] = floatval(trim($value['y']));
-                $p['vp_w'] = floatval(trim($value['w']));
-                $p['vp_h'] = floatval(trim($value['h']));
+            $p['vp_id_pag'] = intval($value['id_pag']);
+            $p['vp_path'] = utf8_encode(trim($value['path']));
+            $p['vp_img'] = utf8_encode(trim($value['img']));
+            $p['vp_cod_trazo'] = intval($value['cod_trazo']);
+            $p['vp_x'] = floatval(trim($value['x']));
+            $p['vp_y'] = floatval(trim($value['y']));
+            $p['vp_w'] = floatval(trim($value['w']));
+            $p['vp_h'] = floatval(trim($value['h']));
 
-                $p['vp_wo'] = floatval(trim($value['wo']));
-                $p['vp_ho'] = floatval(trim($value['wo']));
+            $p['vp_wo'] = floatval(trim($value['wo']));
+            $p['vp_ho'] = floatval(trim($value['wo']));
 
-                $path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
-                $p['extension']=$path_parts['extension'];
-                $status=$this->setDropImg($p);
+            $path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
+            $p['extension']=$path_parts['extension'];
+            $status=$this->setDropImg($p);
 
-                $value_['id_det'] =intval($value['id_det']);
-                $value_['id_lote'] =intval($value['id_lote']);
-                $value_['id_pag'] =intval($value['id_pag']);
-                $value_['cod_trazo'] =intval($value['cod_trazo']);
-                $value_['extension'] =$p['extension'];
-                $value_['tipo'] =utf8_encode(trim($value['tipo']));
-                if($status){
-                    $array[]=$value_;
-                }
-                $data = array('success' => true,'error' => $status?'OK':'ER','msn' => $status=='OK'?'Procesado correctamente':'Ocurrio un error al generar el trazo','data'=>$array);
+            $value_['id_det'] =intval($value['id_det']);
+            $value_['id_lote'] =intval($value['id_lote']);
+            $value_['id_pag'] =intval($value['id_pag']);
+            $value_['cod_trazo'] =intval($value['cod_trazo']);
+            $value_['extension'] =$p['extension'];
+            $value_['tipo'] =utf8_encode(trim($value['tipo']));
+            if($status){
+                $array[]=$value_;
+            }
+            $data = array('success' => true,'error' => $status?'OK':'ER','msn' => $status=='OK'?'Procesado correctamente':'Ocurrio un error al generar el trazo','data'=>$array);
         }
         //header('Content-Type: application/json');
         //return $this->response($data);
-        $p['vp_id_pag']=$page;
+        //$p['vp_id_pag']=$page;
+
+        $res = $this->objDatos->set_marca_trazos($p);
+
         #$data=$this->getScannearTrazos($p);
         header('Content-Type: application/json');
         return $this->response($data);
@@ -969,3 +1019,23 @@ class scanningController extends AppController {
         return $data;
     }
 }
+
+
+class ChildThread extends Thread {
+    public $contexto;
+    public $p;
+    public $op;
+    public function __construct($op$p=[]){
+        $this->contexto = new scanningController();
+        $this->p=$p;
+        $this->op=$op;
+    }
+    public function run() {
+        $this->contexto->set_list_page_trazos_auto($this->p);
+        if($this->op=='S'){
+            $this->contexto->setProcessingOCR($this->p);
+        }else{
+            $this->contexto->setProcessingOCRAUTO($this->p);
+        }
+    }
+};

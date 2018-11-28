@@ -380,6 +380,14 @@ def main():
         exit(2)
     '''
     path = params[0]
+    id_pag     = params[1]
+    shi_codigo = params[2]
+    id_det     = params[3]
+    id_lote    = params[4]
+    estado     = params[5]
+    USR_ID     = params[6]
+
+    DISK='D:/xampp/htdocs/DSP/public_html/'
     
     path= path.replace('\\','/')
     path= path.replace('//','/')
@@ -389,7 +397,7 @@ def main():
     server_config = 'server_main'
 
     Config = configparser.ConfigParser() 
-    Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
+    Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
 
     #print(Config.sections())
 
@@ -435,7 +443,7 @@ def main():
         cursor.callproc(dbname + ".get_list_page", args)
         conx.commit()
         for result in cursor.fetchall():
-            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
+            text=image_to_string(Image.open(DISK+result[3]+result[4]), lang='spa')
             args_ = ['X',result[0],0,result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
             cursor.callproc(dbname + ".set_ocr_page", args_)
             conx.commit()
@@ -445,10 +453,18 @@ def main():
         result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
         conx.commit()
         for result in cursor.fetchall():
-            text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+            text=image_to_string(Image.open(DISK+'tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
             args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
             cursor.callproc(dbname + ".set_ocr_page", args____)
             conx.commit()
+
+        try:
+            args_x = [estado,id_lote,shi_codigo,0,'','','','',0,'',USR_ID]
+            cursor.callproc(dbname + ".set_lotizer", args_x)
+            conx.commit()
+        except Exception as e:
+            print('ER')
+            print(str(error))
 
         print('OK')
         print('PROCESADO CORRECTAMENTE')

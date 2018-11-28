@@ -379,7 +379,16 @@ def main():
 	    sys.stderr.write('Usage: python pytesseract.py [-l lang] input_file\n')
 	    exit(2)
 	'''
-	path = params[0]
+	path       = params[0]
+    id_pag     = params[1]
+    shi_codigo = params[2]
+    id_det     = params[3]
+    id_lote    = params[4]
+    estado     = params[5]
+    USR_ID     = params[6]
+
+    DISK='D:/xampp/htdocs/DSP/public_html/'
+
 
 	path= path.replace('\\','/')
 	path= path.replace('//','/')
@@ -389,7 +398,7 @@ def main():
 	server_config = 'server_main'
 
 	Config = configparser.ConfigParser() 
-	Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
+	Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
 
 	#print(Config.sections())
 
@@ -435,7 +444,7 @@ def main():
 		cursor.callproc(dbname + ".get_list_page", args)
 		conx.commit()
 		for result in cursor.fetchall():
-			text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/'+result[3]+result[4]), lang='spa')
+			text=image_to_string(Image.open(DISK+result[3]+result[4]), lang='spa')
 			try:
 				TEXTO_=text.encode('utf-8').decode('latin-1')
 			except Exception as e:
@@ -459,7 +468,7 @@ def main():
 		ID_DET = 0
 		for result in cursor.fetchall():
 			#print('ID_DET:'+str(ID_DET))
-			text=image_to_string(Image.open('C:/xampp/htdocs/DSP/public_html/tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+			text=image_to_string(Image.open(DISK+'tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
 			try:
 				TEXTO=text.encode('utf-8').decode('latin-1')
 			except Exception as e:
@@ -476,6 +485,14 @@ def main():
 			    conx.commit()
 			    for result_next in cursor.fetchall():
 			    	ID_DET=result_next[3]
+
+        try:
+            args_x = [estado,id_lote,shi_codigo,0,'','','','',0,'',USR_ID]
+            cursor.callproc(dbname + ".set_lotizer", args_x)
+            conx.commit()
+        except Exception as e:
+            print('ER')
+            print(str(error))
 
 		print('OK')
 		print('PROCESADO CORRECTAMENTE')

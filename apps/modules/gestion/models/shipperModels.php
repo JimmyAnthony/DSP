@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Geekode php (http://plasmosys.com/)
- * @link    https://github.com/jbazan/geekcode_php
- * @author  Jimmy Anthony Bazán Solis @remicioluis (https://twitter.com/jbazan)
+ * @author  Jimmy Anthony Bazán Solis (https://twitter.com/jbazan)
  * @version 2.0
  */
 
