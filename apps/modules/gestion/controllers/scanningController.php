@@ -6,7 +6,7 @@
  * @author  Jimmy Anthony Bazán Solis (https://twitter.com/jbazan)
  * @version 2.0
  */
-error_reporting(NULL);
+//error_reporting(NULL);
 set_time_limit(0);
 ini_set("memory_limit", "-1");
 class scanningController extends AppController {
@@ -415,11 +415,16 @@ class scanningController extends AppController {
             $p['fecha']='';
             $p['vp_estado']='A';
             
-            $thread = new ChildThread($op,$p);
-            $thread->start();
-
-            
+            /*$thread = new ChildThread($op,$p);
+            $thread->start();*/
+            $this->set_list_page_trazos_auto($p);
+            if($op=='S'){
+                $this->setProcessingOCR($p);
+            }else{
+                $this->setProcessingOCRAUTO($p);
+            }
         }
+
         $data = array(
             'success' => true,
             'error' => $rs['status'],
@@ -429,7 +434,22 @@ class scanningController extends AppController {
         return $this->response($data);
     }
 
+    public function open($exec, $cwd = null) {
+        if (!is_string($cwd)) {
+            $cwd = @getcwd();
+        }
 
+        @chdir($cwd);
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+            /*$WshShell = new COM("WScript.Shell");
+            $WshShell->CurrentDirectory = str_replace('/', '\\', $cwd);
+            $WshShell->Run($exec, 0, false);*/
+            system($exec." > NUL");
+        } else {
+            exec($exec . " > /dev/null 2>&1 &");
+        }
+    }
 
     public function setProcessingOCR($p){
 
@@ -441,8 +461,8 @@ class scanningController extends AppController {
         $output = array();
         //echo $comando;die();
         try{
-            exec($comando, $output);
-
+            //exec($comando, $output);
+            $this->open($comando);
         }catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
         }
@@ -460,8 +480,8 @@ class scanningController extends AppController {
         $output = array();
         //echo $comando;die();
         try{
-            exec($comando, $output);
-
+            //exec($comando, $output);
+            $this->open($comando);
         }catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
         }
@@ -1020,22 +1040,67 @@ class scanningController extends AppController {
     }
 }
 
-
+/*
 class ChildThread extends Thread {
     public $contexto;
     public $p;
     public $op;
-    public function __construct($op$p=[]){
+    public function __construct($op,$p=[]){
         $this->contexto = new scanningController();
         $this->p=$p;
         $this->op=$op;
     }
     public function run() {
-        $this->contexto->set_list_page_trazos_auto($this->p);
-        if($this->op=='S'){
-            $this->contexto->setProcessingOCR($this->p);
-        }else{
-            $this->contexto->setProcessingOCRAUTO($this->p);
+        
+    }
+}*/
+
+class BackgroundProcess {
+    static function open($exec, $cwd = null) {
+        if (!is_string($cwd)) {
+            $cwd = @getcwd();
+        }
+
+        @chdir($cwd);
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+            $WshShell = new COM("WScript.Shell");
+            $WshShell->CurrentDirectory = str_replace('/', '\\', $cwd);
+            $WshShell->Run($exec, 0, false);
+        } else {
+            exec($exec . " > /dev/null 2>&1 &");
         }
     }
-};
+
+    static function fork($phpScript, $phpExec = null) {
+        $cwd = dirname($phpScript);
+
+        @putenv("PHP_FORCECLI=true");
+
+        if (!is_string($phpExec) || !file_exists($phpExec)) {
+            if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                $phpExec = str_replace('/', '\\', dirname(ini_get('extension_dir'))) . '\php.exe';
+
+                if (@file_exists($phpExec)) {
+                    BackgroundProcess::open(escapeshellarg($phpExec) . " " . escapeshellarg($phpScript), $cwd);
+                }
+            } else {
+                $phpExec = exec("which php-cli");
+
+                if ($phpExec[0] != '/') {
+                    $phpExec = exec("which php");
+                }
+
+                if ($phpExec[0] == '/') {
+                    BackgroundProcess::open(escapeshellarg($phpExec) . " " . escapeshellarg($phpScript), $cwd);
+                }
+            }
+        } else {
+            if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                $phpExec = str_replace('/', '\\', $phpExec);
+            }
+
+            BackgroundProcess::open(escapeshellarg($phpExec) . " " . escapeshellarg($phpScript), $cwd);
+        }
+    }
+}
