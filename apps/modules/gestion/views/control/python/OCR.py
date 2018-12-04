@@ -438,25 +438,33 @@ def main():
         #parent::SetParameterSP($p['vp_id_det'], 'int');
         #parent::SetParameterSP($p['vp_id_lote'], 'int');
 
-        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
-        args = [params[1],params[2],params[3],params[4]]
-        cursor.callproc(dbname + ".get_list_page", args)
-        conx.commit()
-        for result in cursor.fetchall():
-            text=image_to_string(Image.open(DISK+result[3]+result[4]), lang='spa')
-            args_ = ['X',result[0],0,result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
-            cursor.callproc(dbname + ".set_ocr_page", args_)
+        try:
+            #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+            args = [params[1],params[2],params[3],params[4]]
+            cursor.callproc(dbname + ".get_list_page", args)
             conx.commit()
+            for result in cursor.fetchall():
+                text=image_to_string(Image.open(DISK+result[3]+result[4]), lang='spa')
+                args_ = ['X',result[0],0,result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
+                cursor.callproc(dbname + ".set_ocr_page", args_)
+                conx.commit()
+        except Exception as e:
+            e=e
 
         #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT,IN vp_ocr char(1)
-        args__ = [params[1],params[2],params[3],params[4],'N']
-        result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
-        conx.commit()
-        for result in cursor.fetchall():
-            text=image_to_string(Image.open(DISK+'tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
-            args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
-            cursor.callproc(dbname + ".set_ocr_page", args____)
+
+        try:
+            args__ = [params[1],params[2],params[3],params[4],'N']
+            result_args = cursor.callproc(dbname + ".get_list_page_trazos", args__)
             conx.commit()
+            for result in cursor.fetchall():
+                text=image_to_string(Image.open(DISK+'tmp_trazos/'+str(result[0])+'-'+str(result[10])+'-trazo.jpg'), lang='spa')
+                args____ = ['I',result[0],result[10],result[1],result[2],text.encode('utf-8').decode('latin-1'),1]
+                cursor.callproc(dbname + ".set_ocr_page", args____)
+                conx.commit()
+        except Exception as e:
+            e=e
+
 
         try:
             args_x = [estado,id_lote,shi_codigo,0,'','','','',0,'',USR_ID]

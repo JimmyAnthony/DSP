@@ -572,10 +572,13 @@
 						                                    align: 'center'
 						                                },
 						                                {
-						                                    text: '%',
+						                                    text: 'PROCESO',
 						                                    dataIndex: 'por',
 						                                    width: 60,
-						                                    align: 'center'
+						                                    align: 'center',
+						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
+						                                    	return value + '%';
+						                                    }
 						                                },
 						                                {
 						                                    text: 'Estado',
@@ -586,15 +589,16 @@
 						                                    renderer: function(value, metaData, record, rowIndex, colIndex, store, view){
 						                                        //console.log(record);
 						                                        metaData.style = "padding: 0px; margin: 0px";
-						                                        var estado = (record.get('estado')=='A')?'check-circle-green-16.png':'check-circle-red.png';
+						                                        var estado = 'console_.png';
 						                                        var qtip = (record.get('estado')=='A')?'Estado del Lote Activo.':'Estado del Lote Inactivo.';
 						                                        var x = 5;
 						                                        x = (parseInt(record.get('tot_pag'))!=0)?5:0;
+						                                        var nivel = parseInt(record.get('nivel'));
 						                                        return global.permisos({
 						                                            type: 'link',
 						                                            id_menu: BATCH.id_menu,
 						                                            icons:[
-						                                            	{id_serv: 11, img: estado, qtip: qtip, js: ""}
+						                                            	{id_serv: nivel==1?11:0, img: estado, qtip: qtip, js: "BATCH.setProcess("+rowIndex+");"}
 						                                                //{id_serv: x, img: 'pdf.png', qtip: 'Imprimir', js: "BATCH.getPrint("+rowIndex+")"},
 						                                                //{id_serv: x, img: 'download_.png', qtip: 'Descargar Zip', js: "BATCH.getZip("+rowIndex+")"}
 						                                            ]
@@ -688,6 +692,72 @@
 					}
 
 				}).show();
+			},
+			setProcess:function(index){
+				var record=Ext.getCmp(BATCH.id + '-grid-BATCH').getStore().getAt(index);
+				var id_lote=record.data.id_lote;
+			    var shi_codigo=record.data.shi_codigo;
+			    var fac_cliente =record.data.fac_cliente;
+			    var lot_estado =record.data.lot_estado
+
+				if(parseInt(shi_codigo)==0){ 
+					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
+					return false;
+				}
+				if(parseInt(id_lote)==0){
+					global.Msg({msg:"Seleccione un Lote.",icon:2,fn:function(){}});
+					return false;
+				}
+
+				global.Msg({
+                    msg: '¿Seguro de cerrar Lote?',
+                    icon: 3,
+                    buttons: 3,
+                    fn: function(btn){
+                    	if (btn == 'yes'){
+                    		Ext.getCmp(BATCH.id + '-grid-BATCH').el.mask('Procesando Lote…', 'x-mask-loading'); 
+			                Ext.Ajax.request({
+			                    url:BATCH.url+'set_process_ocr/',
+			                    params:{
+			                    	vp_op:lot_estado=='AU'?'N':'S',
+			                    	vp_shi_codigo:shi_codigo,
+			                    	vp_fac_cliente:fac_cliente,
+			                    	vp_id_lote:id_lote
+			                    },
+			                    timeout: 300000,
+			                    success: function(response, options){
+			                        Ext.getCmp(BATCH.id + '-grid-BATCH').el.unmask();
+			                        var res = Ext.JSON.decode(response.responseText);
+			                        if (res.error == 'OK'){
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 1,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	/*scanning.getScanningFile();
+			                                	scanning.setLibera();
+		                               			scanning.getReloadGridscanning();*/
+			                                	//scanning.getScanningFile();
+			                                	BATCH.getReloadGridBATCH();
+			                                }
+			                            });
+			                        } else{
+			                            global.Msg({
+			                                msg: res.msn,
+			                                icon: 0,
+			                                buttons: 1,
+			                                fn: function(btn){
+			                                	//scanning.getReloadGridscanning();
+			                                    //scanning.getScanningFile();
+			                                    BATCH.getReloadGridBATCH();
+			                                }
+			                            });
+			                        }
+			                    }
+			                });
+						}
+					}
+				});
 			},
 			getPrint:function(index){
 				var record=Ext.getCmp(BATCH.id + '-grid-BATCH').getStore().getAt(index);

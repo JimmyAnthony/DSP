@@ -28,7 +28,7 @@ class BATCHModels extends Adodb {
         return $array;
     }
 
-   public function get_lotizer_detalle($p){
+    public function get_lotizer_detalle($p){
         parent::ReiniciarSQL();
         parent::ConnectionOpen($this->dsn, 'get_lotizer_detalle');
         parent::SetParameterSP($p['vp_id_lote'], 'int');
@@ -59,6 +59,41 @@ class BATCHModels extends Adodb {
         parent::SetParameterSP($p['vp_id_pag'], 'int');
         parent::SetParameterSP($p['vp_shi_codigo'], 'int');
         parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+    public function get_list_page_trazos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page_trazos');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_ocr'], 'varchar');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+    public function get_list_page_trazos_pending($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'get_list_page_trazos_pending');
+        parent::SetParameterSP($p['vp_id_pag'], 'int');
+        parent::SetParameterSP($p['vp_shi_codigo'], 'int');
+        parent::SetParameterSP($p['vp_id_det'], 'int');
+        parent::SetParameterSP($p['vp_id_lote'], 'int');
+        parent::SetParameterSP($p['vp_ocr'], 'varchar');
+        // echo '=>' . parent::getSql().'<br>'; exit();
+        $array = parent::ExecuteSPArray();
+        return $array;
+    }
+
+    public function set_marca_trazos($p){
+        parent::ReiniciarSQL();
+        parent::ConnectionOpen($this->dsn, 'set_marca_trazos');
         parent::SetParameterSP($p['vp_id_lote'], 'int');
         // echo '=>' . parent::getSql().'<br>'; exit();
         $array = parent::ExecuteSPArray();

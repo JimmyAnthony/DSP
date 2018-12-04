@@ -451,6 +451,15 @@ class scanningController extends AppController {
         }
     }
 
+    public function execInBackground($cmd) {
+        if (substr(php_uname(), 0, 7) == "Windows"){
+            pclose(popen("start /B ". $cmd, "r"));
+        }
+        else {
+            exec($cmd . " > /dev/null &");
+        }
+    }
+
     public function setProcessingOCR($p){
 
         set_time_limit(0);
@@ -462,7 +471,8 @@ class scanningController extends AppController {
         //echo $comando;die();
         try{
             //exec($comando, $output);
-            $this->open($comando);
+            //$this->open($comando);
+            $this->execInBackground($comando);
         }catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
         }
@@ -481,7 +491,8 @@ class scanningController extends AppController {
         //echo $comando;die();
         try{
             //exec($comando, $output);
-            $this->open($comando);
+            //$this->open($comando);
+            $this->execInBackground($comando);
         }catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
         }

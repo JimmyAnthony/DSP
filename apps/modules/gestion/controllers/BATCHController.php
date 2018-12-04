@@ -255,4 +255,286 @@ class BATCHController extends AppController {
          rmdir($dir); 
        } 
     } 
+
+
+    public function set_process_ocr($p){
+        //$this->valida_mobil($p);
+        //set_time_limit(0);
+        //ini_set('memory_limit', '-1');
+
+        $op = $p['vp_op'];
+
+        /*$p['vp_op']=$p['vp_op']=='S'?'J':$p['vp_op'];
+
+        $rs = $this->objDatos->set_lotizer($p);
+
+        //$p['vp_op']=$op=='A'?'S':$p['vp_op'];
+
+        $rs = $rs[0];
+        if($rs['status']!='ER'){
+
+            
+        }*/
+
+        $p['vp_seleccionar']='P';
+        /*$p['vp_id_pag'] ='0';
+        $p['vp_id_det']='0';*/
+        $p['vp_ocr']='N';
+        //$p['vp_shi_codigo']=
+        //$p['vp_fac_cliente']=
+        $p['vp_lote_estado']='AU';
+        $p['vp_name']='';
+        $p['fecha']='';
+        $p['vp_estado']='A';
+        
+        /*$thread = new ChildThread($op,$p);
+        $thread->start();*/
+        $this->set_list_page_trazos_auto($p);
+        $rs['status'] ='OK';
+        $rs['response'] ='PROCESANDO...';
+        if($op=='S'){
+            $this->setProcessingOCR($p);
+        }else{
+            $this->setProcessingOCRAUTO($p);
+        }
+
+
+        $data = array(
+            'success' => true,
+            'error' => $rs['status'],
+            'msn' => utf8_encode(trim($rs['response']))
+        );
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+    public function open($exec, $cwd = null) {
+        if (!is_string($cwd)) {
+            $cwd = @getcwd();
+        }
+
+        @chdir($cwd);
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+            /*$WshShell = new COM("WScript.Shell");
+            $WshShell->CurrentDirectory = str_replace('/', '\\', $cwd);
+            $WshShell->Run($exec, 0, false);*/
+            system($exec." > NUL");
+        } else {
+            exec($exec . " > /dev/null 2>&1 &");
+        }
+    }
+
+    public function execInBackground($cmd) {
+        if (substr(php_uname(), 0, 7) == "Windows"){
+            pclose(popen("start /B ". $cmd, "r"));
+        }
+        else {
+            exec($cmd . " > /dev/null &");
+        }
+    }
+
+    public function setProcessingOCR($p){
+        set_time_limit(10);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']).'&H&'.USR_ID);
+        $comando = "python " . PATH . "apps/modules/gestion/views/control/python/OCR.py " . $params;
+        $output = array();
+        //echo $comando;die();
+        try{
+            $this->execInBackground($comando);
+            //pclose(popen($comando, 'r'));
+            //$this->open($comando);
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
+    public function setProcessingOCRAUTO($p){
+        set_time_limit(10);
+        ini_set('memory_limit', '-1');
+        #IN vp_id_pag INTEGER,IN vp_shi_codigo smallint,IN vp_id_det INT,IN vp_id_lote INT
+        $params = base64_encode(PATH . '&0&' . trim($p['vp_shi_codigo']) . '&0&' . trim($p['vp_id_lote']).'&B&'.USR_ID);
+        $comando = "python " . PATH . "apps/modules/gestion/views/scanning/python/scanner.py " . $params;
+        $output = array();
+        //echo $comando;die();
+        try{
+            $this->execInBackground($comando);
+            //pclose(popen($comando, 'r'));
+            //$this->open($comando);
+        }catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+        }
+        $data = array('success' => true,'error' => $output[0],'msn' => utf8_encode(trim($output[1])));
+        //header('Content-Type: application/json');
+        return $data;
+    }
+    public function set_list_page_trazos_auto($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        $rs = $this->objDatos->get_list_page_trazos_pending($p);
+        //var_export($rs);
+        $array = array();
+        //$page=$p['vp_id_pag'];
+        foreach ($rs as $index => $value){
+            $p['vp_id_pag'] = intval($value['id_pag']);
+            $p['vp_path'] = utf8_encode(trim($value['path']));
+            $p['vp_img'] = utf8_encode(trim($value['img']));
+            $p['vp_cod_trazo'] = intval($value['cod_trazo']);
+            $p['vp_x'] = floatval(trim($value['x']));
+            $p['vp_y'] = floatval(trim($value['y']));
+            $p['vp_w'] = floatval(trim($value['w']));
+            $p['vp_h'] = floatval(trim($value['h']));
+
+            $p['vp_wo'] = floatval(trim($value['wo']));
+            $p['vp_ho'] = floatval(trim($value['wo']));
+
+            $path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
+            $p['extension']=$path_parts['extension'];
+            $status=$this->setDropImg($p);
+
+            $value_['id_det'] =intval($value['id_det']);
+            $value_['id_lote'] =intval($value['id_lote']);
+            $value_['id_pag'] =intval($value['id_pag']);
+            $value_['cod_trazo'] =intval($value['cod_trazo']);
+            $value_['extension'] =$p['extension'];
+            $value_['tipo'] =utf8_encode(trim($value['tipo']));
+            if($status){
+                $array[]=$value_;
+            }
+            $data = array('success' => true,'error' => $status?'OK':'ER','msn' => $status=='OK'?'Procesado correctamente':'Ocurrio un error al generar el trazo','data'=>$array);
+        }
+        //header('Content-Type: application/json');
+        //return $this->response($data);
+        //$p['vp_id_pag']=$page;
+
+        $res = $this->objDatos->set_marca_trazos($p);
+
+        #$data=$this->getScannearTrazos($p);
+        header('Content-Type: application/json');
+        return $this->response($data);
+    }
+
+    public function setDropImg($p){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        $bool=true;
+        //$path_parts = pathinfo(PATH.'public_html'.$p['vp_path'].$p['vp_img']);
+        $ext=$p['extension'];
+        $src_original = PATH.'public_html'.$p['vp_path'].$p['vp_img'];
+        $src_guardar  = PATH.'public_html/tmp_trazos/'.$p['vp_id_pag'].'-'.$p['vp_cod_trazo'].'-trazo.'.$ext;
+        try {
+            $destImage = imagecreatetruecolor($p['vp_w'], $p['vp_h']);
+            #$sourceImage = imagecreatefromjpeg($src_original);
+
+            switch($ext){
+                case 'bmp': $sourceImage = imagecreatefromwbmp($src_original); break;
+                case 'gif': $sourceImage = imagecreatefromgif($src_original); break;
+                case 'jpg': $sourceImage = imagecreatefromjpeg($src_original); break;
+                case 'png': $sourceImage = imagecreatefrompng($src_original); break;
+                default : return "Unsupported picture type!";
+            }
+            if($ext == "gif" or $ext == "png"){
+                imagecolortransparent($destImage, imagecolorallocatealpha($destImage, 0, 0, 0, 127));
+                imagealphablending($destImage, false);
+                imagesavealpha($destImage, true);
+            }
+
+            imagecopyresampled($destImage, $sourceImage, 0, 0, number_format($p['vp_x'], 4, '.', ''), number_format($p['vp_y'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', ''), number_format($p['vp_w'], 4, '.', ''), number_format($p['vp_h'], 4, '.', '')); 
+
+            switch($ext){
+                case 'bmp': imagewbmp($destImage, $src_guardar); break;
+                case 'gif': imagegif($destImage, $src_guardar); break;
+                case 'jpg': imagejpeg($destImage, $src_guardar); break;
+                case 'png': imagepng($destImage, $src_guardar); break;
+            }
+        } catch (Exception $e) {
+            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            $bool=false;
+        }
+        return $bool;
+    }
+    public function getValidFormat($nameimg){
+        $path_parts = pathinfo(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg);
+        $ext=$path_parts['extension'];
+        $bool=false;
+        switch($ext){
+            #case 'bmp': $sourceImage = $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, 50, 70); break;
+            case 'gif': case 'GIF': 
+                $bool=true;
+            break;
+            case 'jpg': case 'JPG': 
+                $bool=true;
+            break;
+            case 'png': case 'PNG': 
+                $bool=true;
+            break;
+            case 'tiff': case 'TIFF': 
+                $bool=true;
+            break;
+        }
+        return $bool;
+    }
+    public function setResizeImage($nameimg){
+        $path_parts = pathinfo(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg);
+        $ext=$path_parts['extension'];
+        $w=40;
+        $y=60;
+        switch($ext){
+            #case 'bmp': $sourceImage = $img = $this->resize_imagejpg(PATH.'public_html/tmp/'.$nameimg, 50, 70); break;
+            case 'gif': 
+                $img = $this->resize_imagegif(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg, $w, $y); 
+            break;
+            case 'jpg': 
+                $img = $this->resize_imagejpg(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg, $w, $y); 
+            break;
+            case 'png': 
+                $img = $this->resize_imagepng(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg, $w, $y); 
+            break;
+            case 'tiff': 
+                $img = $this->resize_imagetiff(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg, $w, $y); 
+            break;
+            default : 
+                $img = $this->resize_imagejpg(PATH.'public_html/contenedor/'.USR_ID.'/'.$nameimg, $w, $y); 
+            break;
+        }
+        imagejpeg($img, PATH.'public_html/tumblr/'.$nameimg);
+    }
+    // for jpg 
+    public function resize_imagejpg($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefromjpeg($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
+
+     // for png
+    public function resize_imagepng($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefrompng($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
+
+    // for gif
+    public function resize_imagegif($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefromgif($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
+    // for tiff
+    public function resize_imagetiff($file, $w, $h) {
+       list($width, $height) = getimagesize($file);
+       $src = imagecreatefromgif($file);
+       $dst = imagecreatetruecolor($w, $h);
+       imagecopyresampled($dst, $src, 0, 0, 0, 0, $w, $h, $width, $height);
+       return $dst;
+    }
 }
