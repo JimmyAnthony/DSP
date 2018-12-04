@@ -395,7 +395,7 @@ class scanningController extends AppController {
 
         $op = $p['vp_op'];
 
-        $p['vp_op']=$p['vp_op']=='S'?'J':$p['vp_op'];
+        //$p['vp_op']=$p['vp_op']=='S'?'J':$p['vp_op'];
 
         $rs = $this->objDatos->set_lotizer($p);
 

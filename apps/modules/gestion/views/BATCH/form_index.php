@@ -698,7 +698,7 @@
 				var id_lote=record.data.id_lote;
 			    var shi_codigo=record.data.shi_codigo;
 			    var fac_cliente =record.data.fac_cliente;
-			    var lot_estado =record.data.lot_estado
+			    var estado =record.data.estado;
 
 				if(parseInt(shi_codigo)==0){ 
 					global.Msg({msg:"Seleccione un Cliente por favor.",icon:2,fn:function(){}});
@@ -719,7 +719,7 @@
 			                Ext.Ajax.request({
 			                    url:BATCH.url+'set_process_ocr/',
 			                    params:{
-			                    	vp_op:lot_estado=='AU'?'N':'S',
+			                    	vp_op:estado=='AU'?'N':'S',
 			                    	vp_shi_codigo:shi_codigo,
 			                    	vp_fac_cliente:fac_cliente,
 			                    	vp_id_lote:id_lote

@@ -68,7 +68,7 @@
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
 		                    });
-		                    Ext.getCmp(closing.id + '-grid-closing').expandAll();
+		                    //Ext.getCmp(closing.id + '-grid-closing').expandAll();
 	                    }
 	                }
 	            });

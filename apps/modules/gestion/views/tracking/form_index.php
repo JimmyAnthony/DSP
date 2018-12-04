@@ -70,7 +70,7 @@
 		                          if (node.getDepth() < 1) { node.expand(); }
 		                          if (node.getDepth() == 0) { return false; }
 		                    });
-		                    Ext.getCmp(tracking.id + '-grid-tracking').expandAll();
+		                    //Ext.getCmp(tracking.id + '-grid-tracking').expandAll();
 	                    }
 	                }
 	            });
@@ -849,7 +849,8 @@
 																	var image = document.getElementById('imagen-tracking-img');
 																	var downloadingImage = new Image();
 																	downloadingImage.onload = function(){
-																	    image.src = this.src;   
+																	    image.src = this.src;
+																	    //image.percentHeight = 100;
 																	    Ext.getCmp(tracking.id + '-panel-imagen').doLayout();
 																	};
 																	downloadingImage.src = record.get('path')+record.get('img');
@@ -1005,7 +1006,7 @@
 											title:'Imagen',
 											//width:'100%',
 											//width:500,
-											html: '<div id="imagen-tracking" style="width:100%; height:"100%;overflow: none;" ><img id="imagen-tracking-img" src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
+											html: '<div id="imagen-tracking" style="width:100%; height:100%;overflow: none;" ><img id="imagen-tracking-img" src="/plantillas/Document-Scanning-Indexing-Services-min.jpg" width="100%" height="100%"/></div>'
 										}
 									]
 								}

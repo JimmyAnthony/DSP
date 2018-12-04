@@ -923,6 +923,7 @@
 					                        id:control.id+'-btn-ocr',
 					                        //disabled:true,
 					                        scale: 'large',
+					                        hidden:true,
 					                        //iconAlign: 'top',
 					                        //disabled:true,
 					                        //width:'99%',
