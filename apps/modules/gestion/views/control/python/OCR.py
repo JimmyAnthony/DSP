@@ -387,7 +387,7 @@ def main():
     estado     = params[5]
     USR_ID     = params[6]
 
-    DISK='D:/xampp/htdocs/DSP/public_html/'
+    DISK='C:/xampp/htdocs/DSP/public_html/'
     
     path= path.replace('\\','/')
     path= path.replace('//','/')
@@ -397,7 +397,7 @@ def main():
     server_config = 'server_main'
 
     Config = configparser.ConfigParser() 
-    Config.read(str('D:/xampp/htdocs/DSP/config/config.ini'))
+    Config.read(str('C:/xampp/htdocs/DSP/config/config.ini'))
 
     #print(Config.sections())
 
