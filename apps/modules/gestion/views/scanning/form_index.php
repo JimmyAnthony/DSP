@@ -193,6 +193,7 @@
 	                    {name: 'include', type: 'string'}
 	                ],
 	                autoLoad:false,
+	                timeout: 9000000000,
 	                proxy:{
 	                    type: 'ajax',
 	                    url: scanning.url+'get_load_page/',
@@ -219,6 +220,7 @@
 	                    {name: 'include', type: 'string'}
 	                ],
 	                autoLoad:false,
+	                timeout: 9000000000,
 	                proxy:{
 	                    type: 'ajax',
 	                    url: scanning.url+'get_scanner/',
@@ -244,6 +246,7 @@
 	                    {name: 'fecha_actual', type: 'string'}
 	                ],
 	                autoLoad:true,
+	                timeout: 9000000000,
 	                proxy:{
 	                    type: 'ajax',
 	                    url: scanning.url+'get_list_shipper/',
@@ -265,6 +268,7 @@
                     {name: 'pro_descri', type: 'string'}
                 ],
                 autoLoad:false,
+                timeout: 9000000000,
                 proxy:{
                     type: 'ajax',
                     url: scanning.url+'get_list_contratos/',
