@@ -123,6 +123,7 @@
 				    autoLoad:false,
 	                proxy: {
 	                    type: 'ajax',
+	                    timeout: 9000000000,
 	                    url: scanning.url+'get_scanner/'//,
 	                    //reader:{
 	                    //    type: 'json'//,
@@ -171,6 +172,7 @@
 	                    url: scanning.url+'get_XX/',
 	                    reader:{
 	                        type: 'json',
+	                        timeout: 9000000000,
 	                        rootProperty: 'data'
 	                    }
 	                },
@@ -199,6 +201,7 @@
 	                    url: scanning.url+'get_load_page/',
 	                    reader:{
 	                        type: 'json',
+	                        timeout: 9000000000,
 	                        rootProperty: 'data'
 	                    }
 	                },
@@ -223,6 +226,7 @@
 	                timeout: 9000000000,
 	                proxy:{
 	                    type: 'ajax',
+	                    timeout: 9000000000,
 	                    url: scanning.url+'get_scanner/',
 	                    reader:{
 	                        type: 'json',
@@ -249,6 +253,7 @@
 	                timeout: 9000000000,
 	                proxy:{
 	                    type: 'ajax',
+	                    timeout: 9000000000,
 	                    url: scanning.url+'get_list_shipper/',
 	                    reader:{
 	                        type: 'json',
@@ -271,6 +276,7 @@
                 timeout: 9000000000,
                 proxy:{
                     type: 'ajax',
+                    timeout: 9000000000,
                     url: scanning.url+'get_list_contratos/',
                     reader:{
                         type: 'json',
